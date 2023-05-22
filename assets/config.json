@@ -1,0 +1,19 @@
+{
+  "name": "Genesis Service Provider",
+  "URL": "https://dim.chat/",
+
+  "ID": "gsp@everywhere",
+  "founder": "moky@anywhere",
+  "owner": "anyone@anywhere",
+
+  "stations": [
+    {"host": "106.52.25.169", "port": 9394}
+  ],
+
+  "uploads": [
+    "http://106.52.25.169:8081/{ID}/upload?md5={MD5}&salt={SALT}"
+  ],
+
+  "terms": "https://wallet.dim.chat/dimchat/sechat/privacy.html",
+  "about": "https://dim.chat/"
+}

@@ -26,7 +26,7 @@ apply plugin: 'kotlin-android'
 apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
 
 android {
-    namespace "chat.dim.tarsier"
+    //namespace "chat.dim.tarsier"
     compileSdkVersion flutter.compileSdkVersion
     ndkVersion flutter.ndkVersion
 
@@ -40,10 +40,11 @@ android {
         applicationId "chat.dim.tarsier"
         // You can update the following values to match your application needs.
         // For more information, see: https://docs.flutter.dev/deployment/android#reviewing-the-gradle-build-configuration.
-        minSdkVersion flutter.minSdkVersion
+        minSdkVersion 17  //flutter.minSdkVersion
         targetSdkVersion flutter.targetSdkVersion
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
+        multiDexEnabled true
     }
 
     buildTypes {
@@ -57,4 +58,11 @@ android {
 
 flutter {
     source '../..'
+}
+
+dependencies {
+    implementation group: 'chat.dim', name: 'Network', version: '0.1.1'
+    implementation group: 'chat.dim', name: 'CryptoPlugins', version: '0.0.4'
+
+    implementation 'com.android.support:multidex:1.0.3'
 }
