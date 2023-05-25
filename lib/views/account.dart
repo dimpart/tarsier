@@ -98,14 +98,38 @@ class _AccountState extends State<AccountPage> {
       const SizedBox(height: 32,),
       _avatarImage(),
       const SizedBox(height: 16,),
-      _nicknameText(),
+      SizedBox(
+        width: 320,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            const Text('Name:', style: TextStyle(
+              fontSize: 14,
+              color: CupertinoColors.systemGrey,
+            )),
+            _nicknameText(),
+          ],
+        ),
+      ),
       const SizedBox(height: 8,),
-      _idLabel(),
-      const SizedBox(height: 32,),
+      SizedBox(
+        width: 320,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            const Text('DID:', style: TextStyle(
+              fontSize: 14,
+              color: CupertinoColors.systemGrey,
+            )),
+            _idLabel(),
+          ],
+        ),
+      ),
+      const SizedBox(height: 64,),
       _saveButton(context),
       // const SizedBox(height: 8,),
       // _exportButton(context),
-      const SizedBox(height: 64,),
+      const SizedBox(height: 128,),
     ],
   );
 
@@ -138,7 +162,7 @@ class _AccountState extends State<AccountPage> {
   Widget _nicknameText() => SizedBox(
     width: 160,
     child: CupertinoTextField(
-      textAlign: TextAlign.center,
+      textAlign: TextAlign.end,
       controller: TextEditingController(text: _nickname),
       placeholder: 'your nickname',
       padding: const EdgeInsets.only(left: 10, right: 10,),
@@ -152,11 +176,9 @@ class _AccountState extends State<AccountPage> {
     ),
   );
 
-  Widget _idLabel() => Expanded(
-    child: SelectableText(widget.user.identifier.toString(),
-      style: const TextStyle(fontSize: 12,
-        color: Colors.teal,
-      ),
+  Widget _idLabel() => SelectableText(widget.user.identifier.toString(),
+    style: const TextStyle(fontSize: 12,
+      color: Colors.teal,
     ),
   );
 

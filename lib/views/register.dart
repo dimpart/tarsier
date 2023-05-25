@@ -41,6 +41,12 @@ class _RegisterInfo {
 
 class _RegisterState extends State<RegisterPage> {
 
+  static const Color topColor = Colors.purple;
+  static const Color bottomColor = Colors.blueAccent;
+
+  static const Color textColor = Colors.white70;
+  static const Color buttonColor = Colors.greenAccent;
+
   final FocusNode _focusNode = FocusNode();
 
   @override
@@ -59,74 +65,103 @@ class _RegisterState extends State<RegisterPage> {
     // build page
     return Scaffold(
       // A ScrollView that creates custom scroll effects using slivers.
-      body: CustomScrollView(
-        // A list of sliver widgets.
-        slivers: <Widget>[
-          CupertinoSliverNavigationBar(
-            // This title is visible in both collapsed and expanded states.
-            // When the "middle" parameter is omitted, the widget provided
-            // in the "largeTitle" parameter is used instead in the collapsed state.
-            largeTitle: Text(
-              widget._info.importing ? 'Import' : 'Register',
-            ),
-            trailing: TextButton(
-              child: Text(
-                widget._info.importing ? 'Register' : 'Import',
-              ),
-              onPressed: () => setState(() {
-                widget._info.importing = !widget._info.importing;
-              }),
-            ),
-          ),
-          // This widget fills the remaining space in the viewport.
-          // Drag the scrollable area to collapse the CupertinoSliverNavigationBar.
-          SliverFillRemaining(
-            hasScrollBody: false,
-            fillOverscroll: true,
-            child: Column(
-              // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: <Widget>[
-                const SizedBox(
-                  height: 32,
-                ),
-                if (widget._info.importing)
-                SizedBox(
-                  width: 320,
-                  child: _mosaics(),
-                ),
-                if (!widget._info.importing)
-                SizedBox(
-                  width: 320,
-                  height: 256,
-                  child: _welcome(),
-                ),
-                const SizedBox(
-                  height: 32,
-                ),
-                Container(
-                  width: 240,
-                  alignment: Alignment.center,
-                  child: _nicknameField(),
-                ),
-                const SizedBox(
-                  height: 32,
-                ),
-                _okButton(context),
-                Container(
-                  width: 320,
-                  alignment: Alignment.center,
-                  child: _privacyPolicy(context),
-                ),
-                const SizedBox(
-                  height: 32,
-                ),
-              ],
-            ),
-          ),
+      body: Stack(
+        children: [
+          _ground(),
+          _page(),
         ],
       ),
+      backgroundColor: topColor,
     );
   }
+
+  Widget _ground() => Container(
+    decoration: const BoxDecoration(
+      gradient: LinearGradient(
+        colors: [bottomColor, topColor],
+        begin: FractionalOffset(0.4, 1.0),
+        end: FractionalOffset(0.6, 0.2),
+        stops: [0.0, 1.0],
+        tileMode: TileMode.clamp,
+      ),
+    ),
+  );
+
+  Widget _page() => CustomScrollView(
+    // A list of sliver widgets.
+    slivers: <Widget>[
+      CupertinoSliverNavigationBar(
+        // This title is visible in both collapsed and expanded states.
+        // When the "middle" parameter is omitted, the widget provided
+        // in the "largeTitle" parameter is used instead in the collapsed state.
+        largeTitle: Text(
+          widget._info.importing ? 'Import' : 'Register',
+          style: const TextStyle(
+            color: textColor,
+          ),
+        ),
+        trailing: TextButton(
+          child: Text(
+            widget._info.importing ? 'Register' : 'Import',
+            style: const TextStyle(
+              color: buttonColor,
+            ),
+          ),
+          onPressed: () => setState(() {
+            widget._info.importing = !widget._info.importing;
+          }),
+        ),
+        backgroundColor: topColor,
+      ),
+      // This widget fills the remaining space in the viewport.
+      // Drag the scrollable area to collapse the CupertinoSliverNavigationBar.
+      SliverFillRemaining(
+        hasScrollBody: false,
+        fillOverscroll: true,
+        child: _form(),
+      ),
+    ],
+  );
+
+  Widget _form() => Column(
+    // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+    children: <Widget>[
+      const SizedBox(
+        height: 32,
+      ),
+      if (widget._info.importing)
+        SizedBox(
+          width: 320,
+          child: _mosaics(),
+        ),
+      if (!widget._info.importing)
+        SizedBox(
+          width: 320,
+          height: 256,
+          child: _welcome(),
+        ),
+      const SizedBox(
+        height: 32,
+      ),
+      Container(
+        width: 240,
+        alignment: Alignment.center,
+        child: _nicknameField(),
+      ),
+      const SizedBox(
+        height: 32,
+      ),
+      _okButton(context),
+      Container(
+        width: 320,
+        alignment: Alignment.center,
+        child: _privacyPolicy(context),
+      ),
+      const SizedBox(
+        height: 32,
+      ),
+    ],
+  );
 
   Widget _mosaics() {
     List<Widget> tiles = [];
@@ -140,7 +175,7 @@ class _RegisterState extends State<RegisterPage> {
           Text(
             'Mnemonic Codes',
             style: TextStyle(
-              color: Colors.blue,
+              color: Colors.yellowAccent,
               fontSize: 20,
             ),
           ),
@@ -154,7 +189,6 @@ class _RegisterState extends State<RegisterPage> {
                 ' if you don\'t have one, please click "Register" button'
                 ' on the top-right corner to generate a new one.',
               fontSize: 12,
-              color: CupertinoColors.systemGrey,
             ),
           ),
         ],
@@ -213,13 +247,13 @@ class _RegisterState extends State<RegisterPage> {
       alignment: AlignmentDirectional.topEnd,
       children: [
         Container(
-          color: CupertinoColors.extraLightBackgroundGray,
+          color: Colors.white24,
           margin: const EdgeInsets.all(1),
           padding: const EdgeInsets.fromLTRB(6, 8, 6, 8),
           alignment: Alignment.center,
           child: CupertinoTextField(
             decoration: const BoxDecoration(
-              color: CupertinoColors.extraLightBackgroundGray,
+              // color: CupertinoColors.tertiarySystemFill,
             ),
             textAlign: TextAlign.center,
             controller: TextEditingController(text: word),
@@ -235,11 +269,11 @@ class _RegisterState extends State<RegisterPage> {
             child: Container(
               alignment: Alignment.center,
               width: 12, height: 12,
-              color: CupertinoColors.white,
+              color: CupertinoColors.lightBackgroundGray,
               child: Text('${index + 1}',
                 style: const TextStyle(
                   fontSize: 8,
-                  color: CupertinoColors.systemGrey,
+                  color: CupertinoColors.secondaryLabel,
                 ),
               ),
             ),
@@ -262,10 +296,10 @@ class _RegisterState extends State<RegisterPage> {
     ],
   );
 
-  Widget _memo(String text, {double fontSize = 16, Color? color}) => Container(
+  Widget _memo(String text, {double fontSize = 16}) => Container(
     padding: const EdgeInsets.all(4),
     alignment: Alignment.topLeft,
-    child: Text(text, style: TextStyle(fontSize: fontSize, color: color)),
+    child: Text(text, style: TextStyle(fontSize: fontSize, color: textColor)),
   );
 
   Widget _nicknameField() => Row(
@@ -273,7 +307,7 @@ class _RegisterState extends State<RegisterPage> {
       const Text(
         'Name: ',
         style: TextStyle(
-          color: Colors.blue,
+          color: textColor,
           fontSize: 20,
         ),
       ),
@@ -333,7 +367,9 @@ class _RegisterState extends State<RegisterPage> {
       ),
       const Text('Agreed with the'),
       TextButton(
-        child: const Text('DIM Privacy Policy'),
+        child: const Text('DIM Privacy Policy',
+          style: TextStyle(color: buttonColor),
+        ),
         onPressed: () => Config().termsURL.then((url) => Browser.open(context,
           url: url,
           title: 'Privacy Policy',

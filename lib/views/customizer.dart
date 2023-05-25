@@ -60,10 +60,10 @@ class SettingsPage extends StatelessWidget {
                   topMargin: 0,
                   additionalDividerMargin: 32,
                   children: [
-                    _whitePaper(context),
+                    // _whitePaper(context),
                     _source(context),
                     _term(context),
-                    _about(context),
+                    _about2(context),
                   ],
                 ),
               ],
@@ -100,17 +100,17 @@ class SettingsPage extends StatelessWidget {
     ),
   );
 
-  Widget _whitePaper(BuildContext context) => CupertinoListTile(
-    padding: Styles.settingsSectionItemPadding,
-    leading: const Icon(Styles.setWhitePaperIcon),
-    title: const Text('White Paper'),
-    additionalInfo: const Text('zh-CN'),
-    trailing: const CupertinoListTileChevron(),
-    onTap: () => Config().termsURL.then((url) => Browser.open(context,
-      url: 'https://github.com/moky/DIMP/blob/master/zh-CN/TechnicalWhitePaper.md',
-      title: 'Technical White Paper (zh-CN)',
-    )),
-  );
+  // Widget _whitePaper(BuildContext context) => CupertinoListTile(
+  //   padding: Styles.settingsSectionItemPadding,
+  //   leading: const Icon(Styles.setWhitePaperIcon),
+  //   title: const Text('White Paper'),
+  //   additionalInfo: const Text('zh-CN'),
+  //   trailing: const CupertinoListTileChevron(),
+  //   onTap: () => Config().termsURL.then((url) => Browser.open(context,
+  //     url: 'https://github.com/moky/DIMP/blob/master/zh-CN/TechnicalWhitePaper.md',
+  //     title: 'Technical White Paper (zh-CN)',
+  //   )),
+  // );
 
   Widget _source(BuildContext context) => CupertinoListTile(
     padding: Styles.settingsSectionItemPadding,
@@ -119,7 +119,7 @@ class SettingsPage extends StatelessWidget {
     additionalInfo: const Text('github.com/dimchat'),
     trailing: const CupertinoListTileChevron(),
     onTap: () => Config().termsURL.then((url) => Browser.open(context,
-      url: 'https://github.com/dimchat/demo-flutter',
+      url: 'https://github.com/dimgame/tarsier',
       title: 'Open Source',
     )),
   );
@@ -136,17 +136,35 @@ class SettingsPage extends StatelessWidget {
     )),
   );
 
-  Widget _about(BuildContext context) => CupertinoListTile(
+  // Widget _about(BuildContext context) => CupertinoListTile(
+  //   padding: Styles.settingsSectionItemPadding,
+  //   leading: const Icon(Styles.setAboutIcon),
+  //   title: const Text('About'),
+  //   additionalInfo: const Text('DIM'),
+  //   trailing: const CupertinoListTileChevron(),
+  //   onTap: () => Config().aboutURL.then((url) => Browser.open(context,
+  //     url: url,
+  //     title: 'Decentralized Instant Messaging',
+  //   )),
+  // );
+
+  Widget _about2(BuildContext context) => CupertinoListTile(
     padding: Styles.settingsSectionItemPadding,
     leading: const Icon(Styles.setAboutIcon),
     title: const Text('About'),
-    additionalInfo: const Text('DIM'),
-    trailing: const CupertinoListTileChevron(),
-    onTap: () => Config().aboutURL.then((url) => Browser.open(context,
-      url: url,
-      title: 'Decentralized Instant Messaging',
-    )),
+    additionalInfo: const Text('Tarsier (v1.0)'),
+    onTap: () => Config().aboutURL.then((url) => GaussianInfo.show(context,
+        'About Tarsier',
+        'Secure chat application,'
+            ' powered by E2EE (End-to-End Encryption) technology.\n'
+            '\n'
+            'Author: Albert Moky\n'
+            'Version: 1.0 (build 10001)\n'
+            'Website: $url',
+    ),
+    ),
   );
+
 }
 
 class _MyAccountSection extends StatefulWidget {
