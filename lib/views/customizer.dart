@@ -158,7 +158,7 @@ class SettingsPage extends StatelessWidget {
         'Secure chat application,'
             ' powered by E2EE (End-to-End Encryption) technology.\n'
             '\n'
-            'Author: Albert Moky\n'
+            // 'Author: Albert Moky\n'
             'Version: 1.0 (build 10001)\n'
             'Website: $url',
     ),
