@@ -41,11 +41,24 @@ class _RegisterInfo {
 
 class _RegisterState extends State<RegisterPage> {
 
-  static const Color topColor = Colors.purple;
-  static const Color bottomColor = Colors.blueAccent;
+  // static const Color topColor = Colors.purple;
+  // static const Color bottomColor = Colors.blueAccent;
+  static const Color topColor = Styles.logoBackgroundColor;
+  static const Color bottomColor = CupertinoColors.white;
 
-  static const Color textColor = Colors.white70;
-  static const Color buttonColor = Colors.greenAccent;
+  static const Color titleColor = CupertinoColors.white;
+  static const Color secondaryTitleColor = Colors.yellowAccent;
+  static const Color textColor = CupertinoColors.darkBackgroundGray;
+
+  static const Color memoColor = Colors.black54;
+  static const Color idColor = Colors.teal;
+  static const Color okColor = CupertinoColors.systemGreen;
+
+  static const Color tileColor = CupertinoColors.systemBackground;
+  static const Color badgeColor = CupertinoColors.systemGrey3;
+  static const Color badgeFontColor = CupertinoColors.white;
+  static const Color inputColor = CupertinoColors.black;
+  static const Color buttonColor = CupertinoColors.link;
 
   final FocusNode _focusNode = FocusNode();
 
@@ -79,8 +92,8 @@ class _RegisterState extends State<RegisterPage> {
     decoration: const BoxDecoration(
       gradient: LinearGradient(
         colors: [bottomColor, topColor],
-        begin: FractionalOffset(0.4, 1.0),
-        end: FractionalOffset(0.6, 0.2),
+        begin: FractionalOffset(0.6, 0.8),
+        end: FractionalOffset(0.4, 0.2),
         stops: [0.0, 1.0],
         tileMode: TileMode.clamp,
       ),
@@ -97,14 +110,14 @@ class _RegisterState extends State<RegisterPage> {
         largeTitle: Text(
           widget._info.importing ? 'Import' : 'Register',
           style: const TextStyle(
-            color: textColor,
+            color: titleColor,
           ),
         ),
         trailing: TextButton(
           child: Text(
             widget._info.importing ? 'Register' : 'Import',
             style: const TextStyle(
-              color: buttonColor,
+              color: secondaryTitleColor,
             ),
           ),
           onPressed: () => setState(() {
@@ -123,6 +136,24 @@ class _RegisterState extends State<RegisterPage> {
     ],
   );
 
+  Widget _logo() => SizedBox(
+    width: 32,
+    height: 32,
+    child: Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _eye(),
+        const SizedBox(width: 4,),
+        _eye(),
+      ],
+    ),
+  );
+  Widget _eye() => const Icon(Icons.panorama_fish_eye,
+    size: 8,
+    color: CupertinoColors.white,
+  );
+
   Widget _form() => Column(
     // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
     children: <Widget>[
@@ -135,9 +166,11 @@ class _RegisterState extends State<RegisterPage> {
           child: _mosaics(),
         ),
       if (!widget._info.importing)
+        _logo(),
+      if (!widget._info.importing)
         SizedBox(
-          width: 320,
-          height: 256,
+          width: 360,
+          height: 392,
           child: _welcome(),
         ),
       const SizedBox(
@@ -158,7 +191,7 @@ class _RegisterState extends State<RegisterPage> {
         child: _privacyPolicy(context),
       ),
       const SizedBox(
-        height: 32,
+        height: 128,
       ),
     ],
   );
@@ -175,7 +208,7 @@ class _RegisterState extends State<RegisterPage> {
           Text(
             'Mnemonic Codes',
             style: TextStyle(
-              color: Colors.yellowAccent,
+              color: secondaryTitleColor,
               fontSize: 20,
             ),
           ),
@@ -188,7 +221,6 @@ class _RegisterState extends State<RegisterPage> {
             child: _memo('Mnemonic is the private key for an existing account,'
                 ' if you don\'t have one, please click "Register" button'
                 ' on the top-right corner to generate a new one.',
-              fontSize: 12,
             ),
           ),
         ],
@@ -218,7 +250,7 @@ class _RegisterState extends State<RegisterPage> {
           ),
           SelectableText(identifier,
             style: const TextStyle(fontSize: 12,
-              color: Colors.teal,
+              color: idColor,
             ),
           ),
         ],
@@ -247,14 +279,13 @@ class _RegisterState extends State<RegisterPage> {
       alignment: AlignmentDirectional.topEnd,
       children: [
         Container(
-          color: Colors.white24,
+          color: tileColor,
           margin: const EdgeInsets.all(1),
-          padding: const EdgeInsets.fromLTRB(6, 8, 6, 8),
+          padding: const EdgeInsets.fromLTRB(2, 8, 2, 8),
           alignment: Alignment.center,
           child: CupertinoTextField(
-            decoration: const BoxDecoration(
-              // color: CupertinoColors.tertiarySystemFill,
-            ),
+            decoration: const BoxDecoration(),
+            style: const TextStyle(color: inputColor),
             textAlign: TextAlign.center,
             controller: TextEditingController(text: word),
             onChanged: (value) {
@@ -269,11 +300,11 @@ class _RegisterState extends State<RegisterPage> {
             child: Container(
               alignment: Alignment.center,
               width: 12, height: 12,
-              color: CupertinoColors.lightBackgroundGray,
+              color: badgeColor,
               child: Text('${index + 1}',
                 style: const TextStyle(
                   fontSize: 8,
-                  color: CupertinoColors.secondaryLabel,
+                  color: badgeFontColor,
                 ),
               ),
             ),
@@ -285,21 +316,30 @@ class _RegisterState extends State<RegisterPage> {
 
   Widget _welcome() => Column(
     children: [
-      _memo('Welcome to the social network you control!'),
-      _memo('Here is a world where you can host your own communication'
-          ' and still be part of a huge network.'
-          ' DIM network is decentralized, and there is no one server,'
-          ' company, or person running it. Anyone can join and run'
-          ' their own services on DIM network.'),
-      _memo('All you need to do is just input a nickname to enter'
-          ' the wonderful world now.'),
+      _memo('Imagine a world where you can message anyone without being forced to install the same app.'),
+      _memo('Imagine a world where you can host your own communication and still be part of a huge network.'),
+      _memo('This will be brought to you by Tarsier Secure Chat, which is powered by DIM'
+          ' - an open source project that provides the protocol and system architecture.'),
+      _memo('DIM network is decentralized, and there is no one server, company, or person running it.'
+          ' Anyone can join and run their own services on DIM network.'),
+      _memo('When someone joins DIM network with their servers, they are called Service Providers.'
+          ' Since DIM network is open, a Service Provider can have its own set of services,'
+          ' while complying with DIM Protocol.'
+          ' User identification is generated and verified using a cryptographically algorithm,'
+          ' and no longer authenticated by a single corporation.'
+          ' Because of this, Service Providers cannot monetize the user’s privacy or data,'
+          ' they must compete by providing better services.'
+          ' This means that all the Service Providers share the same potential user base.'
+          ' And users could choose the Service Provider that fits their needs at anytime.'),
+      _memo(''),
+      _memo('As a user, all you need to do now is just input a nickname and enter the wonderful world!'),
     ],
   );
 
-  Widget _memo(String text, {double fontSize = 16}) => Container(
+  Widget _memo(String text, {double fontSize = 12}) => Container(
     padding: const EdgeInsets.all(4),
     alignment: Alignment.topLeft,
-    child: Text(text, style: TextStyle(fontSize: fontSize, color: textColor)),
+    child: Text(text, style: TextStyle(fontSize: fontSize, color: memoColor)),
   );
 
   Widget _nicknameField() => Row(
@@ -331,7 +371,7 @@ class _RegisterState extends State<RegisterPage> {
   );
 
   Widget _okButton(BuildContext context) => CupertinoButton(
-    color: Colors.red,
+    color: okColor,
     borderRadius: const BorderRadius.all(Radius.circular(24)),
     onPressed: () {
       _submit(context, widget._info);
