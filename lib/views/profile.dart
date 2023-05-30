@@ -105,16 +105,20 @@ class _ProfileState extends State<ProfilePage> implements lnc.Observer {
   }
 
   @override
-  Widget build(BuildContext context) => CupertinoPageScaffold(
+  Widget build(BuildContext context) => Scaffold(
+    backgroundColor: Facade.of(context).colors.scaffoldBackgroundColor,
     // A ScrollView that creates custom scroll effects using slivers.
-    child: CustomScrollView(
+    body: CustomScrollView(
       // A list of sliver widgets.
       slivers: <Widget>[
         CupertinoSliverNavigationBar(
+          backgroundColor: Facade.of(context).colors.appBardBackgroundColor,
           // This title is visible in both collapsed and expanded states.
           // When the "middle" parameter is omitted, the widget provided
           // in the "largeTitle" parameter is used instead in the collapsed state.
-          largeTitle: Text(widget.info.name),
+          largeTitle: Text(widget.info.name,
+            style: Facade.of(context).styles.titleTextStyle,
+          ),
         ),
         // This widget fills the remaining space in the viewport.
         // Drag the scrollable area to collapse the CupertinoSliverNavigationBar.
@@ -135,7 +139,7 @@ class _ProfileState extends State<ProfilePage> implements lnc.Observer {
       const SizedBox(height: 32,),
       _avatarImage(context),
       const SizedBox(height: 8,),
-      _idLabel(),
+      _idLabel(context),
       const SizedBox(height: 32,),
       if (!_isFriend)
         _addButton(context),
@@ -160,15 +164,15 @@ class _ProfileState extends State<ProfilePage> implements lnc.Observer {
         shared.facebook.getAvatar(widget.info.identifier).then((pair) {
           String? path = pair.first;
           if (path == null) {
-            Log.error('avatar image not foundL ${widget.info.identifier}');
+            Log.error('avatar image not found: ${widget.info.identifier}');
           } else {
             previewImage(context, path);
           }
         });
       });
 
-  Widget _idLabel() => Row(
-    mainAxisSize: MainAxisSize.min,
+  Widget _idLabel(BuildContext context) => Row(
+    // mainAxisSize: MainAxisSize.min,
     mainAxisAlignment: MainAxisAlignment.center,
     children: [
       const Text('ID: ',
@@ -178,11 +182,9 @@ class _ProfileState extends State<ProfilePage> implements lnc.Observer {
         ),
       ),
       Container(
-        constraints: const BoxConstraints(maxWidth: 320),
+        constraints: const BoxConstraints(maxWidth: 336),
         child: SelectableText(widget.info.identifier.toString(),
-          style: const TextStyle(fontSize: 12,
-            color: Colors.teal,
-          ),
+          style: Facade.of(context).styles.identifierTextStyle,
         ),
       ),
     ],
@@ -191,8 +193,8 @@ class _ProfileState extends State<ProfilePage> implements lnc.Observer {
   Widget _addButton(BuildContext context) => SizedBox(
     width: 256,
     child: CupertinoButton(
-      color: CupertinoColors.systemOrange,
-      child: const Text('Add Contact'),
+      color: Facade.of(context).colors.normalButtonColor,
+      child: Text('Add Contact', style: Facade.of(context).styles.buttonStyle),
       onPressed: () => widget.info.add(context: context),
     ),
   );
@@ -200,8 +202,8 @@ class _ProfileState extends State<ProfilePage> implements lnc.Observer {
   Widget _sendButton(BuildContext context) => SizedBox(
     width: 256,
     child: CupertinoButton(
-      color: CupertinoColors.systemBlue,
-      child: const Text('Send Message'),
+      color: Facade.of(context).colors.normalButtonColor,
+      child: Text('Send Message', style: Facade.of(context).styles.buttonStyle),
       onPressed: () => _sendMessage(context, widget.info, widget.fromWhere),
     ),
   );
@@ -209,8 +211,8 @@ class _ProfileState extends State<ProfilePage> implements lnc.Observer {
   Widget _clearButton(BuildContext context) => SizedBox(
     width: 256,
     child: CupertinoButton(
-      color: CupertinoColors.systemYellow,
-      child: const Text('Clear History'),
+      color: Facade.of(context).colors.importantButtonColor,
+      child: Text('Clear History', style: Facade.of(context).styles.buttonStyle),
       onPressed: () => _clearHistory(context, widget.info),
     ),
   );
@@ -218,8 +220,10 @@ class _ProfileState extends State<ProfilePage> implements lnc.Observer {
   Widget _deleteButton(BuildContext context) => SizedBox(
     width: 256,
     child: CupertinoButton(
-      color: CupertinoColors.systemRed,
-      child: Text(widget.info.identifier.isUser ? 'Delete Contact' : 'Delete Group'),
+      color: Facade.of(context).colors.criticalButtonColor,
+      child: Text(widget.info.identifier.isUser ? 'Delete Contact' : 'Delete Group',
+        style: Facade.of(context).styles.buttonStyle,
+      ),
       onPressed: () => widget.info.delete(context: context),
     ),
   );

@@ -70,16 +70,18 @@ class _AccountState extends State<AccountPage> {
   }
 
   @override
-  Widget build(BuildContext context) => CupertinoPageScaffold(
+  Widget build(BuildContext context) => Scaffold(
+    backgroundColor: Facade.of(context).colors.scaffoldBackgroundColor,
     // A ScrollView that creates custom scroll effects using slivers.
-    child: CustomScrollView(
+    body: CustomScrollView(
       // A list of sliver widgets.
       slivers: <Widget>[
-        const CupertinoSliverNavigationBar(
+        CupertinoSliverNavigationBar(
+          backgroundColor: Facade.of(context).colors.appBardBackgroundColor,
           // This title is visible in both collapsed and expanded states.
           // When the "middle" parameter is omitted, the widget provided
           // in the "largeTitle" parameter is used instead in the collapsed state.
-          largeTitle: Text('Edit Profile'),
+          largeTitle: Text('Edit Profile', style: Facade.of(context).styles.titleTextStyle),
         ),
         // This widget fills the remaining space in the viewport.
         // Drag the scrollable area to collapse the CupertinoSliverNavigationBar.
@@ -96,10 +98,10 @@ class _AccountState extends State<AccountPage> {
     mainAxisAlignment: MainAxisAlignment.start,
     children: [
       const SizedBox(height: 32,),
-      _avatarImage(),
+      _avatarImage(context),
       const SizedBox(height: 16,),
       SizedBox(
-        width: 320,
+        width: 360,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -107,21 +109,21 @@ class _AccountState extends State<AccountPage> {
               fontSize: 14,
               color: CupertinoColors.systemGrey,
             )),
-            _nicknameText(),
+            _nicknameText(context),
           ],
         ),
       ),
       const SizedBox(height: 8,),
       SizedBox(
-        width: 320,
+        width: 360,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const Text('DID:', style: TextStyle(
-              fontSize: 14,
+            const Text('ID:', style: TextStyle(
+              fontSize: 12,
               color: CupertinoColors.systemGrey,
             )),
-            _idLabel(),
+            _idLabel(context),
           ],
         ),
       ),
@@ -133,13 +135,13 @@ class _AccountState extends State<AccountPage> {
     ],
   );
 
-  Widget _avatarImage() => ClipRRect(
+  Widget _avatarImage(BuildContext context) => ClipRRect(
     borderRadius: const BorderRadius.all(Radius.circular(32)),
     child: Stack(
       alignment: AlignmentDirectional.bottomCenter,
       children: [
         if (_avatarPath == null)
-        Container(width: 256, height: 256, color: Styles.backgroundColor),
+        Container(width: 256, height: 256, color: Facade.of(context).colors.logoBackgroundColor),
         if (_avatarPath != null)
         Image.file(File(_avatarPath!), width: 256, height: 256, fit: BoxFit.cover),
         SizedBox(
@@ -159,34 +161,30 @@ class _AccountState extends State<AccountPage> {
     ),
   );
 
-  Widget _nicknameText() => SizedBox(
+  Widget _nicknameText(BuildContext context) => SizedBox(
     width: 160,
     child: CupertinoTextField(
       textAlign: TextAlign.end,
       controller: TextEditingController(text: _nickname),
       placeholder: 'your nickname',
-      padding: const EdgeInsets.only(left: 10, right: 10,),
-      style: const TextStyle(
-        fontSize: 20,
-        height: 1.6,
-      ),
+      decoration: Facade.of(context).styles.textFieldDecoration,
+      style: Facade.of(context).styles.textFieldStyle,
       focusNode: _focusNode,
       onTapOutside: (event) => _focusNode.unfocus(),
       onChanged: (value) => _nickname = value,
     ),
   );
 
-  Widget _idLabel() => SelectableText(widget.user.identifier.toString(),
-    style: const TextStyle(fontSize: 12,
-      color: Colors.teal,
-    ),
+  Widget _idLabel(BuildContext context) => SelectableText(
+    widget.user.identifier.toString(),
+    style: Facade.of(context).styles.identifierTextStyle,
   );
 
   Widget _saveButton(BuildContext context) => SizedBox(
     width: 256,
     child: CupertinoButton(
-      color: Colors.orange,
-      child: const Text('Save'),
+      color: Facade.of(context).colors.importantButtonColor,
+      child: Text('Save', style: Facade.of(context).styles.buttonStyle),
       onPressed: () => _saveInfo(context).then((ok) {
         if (ok) {
           Alert.show(context, 'Success', 'Your visa document is updated!');
@@ -284,7 +282,11 @@ class _AccountState extends State<AccountPage> {
     assert(ok, 'failed to save visa: $user, $visa');
     if (ok) {
       // broadcast this document to all friends
-      await shared.messenger?.broadcastDocument(updated: true);
+      try {
+        await shared.messenger?.broadcastDocument(updated: true);
+      } catch (e) {
+        Log.error('failed to broadcast document: $e');
+      }
     }
     return ok;
   }

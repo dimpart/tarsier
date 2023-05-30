@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
@@ -16,7 +17,7 @@ void main() {
   WidgetsFlutterBinding.ensureInitialized();
 
   // Set log level
-  Log.level = Log.kDebug;
+  Log.level = Log.kRelease;
   if (Platform.isIOS) {
     Log.colorful = false;
     Log.showTime = true;
@@ -74,10 +75,9 @@ class _Application extends StatelessWidget {
   final Widget home;
 
   @override
-  Widget build(BuildContext context) => CupertinoApp(
-    theme: const CupertinoThemeData(
-      barBackgroundColor: Styles.themeBarBackgroundColor,
-    ),
+  Widget build(BuildContext context) => MaterialApp(
+    theme: ThemeData.light(useMaterial3: true),
+    darkTheme: ThemeData.dark(useMaterial3: true),
     home: home,
     localizationsDelegates: const [
       GlobalMaterialLocalizations.delegate,
@@ -90,7 +90,9 @@ class _MainPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => CupertinoTabScaffold(
+    backgroundColor: Facade.of(context).colors.scaffoldBackgroundColor,
     tabBar: CupertinoTabBar(
+      backgroundColor: Facade.of(context).colors.appBardBackgroundColor,
       items: [
         ChatHistoryPage.barItem(),
         ContactListPage.barItem(),

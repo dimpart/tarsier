@@ -46,8 +46,8 @@
 
 - (void)setMars:(MGMars *)mars {
     MGMars *old = _mars;
-    if (old) {
-        NSLog(@"%@ terminating: %@", self, old);
+    if (old != mars) {
+        NSLog(@"%@ terminating: %@, %@", self, old, mars);
         [old terminate];
     }
     _mars = mars;

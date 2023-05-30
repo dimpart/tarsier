@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 
 import 'package:dim_flutter/dim_flutter.dart';
 
@@ -20,6 +21,7 @@ class _ExportState extends State<ExportPage> {
     GlobalVariable shared = GlobalVariable();
     Keychain keychain = Keychain(shared.database);
     String? mnemonic = await keychain.mnemonic;
+    Log.debug('mnemonic: $mnemonic');
     if (mnemonic != null && mounted) {
       setState(() {
         _words.addAll(mnemonic.split(' '));
@@ -34,16 +36,18 @@ class _ExportState extends State<ExportPage> {
   }
 
   @override
-  Widget build(BuildContext context) => CupertinoPageScaffold(
+  Widget build(BuildContext context) => Scaffold(
+    backgroundColor: Facade.of(context).colors.scaffoldBackgroundColor,
     // A ScrollView that creates custom scroll effects using slivers.
-    child: CustomScrollView(
+    body: CustomScrollView(
       // A list of sliver widgets.
       slivers: <Widget>[
-        const CupertinoSliverNavigationBar(
+        CupertinoSliverNavigationBar(
+          backgroundColor: Facade.of(context).colors.appBardBackgroundColor,
           // This title is visible in both collapsed and expanded states.
           // When the "middle" parameter is omitted, the widget provided
           // in the "largeTitle" parameter is used instead in the collapsed state.
-          largeTitle: Text('Mnemonic'),
+          largeTitle: Text('Mnemonic', style: Facade.of(context).styles.titleTextStyle),
         ),
         // This widget fills the remaining space in the viewport.
         // Drag the scrollable area to collapse the CupertinoSliverNavigationBar.
@@ -62,24 +66,24 @@ class _ExportState extends State<ExportPage> {
       const SizedBox(height: 32,),
       SizedBox(
         width: 320,
-        child: _mosaics(),
+        child: _mosaics(context),
       ),
       const SizedBox(height: 16,),
-      _memo('* Mnemonic is your private key,'
+      _memo(context, '* Mnemonic is your private key,'
           ' anyone got these words can own your account;'),
-      _memo('* You could write it down on a piece of paper'
+      _memo(context, '* You could write it down on a piece of paper'
           ' and keep it somewhere safety,'
           ' take a screenshot and store it in your computer is not recommended.'),
       const SizedBox(height: 32,),
-      _toggleButton(),
+      _toggleButton(context),
       const SizedBox(height: 64,),
     ],
   );
 
-  Widget _mosaics() {
+  Widget _mosaics(BuildContext context) {
     List<Widget> tiles = [];
     for (int index = 0; index < _words.length; ++index) {
-      tiles.add(_tile(_words[index], index));
+      tiles.add(_tile(context, _words[index], index));
     }
     List<Row> rows = [];
     const int width = 3;
@@ -101,18 +105,20 @@ class _ExportState extends State<ExportPage> {
     );
   }
 
-  Widget _tile(String word, int index) => Expanded(
+  Widget _tile(BuildContext context, String word, int index) => Expanded(
       child: Stack(
         alignment: AlignmentDirectional.topEnd,
         children: [
           Container(
-            color: CupertinoColors.extraLightBackgroundGray,
+            color: Facade.of(context).colors.tileBackgroundColor,
             margin: const EdgeInsets.all(1),
             padding: const EdgeInsets.fromLTRB(8, 16, 8, 16),
             alignment: Alignment.center,
             child: Text(visible ? word : '***',
               style: TextStyle(
-                color: visible ? CupertinoColors.black : CupertinoColors.systemGrey,
+                fontSize: 14,
+                color: visible ? Facade.of(context).colors.tileColor
+                    : Facade.of(context).colors.tileInvisibleColor,
               ),
             ),
           ),
@@ -122,11 +128,11 @@ class _ExportState extends State<ExportPage> {
               child: Container(
                 alignment: Alignment.center,
                 width: 12, height: 12,
-                color: CupertinoColors.white,
+                color: Facade.of(context).colors.tileBadgeColor,
                 child: Text('${index + 1}',
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 8,
-                    color: CupertinoColors.systemGrey,
+                    color: Facade.of(context).colors.tileOrderColor,
                   ),
                 ),
               ),
@@ -136,22 +142,24 @@ class _ExportState extends State<ExportPage> {
       ),
   );
 
-  Widget _memo(String text) => Container(
+  Widget _memo(BuildContext context, String text) => Container(
     width: 300,
     padding: const EdgeInsets.all(4),
     alignment: Alignment.topLeft,
     child: Text(text,
       style: TextStyle(fontSize: 12,
-        color: visible ? CupertinoColors.systemGrey : CupertinoColors.black,
+        color: visible ? Facade.of(context).colors.tertiaryTextColor
+            : Facade.of(context).colors.secondaryTextColor,
       ),
     ),
   );
 
-  Widget _toggleButton() => SizedBox(
+  Widget _toggleButton(BuildContext context) => SizedBox(
     width: 256,
     child: CupertinoButton(
-      color: visible ? CupertinoColors.systemBlue : CupertinoColors.systemOrange,
-      child: Text(visible ? 'Hide' : 'Show'),
+      color: visible ? Facade.of(context).colors.normalButtonColor
+          : Facade.of(context).colors.importantButtonColor,
+      child: Text(visible ? 'Hide' : 'Show', style: Facade.of(context).styles.buttonStyle),
       onPressed: () => setState(() {
         visible = !visible;
       }),

@@ -19,18 +19,16 @@ class ChatBox extends StatefulWidget {
 
   static int maxCountOfMessages = 2048;
 
-  static void open(BuildContext context, ContactInfo info) {
-    showCupertinoDialog(
-      context: context,
-      builder: (context) => ChatBox(info),
-    ).then((value) {
-      if (info is Conversation) {
-        info.unread = 0;
-      }
-      Amanuensis clerk = Amanuensis();
-      clerk.clearUnread(info.identifier);
-    });
-  }
+  static void open(BuildContext context, ContactInfo info) => showCupertinoDialog(
+    context: context,
+    builder: (context) => ChatBox(info),
+  ).then((value) {
+    if (info is Conversation) {
+      info.unread = 0;
+    }
+    Amanuensis clerk = Amanuensis();
+    clerk.clearUnread(info.identifier);
+  });
 
   @override
   State<ChatBox> createState() => _ChatBoxState();
@@ -99,14 +97,12 @@ class _ChatBoxState extends State<ChatBox> implements lnc.Observer {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-    backgroundColor: Styles.backgroundColor,
+    backgroundColor: Facade.of(context).colors.scaffoldBackgroundColor,
     appBar: CupertinoNavigationBar(
-      backgroundColor: Styles.navigationBarBackground,
-      border: Styles.navigationBarBorder,
-      middle: StatedTitleView(() => widget.info.name),
+      backgroundColor: Facade.of(context).colors.appBardBackgroundColor,
+      middle: StatedTitleView.from(context, () => widget.info.name),
       trailing: IconButton(
         iconSize: Styles.navigationBarIconSize,
-        color: Styles.navigationBarIconColor,
         icon: const Icon(Styles.chatDetailIcon),
         onPressed: () => _openDetail(context, widget.info),
       ),
@@ -127,7 +123,7 @@ class _ChatBoxState extends State<ChatBox> implements lnc.Observer {
         ),
       ),
       Container(
-        color: Styles.inputTrayBackground,
+        color: Facade.of(context).colors.inputTrayBackgroundColor,
         child: ChatInputTray(widget.info),
       ),
     ],
@@ -152,12 +148,12 @@ class _HistoryAdapter with SectionAdapterMixin {
     InstantMessage iMsg = _dataSource.getItem(indexPath.item);
     ID sender = iMsg.sender;
     Content content = iMsg.content;
-    Widget? timeLabel = _getTimeLabel(iMsg, indexPath);
+    Widget? timeLabel = _getTimeLabel(context, iMsg, indexPath);
     String? commandText = _getCommandText(content, sender, indexPath);
     Widget? commandLabel;
     Widget? contentView;
     if (commandText == null) {
-      Widget? nameLabel = _getNameLabel(sender);
+      Widget? nameLabel = _getNameLabel(context, sender);
       int mainFlex = 3;
       // show content
       if (content is FileContent) {
@@ -191,7 +187,7 @@ class _HistoryAdapter with SectionAdapterMixin {
       return Container();
     } else {
       // show command
-      commandLabel = _getCommandLabel(commandText);
+      commandLabel = _getCommandLabel(context, commandText);
     }
     return Container(
       margin: Styles.messageItemMargin,
@@ -208,7 +204,7 @@ class _HistoryAdapter with SectionAdapterMixin {
     );
   }
 
-  Widget? _getTimeLabel(InstantMessage iMsg, IndexPath indexPath) {
+  Widget? _getTimeLabel(BuildContext context, InstantMessage iMsg, IndexPath indexPath) {
     DateTime? time = iMsg.time;
     if (time == null) {
       assert(false, 'message time not found: $iMsg');
@@ -226,10 +222,12 @@ class _HistoryAdapter with SectionAdapterMixin {
         }
       }
     }
-    return Text(TimeUtils.getTimeString(time), style: Styles.messageTimeTextStyle);
+    return Text(TimeUtils.getTimeString(time),
+      style: Facade.of(context).styles.messageTimeTextStyle,
+    );
   }
 
-  Widget? _getNameLabel(ID sender) {
+  Widget? _getNameLabel(BuildContext context, ID sender) {
     if (sender == ContentViewUtils.currentUser?.identifier) {
       // no need to show my name in chat box
       return null;
@@ -237,7 +235,7 @@ class _HistoryAdapter with SectionAdapterMixin {
       // no need to show friend's name if your are in a personal chat box
       return null;
     }
-    return ContentViewUtils.getNameLabel(sender);
+    return ContentViewUtils.getNameLabel(context, sender);
   }
 
   String? _getCommandText(Content content, ID sender, IndexPath? indexPath) {
@@ -255,12 +253,12 @@ class _HistoryAdapter with SectionAdapterMixin {
     }
     return text;
   }
-  Widget? _getCommandLabel(String text) => Row(
+  Widget? _getCommandLabel(BuildContext context, String text) => Row(
     mainAxisAlignment: MainAxisAlignment.center,
     children: [
       Expanded(flex: 1, child: Container()),
       Expanded(flex: 2,
-        child: ContentViewUtils.getCommandLabel(text),
+        child: ContentViewUtils.getCommandLabel(context, text),
       ),
       Expanded(flex: 1, child: Container()),
     ],
@@ -270,11 +268,11 @@ class _HistoryAdapter with SectionAdapterMixin {
     if (content is ImageContent) {
       return ContentViewUtils.getImageContentView(ctx, content, sender, _dataSource.allMessages);
     } else if (content is AudioContent) {
-      return ContentViewUtils.getAudioContentView(content, sender);
+      return ContentViewUtils.getAudioContentView(ctx, content, sender);
     } else if (content is VideoContent) {
-      return ContentViewUtils.getVideoContentView(content, sender);
+      return ContentViewUtils.getVideoContentView(ctx, content, sender);
     } else {
-      return ContentViewUtils.getTextContentView(content, sender);
+      return ContentViewUtils.getTextContentView(ctx, content, sender);
     }
   }
 

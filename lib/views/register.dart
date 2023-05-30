@@ -34,16 +34,14 @@ class _RegisterInfo {
     while (index >= _words.length) {
       _words.add('');
     }
-    _words[index] = text;
+    _words[index] = text.trim();
   }
 
 }
 
 class _RegisterState extends State<RegisterPage> {
 
-  // static const Color topColor = Colors.purple;
-  // static const Color bottomColor = Colors.blueAccent;
-  static const Color topColor = Styles.logoBackgroundColor;
+  static Color topColor(BuildContext context) => Facade.of(context).colors.logoBackgroundColor;
   static const Color bottomColor = CupertinoColors.white;
 
   static const Color titleColor = CupertinoColors.white;
@@ -51,11 +49,11 @@ class _RegisterState extends State<RegisterPage> {
   static const Color textColor = CupertinoColors.darkBackgroundGray;
 
   static const Color memoColor = Colors.black54;
-  static const Color idColor = Colors.teal;
   static const Color okColor = CupertinoColors.systemGreen;
 
   static const Color tileColor = CupertinoColors.systemBackground;
-  static const Color badgeColor = CupertinoColors.systemGrey3;
+  // static const Color badgeColor = CupertinoColors.systemGrey3;
+  static const Color badgeColor = Styles.logoBackgroundColor;
   static const Color badgeFontColor = CupertinoColors.white;
   static const Color inputColor = CupertinoColors.black;
   static const Color buttonColor = CupertinoColors.link;
@@ -80,27 +78,27 @@ class _RegisterState extends State<RegisterPage> {
       // A ScrollView that creates custom scroll effects using slivers.
       body: Stack(
         children: [
-          _ground(),
-          _page(),
+          _ground(context),
+          _page(context),
         ],
       ),
-      backgroundColor: topColor,
+      backgroundColor: topColor(context),
     );
   }
 
-  Widget _ground() => Container(
-    decoration: const BoxDecoration(
+  Widget _ground(BuildContext context) => Container(
+    decoration: BoxDecoration(
       gradient: LinearGradient(
-        colors: [bottomColor, topColor],
-        begin: FractionalOffset(0.6, 0.8),
-        end: FractionalOffset(0.4, 0.2),
-        stops: [0.0, 1.0],
+        colors: [bottomColor, topColor(context)],
+        begin: const FractionalOffset(0.6, 0.8),
+        end: const FractionalOffset(0.4, 0.2),
+        stops: const [0.0, 1.0],
         tileMode: TileMode.clamp,
       ),
     ),
   );
 
-  Widget _page() => CustomScrollView(
+  Widget _page(BuildContext context) => CustomScrollView(
     // A list of sliver widgets.
     slivers: <Widget>[
       CupertinoSliverNavigationBar(
@@ -124,14 +122,14 @@ class _RegisterState extends State<RegisterPage> {
             widget._info.importing = !widget._info.importing;
           }),
         ),
-        backgroundColor: topColor,
+        backgroundColor: topColor(context),
       ),
       // This widget fills the remaining space in the viewport.
       // Drag the scrollable area to collapse the CupertinoSliverNavigationBar.
       SliverFillRemaining(
         hasScrollBody: false,
         fillOverscroll: true,
-        child: _form(),
+        child: _form(context),
       ),
     ],
   );
@@ -154,7 +152,7 @@ class _RegisterState extends State<RegisterPage> {
     color: CupertinoColors.white,
   );
 
-  Widget _form() => Column(
+  Widget _form(BuildContext context) => Column(
     // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
     children: <Widget>[
       const SizedBox(
@@ -163,14 +161,23 @@ class _RegisterState extends State<RegisterPage> {
       if (widget._info.importing)
         SizedBox(
           width: 320,
-          child: _mosaics(),
+          child: _mosaics(context),
+        ),
+      if (widget._info.identifier != null)
+        Container(
+          width: 360,
+          padding: const EdgeInsets.only(top: 8, bottom: 8),
+          alignment: AlignmentDirectional.center,
+          child: SelectableText('${widget._info.identifier}',
+            style: Facade.of(context).styles.identifierTextStyle,
+          ),
         ),
       if (!widget._info.importing)
         _logo(),
       if (!widget._info.importing)
         SizedBox(
           width: 360,
-          height: 392,
+          height: 500,
           child: _welcome(),
         ),
       const SizedBox(
@@ -179,7 +186,7 @@ class _RegisterState extends State<RegisterPage> {
       Container(
         width: 240,
         alignment: Alignment.center,
-        child: _nicknameField(),
+        child: _nicknameField(context),
       ),
       const SizedBox(
         height: 32,
@@ -196,7 +203,7 @@ class _RegisterState extends State<RegisterPage> {
     ],
   );
 
-  Widget _mosaics() {
+  Widget _mosaics(BuildContext context) {
     List<Widget> tiles = [];
     for (int index = 0; index < 12; ++index) {
       tiles.add(_tile(widget._info.getWord(index), index));
@@ -239,22 +246,6 @@ class _RegisterState extends State<RegisterPage> {
           children: tiles.sublist(start),
         ));
       }
-    }
-    String? identifier = widget._info.identifier;
-    if (identifier != null) {
-      rows.add(Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const SizedBox(
-            height: 32,
-          ),
-          SelectableText(identifier,
-            style: const TextStyle(fontSize: 12,
-              color: idColor,
-            ),
-          ),
-        ],
-      ));
     }
     return Column(
       children: rows,
@@ -342,7 +333,7 @@ class _RegisterState extends State<RegisterPage> {
     child: Text(text, style: TextStyle(fontSize: fontSize, color: memoColor)),
   );
 
-  Widget _nicknameField() => Row(
+  Widget _nicknameField(BuildContext context) => Row(
     children: [
       const Text(
         'Name: ',
@@ -354,11 +345,20 @@ class _RegisterState extends State<RegisterPage> {
       SizedBox(
         width: 160,
         child: CupertinoTextField(
+          textAlign: TextAlign.center,
           placeholder: 'your nickname',
-          padding: const EdgeInsets.only(left: 10, right: 10,),
+          decoration: BoxDecoration(
+            color: CupertinoColors.white,
+            border: Border.all(
+              color: CupertinoColors.lightBackgroundGray,
+              style: BorderStyle.solid,
+              width: 1,
+            ),
+            borderRadius: BorderRadius.circular(8),
+          ),
           style: const TextStyle(
-            fontSize: 20,
             height: 1.6,
+            color: CupertinoColors.black,
           ),
           focusNode: _focusNode,
           onTapOutside: (event) => _focusNode.unfocus(),
@@ -376,7 +376,9 @@ class _RegisterState extends State<RegisterPage> {
     onPressed: () {
       _submit(context, widget._info);
     },
-    child: const Text("Let's rock!"),
+    child: const Text("Let's rock!",
+      style: TextStyle(color: titleColor),
+    ),
   );
 
   Widget _privacyPolicy(BuildContext context) => Row(
@@ -405,7 +407,7 @@ class _RegisterState extends State<RegisterPage> {
           widget._info.agreed = !widget._info.agreed;
         }),
       ),
-      const Text('Agreed with the'),
+      const Text('Agreed with the', style: TextStyle(color: CupertinoColors.black)),
       TextButton(
         child: const Text('DIM Privacy Policy',
           style: TextStyle(color: buttonColor),

@@ -47,11 +47,10 @@ class _NetworkState extends State<NetworkSettingPage> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-    backgroundColor: Styles.backgroundColor,
+    backgroundColor: Facade.of(context).colors.scaffoldBackgroundColor,
     appBar: CupertinoNavigationBar(
-      backgroundColor: Styles.navigationBarBackground,
-      border: Styles.navigationBarBorder,
-      middle: const Text('Relay Stations'),
+      backgroundColor: Facade.of(context).colors.appBardBackgroundColor,
+      middle: Text('Relay Stations', style: Facade.of(context).styles.titleTextStyle),
       trailing: IconButton(
           icon: const Icon(Styles.refreshStationsIcon, size: 16),
           onPressed: _refreshing ? null : () => _confirmRefresh(context)),
@@ -124,10 +123,10 @@ class _StationListAdapter with SectionAdapterMixin {
 
   @override
   Widget getSectionHeader(BuildContext context, int section) => Container(
-    color: Styles.sectionHeaderBackground,
+    color: Facade.of(context).colors.sectionHeaderBackgroundColor,
     padding: Styles.sectionHeaderPadding,
     child: Text(_dataSource.getSection(section),
-      style: Styles.sectionHeaderTextStyle,
+      style: Facade.of(context).styles.sectionHeaderTextStyle,
     ),
   );
 

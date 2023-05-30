@@ -12,12 +12,10 @@ import 'search.dart';
 class ChatHistoryPage extends StatefulWidget {
   const ChatHistoryPage({super.key});
 
-  static BottomNavigationBarItem barItem() {
-    return const BottomNavigationBarItem(
-      icon: Icon(Styles.chatsTabIcon),
-      label: 'Chats',
-    );
-  }
+  static BottomNavigationBarItem barItem() => const BottomNavigationBarItem(
+    icon: Icon(Styles.chatsTabIcon),
+    label: 'Chats',
+  );
 
   @override
   State<StatefulWidget> createState() => _ChatListState();
@@ -69,11 +67,10 @@ class _ChatListState extends State<ChatHistoryPage> implements lnc.Observer {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-    backgroundColor: Styles.backgroundColor,
+    backgroundColor: Facade.of(context).colors.scaffoldBackgroundColor,
     appBar: CupertinoNavigationBar(
-      backgroundColor: Styles.navigationBarBackground,
-      border: Styles.navigationBarBorder,
-      middle: StatedTitleView(() => 'Secure Chat'),
+      backgroundColor: Facade.of(context).colors.appBardBackgroundColor,
+      middle: StatedTitleView.from(context, () => 'Secure Chat'),
       trailing: SearchPage.searchButton(context),
     ),
     body: SectionListView.builder(

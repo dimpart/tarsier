@@ -55,16 +55,32 @@ class _ContactListState extends State<ContactListPage> implements lnc.Observer {
 
   Future<void> _reload() async {
     GlobalVariable shared = GlobalVariable();
+    // 0. check current user
     User? user = await shared.facebook.currentUser;
     if (user == null) {
       Log.error('current user not set');
       return;
     }
-    List<ID> contacts = await shared.database.getContacts(user: user.identifier);
+    // 1. get contacts for current user
+    SharedDatabase database = shared.database;
+    List<ID> contacts = await database.getContacts(user: user.identifier);
+    if (contacts.isEmpty) {
+      // check default contacts
+      List<ID> candidates = await Config().contacts;
+      Log.warning('default contacts: $candidates');
+      for (ID item in candidates) {
+        database.addContact(item, user: user.identifier);
+      }
+      if (candidates.isNotEmpty) {
+        contacts = await database.getContacts(user: user.identifier);
+      }
+    }
+    // 2. load contact info
     List<ContactInfo> array = ContactInfo.fromList(contacts);
     for (ContactInfo item in array) {
       await item.reloadData();
     }
+    // 3. refresh contact list
     _dataSource.refresh(array);
     if (mounted) {
       setState(() {
@@ -81,11 +97,10 @@ class _ContactListState extends State<ContactListPage> implements lnc.Observer {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-    backgroundColor: Styles.backgroundColor,
+    backgroundColor: Facade.of(context).colors.scaffoldBackgroundColor,
     appBar: CupertinoNavigationBar(
-      backgroundColor: Styles.navigationBarBackground,
-      border: Styles.navigationBarBorder,
-      middle: StatedTitleView(() => 'Contacts'),
+      backgroundColor: Facade.of(context).colors.appBardBackgroundColor,
+      middle: StatedTitleView.from(context, () => 'Contacts'),
       trailing: SearchPage.searchButton(context),
     ),
     body: SectionListView.builder(
@@ -118,10 +133,10 @@ class _ContactListAdapter with SectionAdapterMixin {
     // }
     String title = _dataSource.getSection(section);// - 1);
     return Container(
-      color: Styles.sectionHeaderBackground,
+      color: Facade.of(context).colors.sectionHeaderBackgroundColor,
       padding: Styles.sectionHeaderPadding,
       child: Text(title,
-        style: Styles.sectionHeaderTextStyle,
+        style: Facade.of(context).styles.sectionHeaderTextStyle,
       ),
     );
   }

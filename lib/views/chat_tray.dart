@@ -55,6 +55,8 @@ class _InputState extends State<ChatInputTray> {
             maxLines: 8,
             controller: _controller,
             placeholder: 'Input text message',
+            decoration: Facade.of(context).styles.textFieldDecoration,
+            style: Facade.of(context).styles.textFieldStyle,
             keyboardType: TextInputType.multiline,
             textInputAction: TextInputAction.newline,
             focusNode: _focusNode,
@@ -88,7 +90,7 @@ class _InputState extends State<ChatInputTray> {
 //--------
 
 void _sendText(BuildContext context, TextEditingController controller, ContactInfo chat) {
-  String text = controller.text;
+  String text = controller.text.trim();
   if (text.isNotEmpty) {
     GlobalVariable shared = GlobalVariable();
     shared.emitter.sendText(text, chat.identifier);

@@ -6,6 +6,11 @@
   "founder": "moky@anywhere",
   "owner": "anyone@anywhere",
 
+  "contacts": [
+    "0x9527cFD9b6a0736d8417354088A4fC6e345E31F8",
+    "0x9527d3960bfD477ec97D03Fe52c967Ff3B555c1A"
+  ],
+
   "stations": [
     {"host": "106.52.25.169", "port": 9394}
   ],
