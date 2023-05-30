@@ -66,14 +66,23 @@ post_install do |installer|
   end
 end
 ```
+then try to build iOS in **Android Studio** (click menu ```Build -> Flutter -> Build iOS```), this step will install pods and initialize project configs;
 
-2.2. Try to build iOS in **Android Studio**, this step will install pods and init project configs;
+2.2. Open ```tarsier/ios/Runner.xcworkspace``` by Xcode
 
-2.3. Open ```tarsier/ios/Runner.xcworkspace``` by Xcode, check general & signing info;
+A) Set your team in ```TARGETS -> Runner -> Signing & Capabilities```;
 
-2.4. Open ```TARGETS -> Runner -> Build Settings``` in Xcode
+B) If error occurred while launching:
 
-A) search "rpath", check ```Runpath Search Paths```, make sure "/usr/lib/swift" exists:
+```
+dyld[48747]: Library not loaded: @rpath/libswiftCore.dylib
+  Referenced from: <XXXX-YYYY> /Users/..../Runner.app/Runner
+  Reason: tried: '/Users/..../libswiftCore.dylib' (no such file),
+    '/Applications/..../libswiftCore.dylib' (no such file),
+    ...
+```
+
+click ```TARGETS -> Runner -> Build Settings``` in Xcode, search "rpath", check ```Runpath Search Paths```, make sure "/usr/lib/swift" exists:
 
 ```
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -83,7 +92,7 @@ A) search "rpath", check ```Runpath Search Paths```, make sure "/usr/lib/swift" 
 				);
 ```
 
-B) search "Linker", check ```Other Linker Flags```, make sure the flag "-lc++" exists:
+C) If error occurred with C++, search "Linker", check ```Other Linker Flags```, make sure the flag "-lc++" exists:
 
 ```
 				OTHER_LDFLAGS = (
@@ -123,5 +132,8 @@ B) search "Linker", check ```Other Linker Flags```, make sure the flag "-lc++" e
 				);
 ```
 
+If nothing unexpected happens, your iOS app should be able to run now!
 
+
+----
 Copyright &copy; 2023 Albert Moky
