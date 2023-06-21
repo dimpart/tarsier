@@ -26,23 +26,7 @@ public class MainActivity extends FlutterActivity {
     public void configureFlutterEngine(@NonNull FlutterEngine flutterEngine) {
         super.configureFlutterEngine(flutterEngine);
 
-        String cacheDir = null;
-        if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) {
-            // sdcard found, get external cache
-            File dir = MainActivity.this.getExternalCacheDir();
-            if (dir != null) {
-                cacheDir = dir.getAbsolutePath();
-            }
-        }
-        String tmpDir = MainActivity.this.getCacheDir().getAbsolutePath();
-        if (cacheDir == null) {
-            // external cache not found, use internal cache instead
-            cacheDir = tmpDir;
-        }
-        System.out.println("cache dirs: [" + cacheDir + ", " + tmpDir + "]");
-        LocalCache cache = LocalCache.getInstance();
-        cache.setCachesDirectory(cacheDir);
-        cache.setTemporaryDirectory(tmpDir);
+        prepareDirectories(this);
 
         CryptoPlugins.registerCryptoPlugins();
 
@@ -55,6 +39,30 @@ public class MainActivity extends FlutterActivity {
         manager.audioChannel.initAudioPlayer(MainActivity.this);
         manager.audioChannel.initAudioRecorder(MainActivity.this);
 
+    }
+
+    private static void prepareDirectories(Context context) {
+        File filesDir = null;
+        File cacheDir = null;
+        if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) {
+            // sdcard found, get external files/cache
+            filesDir = context.getExternalFilesDir(null);
+            cacheDir = context.getExternalCacheDir();
+        }
+        if (filesDir == null) {
+            filesDir = context.getFilesDir();
+            assert filesDir != null : "failed to get files directory";
+        }
+        if (cacheDir == null) {
+            cacheDir = context.getCacheDir();
+            assert cacheDir != null : "failed to get cache directory";
+        }
+        System.out.println("files dir: " + filesDir);
+        System.out.println("cache dir: " + cacheDir);
+
+        LocalCache cache = LocalCache.getInstance();
+        cache.setCachesDirectory(filesDir.getAbsolutePath());
+        cache.setTemporaryDirectory(cacheDir.getAbsolutePath());
     }
 
     @Override

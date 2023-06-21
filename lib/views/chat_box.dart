@@ -124,6 +124,7 @@ class _ChatBoxState extends State<ChatBox> implements lnc.Observer {
       ),
       Container(
         color: Facade.of(context).colors.inputTrayBackgroundColor,
+        padding: const EdgeInsets.only(bottom: 16),
         child: ChatInputTray(widget.info),
       ),
     ],

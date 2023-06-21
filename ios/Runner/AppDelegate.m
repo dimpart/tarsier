@@ -7,8 +7,7 @@
 
 @implementation AppDelegate
 
-- (BOOL)application:(UIApplication *)application
-    didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     FlutterViewController* controller;
     controller = (FlutterViewController*)[self.window rootViewController];
     
@@ -53,6 +52,13 @@
     DIMPushNotificationController *apns = [DIMPushNotificationController sharedInstance];
     [apns applicationDidBecomeActive:application];
     [super applicationDidBecomeActive:application];
+}
+
+- (void)applicationWillResignActive:(UIApplication *)application {
+    NSLog(@"APNs applicationWillResignActive");
+    DIMPushNotificationController *apns = [DIMPushNotificationController sharedInstance];
+    [apns applicationWillResignActive:application];
+    [super applicationWillResignActive:application];
 }
 
 - (void)userNotificationCenter:(UNUserNotificationCenter *)center willPresentNotification:(UNNotification *)notification withCompletionHandler:(void (^)(UNNotificationPresentationOptions))completionHandler {

@@ -117,21 +117,21 @@ class _ContactListAdapter with SectionAdapterMixin {
 
   @override
   int numberOfSections() =>
-      _dataSource.getSectionCount();// + 1;  // includes fixed section
+      _dataSource.getSectionCount() + 1;  // includes fixed section
 
   @override
-  bool shouldExistSectionHeader(int section) => true;//section > 0;
+  bool shouldExistSectionHeader(int section) => section > 0;
 
   @override
   bool shouldSectionHeaderStick(int section) => true;
 
   @override
   Widget getSectionHeader(BuildContext context, int section) {
-    // if (section == 0) {
-    //   // fixed section
-    //   return const Text('...');
-    // }
-    String title = _dataSource.getSection(section);// - 1);
+    if (section == 0) {
+      // fixed section
+      return const Text('...');
+    }
+    String title = _dataSource.getSection(section - 1);
     return Container(
       color: Facade.of(context).colors.sectionHeaderBackgroundColor,
       padding: Styles.sectionHeaderPadding,
@@ -143,22 +143,29 @@ class _ContactListAdapter with SectionAdapterMixin {
 
   @override
   int numberOfItems(int section) {
-    // if (section == 0) {
-    //   // fixed section
-    //   return 2;
-    // }
-    return _dataSource.getItemCount(section);// - 1);
+    if (section == 0) {
+      // fixed section
+      return 2;
+    }
+    return _dataSource.getItemCount(section - 1);
   }
 
   @override
   Widget getItem(BuildContext context, IndexPath indexPath) {
-    int section = indexPath.section;// - 1;
+    int section = indexPath.section;
     int index = indexPath.item;
-    // if (indexPath.section == 0) {
-    //   // fixed section
-    //   return _fixedItem(context, index);
-    // }
-    ContactInfo info = _dataSource.getItem(section, index);
+    if (section == 0) {
+      // fixed section
+      if (index == 0) {
+        return _newFriendsItem(context);
+      } else if (index == 1) {
+        return _blockListIcon(context);
+      } else {
+        // error
+        return const Text('error');
+      }
+    }
+    ContactInfo info = _dataSource.getItem(section - 1, index);
     return ProfilePage.cell(info, onLongPress: () {
       Log.warning('long press: $info');
       Alert.actionSheet(context,
@@ -169,44 +176,53 @@ class _ContactListAdapter with SectionAdapterMixin {
     });
   }
 
+  Widget _newFriendsItem(BuildContext context) => CupertinoTableCell(
+      leading: Container(
+        color: Colors.orange,
+        padding: const EdgeInsets.all(2),
+        child: const Icon(Styles.newFriendsIcon,
+          color: Colors.white,
+        ),
+      ),
+      title: const Text('New Friends'),
+      trailing: const CupertinoListTileChevron(),
+      onTap: () {
+        Alert.show(context, 'Coming soon', 'Requests from new friends.');
+      }
+  );
+
+  Widget _blockListIcon(BuildContext context) => CupertinoTableCell(
+      leading: Container(
+        color: Colors.black,
+        padding: const EdgeInsets.all(2),
+        child: const Icon(Styles.blockListIcon,
+          color: Colors.white,
+        ),
+      ),
+      title: const Text('Blocked'),
+      trailing: const CupertinoListTileChevron(),
+      onTap: () {
+        Alert.show(context, 'Coming soon', 'Conversations for groups.');
+      }
+  );
+
   /*
-  Widget _fixedItem(BuildContext context, int item) {
-    if (item == 0) {
-      return TableView.cell(
-          leading: Container(
-            color: Colors.orange,
-            padding: const EdgeInsets.all(2),
-            child: const Icon(Styles.newFriendIcon,
-              color: Colors.white,
-            ),
-          ),
-          title: const Text('New Friends'),
-          trailing: TableView.defaultTrailing,
-          onTap: () {
-            Alert.show(context, 'Coming soon', 'Requests from new friends.');
-          }
-      );
-    } else if (item == 1) {
-      return TableView.cell(
-          leading: Container(
-            color: Colors.green,
-            padding: const EdgeInsets.all(2),
-            child: const Icon(Styles.groupChatsIcon,
-              color: Colors.white,
-            ),
-          ),
-          title: const Text('Group Chats'),
-          trailing: TableView.defaultTrailing,
-          onTap: () {
-            Alert.show(context, 'Coming soon', 'Conversations for groups.');
-          }
-      );
-    } else {
-      // error
-      return const Text('error');
-    }
-  }
+  Widget _groupChatsItem(BuildContext context) => CupertinoTableCell(
+      leading: Container(
+        color: Colors.green,
+        padding: const EdgeInsets.all(2),
+        child: const Icon(Styles.groupChatsIcon,
+          color: Colors.white,
+        ),
+      ),
+      title: const Text('Group Chats'),
+      trailing: const CupertinoListTileChevron(),
+      onTap: () {
+        Alert.show(context, 'Coming soon', 'Conversations for groups.');
+      }
+  );
    */
+
 }
 
 class _ContactDataSource {

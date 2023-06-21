@@ -253,14 +253,13 @@ class _SendState extends State<ChatSendFlag> implements lnc.Observer {
 
   @override
   Widget build(BuildContext context) {
-    if (status != _MsgStatus.kReceived) {
-      return GestureDetector(
-        onTap: _resendMessage,
-        child: _traceInfo(),
-      );
-    } else {
+    if (status == _MsgStatus.kReceived) {
       return _traceInfo();
     }
+    return GestureDetector(
+      onTap: _resendMessage,
+      child: _traceInfo(),
+    );
   }
 
   Widget _traceInfo() => Row(
