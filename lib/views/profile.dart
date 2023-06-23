@@ -8,17 +8,17 @@ import 'chat_box.dart';
 
 
 class ProfilePage extends StatefulWidget {
-  const ProfilePage(this.info, this.fromWhere, {super.key});
+  const ProfilePage(this.info, this.fromChat, {super.key});
 
   final ContactInfo info;
-  final ID? fromWhere;
+  final ID? fromChat;
 
-  static void open(BuildContext context, ID identifier, {ID? fromWhere}) {
+  static void open(BuildContext context, ID identifier, {ID? fromChat}) {
     ContactInfo info = ContactInfo.fromID(identifier);
     info.reloadData().then((value) {
       showCupertinoDialog(
         context: context,
-        builder: (context) => ProfilePage(info, fromWhere),
+        builder: (context) => ProfilePage(info, fromChat),
       );
     }).onError((error, stackTrace) {
       Alert.show(context, 'Error', '$error');
@@ -42,17 +42,17 @@ class ProfilePage extends StatefulWidget {
 class _ProfileState extends State<ProfilePage> implements lnc.Observer {
   _ProfileState() {
     var nc = lnc.NotificationCenter();
-    nc.addObserver(this, NotificationNames.kContactsUpdated);
     nc.addObserver(this, NotificationNames.kDocumentUpdated);
+    nc.addObserver(this, NotificationNames.kContactsUpdated);
+    nc.addObserver(this, NotificationNames.kBlockListUpdated);
   }
-
-  bool _isFriend = false;
 
   @override
   void dispose() {
     var nc = lnc.NotificationCenter();
-    nc.removeObserver(this, NotificationNames.kDocumentUpdated);
+    nc.removeObserver(this, NotificationNames.kBlockListUpdated);
     nc.removeObserver(this, NotificationNames.kContactsUpdated);
+    nc.removeObserver(this, NotificationNames.kDocumentUpdated);
     super.dispose();
   }
 
@@ -77,24 +77,28 @@ class _ProfileState extends State<ProfilePage> implements lnc.Observer {
       if (contact == widget.info.identifier) {
         await _reload();
       }
+    } else if (name == NotificationNames.kBlockListUpdated) {
+      ID? contact = userInfo?['blocked'];
+      contact ??= userInfo?['unblocked'];
+      Log.info('blocked contact updated: $contact');
+      if (contact != null) {
+        if (contact == widget.info.identifier) {
+          await _reload();
+        }
+      } else {
+        // block-list updated
+        await _reload();
+      }
     } else {
       Log.error('notification error: $notification');
     }
   }
 
   Future<void> _reload() async {
-    GlobalVariable shared = GlobalVariable();
-    User? user = await shared.facebook.currentUser;
-    if (user == null) {
-      Log.error('current user not found, failed to reload data');
-    } else {
-      Log.debug('reloading profile: ${widget.info}');
-      List<ID> contacts = await shared.facebook.getContacts(user.identifier);
-      if (mounted) {
-        setState(() {
-          _isFriend = contacts.contains(widget.info.identifier);
-        });
-      }
+    await widget.info.reloadData();
+    if (mounted) {
+      setState(() {
+      });
     }
   }
 
@@ -141,19 +145,31 @@ class _ProfileState extends State<ProfilePage> implements lnc.Observer {
       const SizedBox(height: 8,),
       _idLabel(context),
       const SizedBox(height: 32,),
-      if (!_isFriend)
+
+      /// add friend
+      if (!widget.info.isFriend)
         _addButton(context),
-      if (_isFriend)
+      if (widget.info.isFriend)
         Column(
           children: [
-            _sendButton(context),
+            if (!widget.info.isBlocked)
+              _sendButton(context),
+            /// clear history / delete contact
             const SizedBox(height: 8,),
-            if (widget.fromWhere != null)
+            if (widget.fromChat != null)
             _clearButton(context),
-            if (widget.fromWhere == null)
+            if (widget.fromChat == null)
             _deleteButton(context),
           ],
         ),
+      const SizedBox(height: 32,),
+
+      /// block/unblock
+      if (!widget.info.isBlocked)
+        _blockButton(context),
+      if (widget.info.isBlocked)
+        _unblockButton(context),
+
       const SizedBox(height: 64,),
     ],
   );
@@ -204,7 +220,7 @@ class _ProfileState extends State<ProfilePage> implements lnc.Observer {
     child: CupertinoButton(
       color: Facade.of(context).colors.normalButtonColor,
       child: Text('Send Message', style: Facade.of(context).styles.buttonStyle),
-      onPressed: () => _sendMessage(context, widget.info, widget.fromWhere),
+      onPressed: () => _sendMessage(context, widget.info, widget.fromChat),
     ),
   );
 
@@ -228,10 +244,32 @@ class _ProfileState extends State<ProfilePage> implements lnc.Observer {
     ),
   );
 
+  Widget _blockButton(BuildContext context) => SizedBox(
+    width: 256,
+    child: CupertinoButton(
+      color: Facade.of(context).colors.importantButtonColor,
+      child: Text('Block',
+        style: Facade.of(context).styles.buttonStyle,
+      ),
+      onPressed: () => _doBlock(context, widget.info),
+    ),
+  );
+
+  Widget _unblockButton(BuildContext context) => SizedBox(
+    width: 256,
+    child: CupertinoButton(
+      color: Facade.of(context).colors.importantButtonColor,
+      child: Text('Unblock',
+        style: Facade.of(context).styles.buttonStyle,
+      ),
+      onPressed: () => _unblock(context, widget.info),
+    ),
+  );
+
 }
 
-void _sendMessage(BuildContext ctx, ContactInfo info, ID? fromWhere) {
-  if (info.identifier == fromWhere) {
+void _sendMessage(BuildContext ctx, ContactInfo info, ID? fromChat) {
+  if (info.identifier == fromChat) {
     // this page is open from a chat box
     Navigator.pop(ctx);
   } else {
@@ -259,6 +297,20 @@ void _doClear(BuildContext ctx, ID chat) {
       Alert.show(ctx, 'Error', 'Failed to clear chat history');
     }
   });
+}
+
+void _doBlock(BuildContext ctx, ContactInfo info) {
+  String msg = 'Are you sure want to block this contact?'
+      ' You will never receive it\'s message again.';
+  Alert.confirm(ctx, 'Confirm Block', msg,
+    okAction: () => info.block(context: ctx),
+  );
+}
+void _unblock(BuildContext ctx, ContactInfo info) {
+  String msg = 'Are you sure want to unblock this contact?';
+  Alert.confirm(ctx, 'Confirm Unblock', msg,
+    okAction: () => info.unblock(context: ctx),
+  );
 }
 
 //

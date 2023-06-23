@@ -7,6 +7,7 @@ import 'package:lnc/lnc.dart' as lnc;
 
 import 'profile.dart';
 import 'search.dart';
+import 'block_list.dart';
 
 
 class ContactListPage extends StatefulWidget {
@@ -201,9 +202,7 @@ class _ContactListAdapter with SectionAdapterMixin {
       ),
       title: const Text('Blocked'),
       trailing: const CupertinoListTileChevron(),
-      onTap: () {
-        Alert.show(context, 'Coming soon', 'Conversations for groups.');
-      }
+      onTap: () => BlockListPage.open(context),
   );
 
   /*

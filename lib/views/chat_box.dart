@@ -41,11 +41,13 @@ class _ChatBoxState extends State<ChatBox> implements lnc.Observer {
     var nc = lnc.NotificationCenter();
     nc.addObserver(this, NotificationNames.kMessageUpdated);
     nc.addObserver(this, NotificationNames.kDocumentUpdated);
+    nc.addObserver(this, NotificationNames.kBlockListUpdated);
   }
 
   @override
   void dispose() {
     var nc = lnc.NotificationCenter();
+    nc.removeObserver(this, NotificationNames.kBlockListUpdated);
     nc.removeObserver(this, NotificationNames.kDocumentUpdated);
     nc.removeObserver(this, NotificationNames.kMessageUpdated);
     super.dispose();
@@ -68,6 +70,18 @@ class _ChatBoxState extends State<ChatBox> implements lnc.Observer {
         await _reload();
       } else {
         // TODO: check members for group chat?
+      }
+    } else if (name == NotificationNames.kBlockListUpdated) {
+      ID? contact = userInfo?['blocked'];
+      contact ??= userInfo?['unblocked'];
+      Log.info('blocked contact updated: $contact');
+      if (contact != null) {
+        if (contact == widget.info.identifier) {
+          await _reload();
+        }
+      } else {
+        // block-list updated
+        await _reload();
       }
     } else {
       assert(false, 'notification error: $notification');
@@ -125,10 +139,22 @@ class _ChatBoxState extends State<ChatBox> implements lnc.Observer {
       Container(
         color: Facade.of(context).colors.inputTrayBackgroundColor,
         padding: const EdgeInsets.only(bottom: 16),
-        child: ChatInputTray(widget.info),
+        child: _inputTray(),
       ),
     ],
   );
+
+  Widget _inputTray() {
+    if (widget.info.isBlocked) {
+      return Center(
+        child: Container(
+          padding: const EdgeInsets.all(16),
+          child: const Text('Blocked'),
+        ),
+      );
+    }
+    return ChatInputTray(widget.info);
+  }
 
 }
 
@@ -340,5 +366,5 @@ void _openDetail(BuildContext context, ContactInfo info) {
 }
 
 void _openProfile(BuildContext context, ID uid, ContactInfo info) {
-  ProfilePage.open(context, uid, fromWhere: info.identifier);
+  ProfilePage.open(context, uid, fromChat: info.identifier);
 }

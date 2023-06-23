@@ -27,11 +27,13 @@ class _ChatListState extends State<ChatHistoryPage> implements lnc.Observer {
 
     var nc = lnc.NotificationCenter();
     nc.addObserver(this, NotificationNames.kConversationUpdated);
+    nc.addObserver(this, NotificationNames.kBlockListUpdated);
   }
 
   @override
   void dispose() {
     var nc = lnc.NotificationCenter();
+    nc.removeObserver(this, NotificationNames.kBlockListUpdated);
     nc.removeObserver(this, NotificationNames.kConversationUpdated);
     super.dispose();
   }
@@ -47,6 +49,9 @@ class _ChatListState extends State<ChatHistoryPage> implements lnc.Observer {
     if (name == NotificationNames.kConversationUpdated) {
       await _reload();
       Log.warning('conversation updated');
+    } else if (name == NotificationNames.kBlockListUpdated) {
+      await _reload();
+      Log.warning('block-list updated');
     }
   }
 
@@ -85,11 +90,16 @@ class _ChatListAdapter with SectionAdapterMixin {
   final Amanuensis _dataSource;
 
   @override
-  int numberOfItems(int section) => _dataSource.numberOfConversation;
+  int numberOfItems(int section) => _dataSource.conversations.length;
 
   @override
   Widget getItem(BuildContext context, IndexPath indexPath) {
-    Conversation info = _dataSource.conversationAtIndex(indexPath.item);
+    List<Conversation> conversations = _dataSource.conversations;
+    if (indexPath.item >= conversations.length) {
+      Log.error('out of range: ${conversations.length}, $indexPath');
+      return const Text('null');
+    }
+    Conversation info = conversations[indexPath.item];
     Log.warning('show item: $info');
     return _ChatTableCell(info);
   }
