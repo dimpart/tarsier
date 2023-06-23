@@ -44,10 +44,12 @@ class _BlockListState extends State<BlockListPage> implements lnc.Observer {
   @override
   Future<void> onReceiveNotification(lnc.Notification notification) async {
     String name = notification.name;
-    // Map? info = notification.userInfo;
+    Map? userInfo = notification.userInfo;
     if (name == NotificationNames.kBlockListUpdated) {
       await _reload();
     } else if (name == NotificationNames.kDocumentUpdated) {
+      ID? did = userInfo?['ID'];
+      Log.warning('document updated: $did');
       await _reload();
     }
   }

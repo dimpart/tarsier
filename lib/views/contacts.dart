@@ -7,6 +7,7 @@ import 'package:lnc/lnc.dart' as lnc;
 
 import 'profile.dart';
 import 'search.dart';
+import 'strangers.dart';
 import 'block_list.dart';
 
 
@@ -28,7 +29,9 @@ class _ContactListState extends State<ContactListPage> implements lnc.Observer {
     _adapter = _ContactListAdapter(dataSource: _dataSource);
 
     var nc = lnc.NotificationCenter();
+    nc.addObserver(this, NotificationNames.kConversationUpdated);
     nc.addObserver(this, NotificationNames.kContactsUpdated);
+    nc.addObserver(this, NotificationNames.kBlockListUpdated);
     nc.addObserver(this, NotificationNames.kDocumentUpdated);
   }
 
@@ -36,7 +39,9 @@ class _ContactListState extends State<ContactListPage> implements lnc.Observer {
   void dispose() {
     var nc = lnc.NotificationCenter();
     nc.removeObserver(this, NotificationNames.kDocumentUpdated);
+    nc.removeObserver(this, NotificationNames.kBlockListUpdated);
     nc.removeObserver(this, NotificationNames.kContactsUpdated);
+    nc.removeObserver(this, NotificationNames.kConversationUpdated);
     super.dispose();
   }
 
@@ -46,10 +51,21 @@ class _ContactListState extends State<ContactListPage> implements lnc.Observer {
   @override
   Future<void> onReceiveNotification(lnc.Notification notification) async {
     String name = notification.name;
+    Map? userInfo = notification.userInfo;
     // Map? info = notification.userInfo;
-    if (name == NotificationNames.kContactsUpdated) {
+    if (name == NotificationNames.kConversationUpdated) {
+      ID? chat = userInfo?['ID'];
+      Log.warning('conversation updated: $chat');
+      await _reload();
+    } else if (name == NotificationNames.kContactsUpdated) {
+      Log.warning('contacts updated');
+      await _reload();
+    } else if (name == NotificationNames.kBlockListUpdated) {
+      Log.warning('block-list updated');
       await _reload();
     } else if (name == NotificationNames.kDocumentUpdated) {
+      ID? did = userInfo?['ID'];
+      Log.warning('document updated: $did');
       await _reload();
     }
   }
@@ -186,11 +202,22 @@ class _ContactListAdapter with SectionAdapterMixin {
         ),
       ),
       title: const Text('New Friends'),
+      additionalInfo: _newFriendCounter(),
       trailing: const CupertinoListTileChevron(),
-      onTap: () {
-        Alert.show(context, 'Coming soon', 'Requests from new friends.');
-      }
+      onTap: () => StrangerListPage.open(context),
   );
+
+  Widget _newFriendCounter() {
+    Amanuensis clerk = Amanuensis();
+    List<Conversation> strangers = clerk.strangers;
+    int count = 0;
+    for (Conversation item in strangers) {
+      if (item.unread > 0) {
+        count += 1;
+      }
+    }
+    return NumberView(count);
+  }
 
   Widget _blockListIcon(BuildContext context) => CupertinoTableCell(
       leading: Container(

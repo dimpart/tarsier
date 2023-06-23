@@ -6,24 +6,23 @@ import 'package:dim_flutter/dim_flutter.dart';
 import 'package:lnc/lnc.dart' as lnc;
 
 import 'chat_box.dart';
-import 'search.dart';
 
 
-class ChatHistoryPage extends StatefulWidget {
-  const ChatHistoryPage({super.key});
+class StrangerListPage extends StatefulWidget {
+  const StrangerListPage({super.key});
 
-  static BottomNavigationBarItem barItem() => const BottomNavigationBarItem(
-    icon: Icon(Styles.chatsTabIcon),
-    label: 'Chats',
+  static void open(BuildContext context) => showCupertinoDialog(
+    context: context,
+    builder: (context) => const StrangerListPage(),
   );
 
   @override
-  State<StatefulWidget> createState() => _ChatListState();
+  State<StatefulWidget> createState() => _StrangerListState();
 }
 
-class _ChatListState extends State<ChatHistoryPage> implements lnc.Observer {
-  _ChatListState() : _clerk = Amanuensis() {
-    _adapter = _ChatListAdapter(dataSource: _clerk);
+class _StrangerListState extends State<StrangerListPage> implements lnc.Observer {
+  _StrangerListState() : _clerk = Amanuensis() {
+    _adapter = _StrangerListAdapter(dataSource: _clerk);
 
     var nc = lnc.NotificationCenter();
     nc.addObserver(this, NotificationNames.kConversationUpdated);
@@ -42,7 +41,7 @@ class _ChatListState extends State<ChatHistoryPage> implements lnc.Observer {
 
   final Amanuensis _clerk;
 
-  late final _ChatListAdapter _adapter;
+  late final _StrangerListAdapter _adapter;
 
   @override
   Future<void> onReceiveNotification(lnc.Notification notification) async {
@@ -81,8 +80,7 @@ class _ChatListState extends State<ChatHistoryPage> implements lnc.Observer {
     backgroundColor: Facade.of(context).colors.scaffoldBackgroundColor,
     appBar: CupertinoNavigationBar(
       backgroundColor: Facade.of(context).colors.appBardBackgroundColor,
-      middle: StatedTitleView.from(context, () => 'Secure Chat'),
-      trailing: SearchPage.searchButton(context),
+      middle: StatedTitleView.from(context, () => 'New Friends'),
     ),
     body: SectionListView.builder(
       adapter: _adapter,
@@ -90,17 +88,17 @@ class _ChatListState extends State<ChatHistoryPage> implements lnc.Observer {
   );
 }
 
-class _ChatListAdapter with SectionAdapterMixin {
-  _ChatListAdapter({required Amanuensis dataSource}) : _dataSource = dataSource;
+class _StrangerListAdapter with SectionAdapterMixin {
+  _StrangerListAdapter({required Amanuensis dataSource}) : _dataSource = dataSource;
 
   final Amanuensis _dataSource;
 
   @override
-  int numberOfItems(int section) => _dataSource.conversations.length;
+  int numberOfItems(int section) => _dataSource.strangers.length;
 
   @override
   Widget getItem(BuildContext context, IndexPath indexPath) {
-    List<Conversation> conversations = _dataSource.conversations;
+    List<Conversation> conversations = _dataSource.strangers;
     if (indexPath.item >= conversations.length) {
       Log.error('out of range: ${conversations.length}, $indexPath');
       return const Text('null');
@@ -181,22 +179,22 @@ class _ChatTableCellState extends State<_ChatTableCell> implements lnc.Observer 
     onTap: () {
       Log.warning('tap: ${widget.info}');
       ChatBox.open(context, widget.info);
-      },
+    },
     onLongPress: () {
       Log.warning('long press: ${widget.info}');
       Alert.actionSheet(context,
-        'Confirm', 'Are you sure to remove this conversation?',
+        'Confirm', 'Are you sure to remove this friend?',
         'Remove ${widget.info.name}',
             () => _removeConversation(context, widget.info.identifier),
       );
-      },
+    },
   );
 
   void _removeConversation(BuildContext context, ID chat) {
     Log.warning('removing $chat');
     Amanuensis clerk = Amanuensis();
     clerk.removeConversation(chat).onError((error, stackTrace) {
-      Alert.show(context, 'Error', 'Failed to remove conversation');
+      Alert.show(context, 'Error', 'Failed to remove friend');
       return false;
     });
   }
