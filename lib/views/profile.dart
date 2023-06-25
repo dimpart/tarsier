@@ -44,13 +44,15 @@ class _ProfileState extends State<ProfilePage> implements lnc.Observer {
     var nc = lnc.NotificationCenter();
     nc.addObserver(this, NotificationNames.kDocumentUpdated);
     nc.addObserver(this, NotificationNames.kContactsUpdated);
-    nc.addObserver(this, NotificationNames.kBlockListUpdated);
   }
+
+  final FocusNode _focusNode = FocusNode();
+  String? _alias;
 
   @override
   void dispose() {
+    _focusNode.dispose();
     var nc = lnc.NotificationCenter();
-    nc.removeObserver(this, NotificationNames.kBlockListUpdated);
     nc.removeObserver(this, NotificationNames.kContactsUpdated);
     nc.removeObserver(this, NotificationNames.kDocumentUpdated);
     super.dispose();
@@ -77,18 +79,6 @@ class _ProfileState extends State<ProfilePage> implements lnc.Observer {
       if (contact == widget.info.identifier) {
         await _reload();
       }
-    } else if (name == NotificationNames.kBlockListUpdated) {
-      ID? contact = userInfo?['blocked'];
-      contact ??= userInfo?['unblocked'];
-      Log.info('blocked contact updated: $contact');
-      if (contact != null) {
-        if (contact == widget.info.identifier) {
-          await _reload();
-        }
-      } else {
-        // block-list updated
-        await _reload();
-      }
     } else {
       Log.error('notification error: $notification');
     }
@@ -109,68 +99,156 @@ class _ProfileState extends State<ProfilePage> implements lnc.Observer {
   }
 
   @override
-  Widget build(BuildContext context) => Scaffold(
-    backgroundColor: Facade.of(context).colors.scaffoldBackgroundColor,
-    // A ScrollView that creates custom scroll effects using slivers.
-    body: CustomScrollView(
-      // A list of sliver widgets.
-      slivers: <Widget>[
-        CupertinoSliverNavigationBar(
-          backgroundColor: Facade.of(context).colors.appBardBackgroundColor,
-          // This title is visible in both collapsed and expanded states.
-          // When the "middle" parameter is omitted, the widget provided
-          // in the "largeTitle" parameter is used instead in the collapsed state.
-          largeTitle: Text(widget.info.name,
-            style: Facade.of(context).styles.titleTextStyle,
+  Widget build(BuildContext context) {
+    var colors = Facade.of(context).colors;
+    var styles = Facade.of(context).styles;
+    return Scaffold(
+      backgroundColor: colors.scaffoldBackgroundColor,
+      // A ScrollView that creates custom scroll effects using slivers.
+      body: CustomScrollView(
+        // A list of sliver widgets.
+        slivers: <Widget>[
+          CupertinoSliverNavigationBar(
+            backgroundColor: colors.appBardBackgroundColor,
+            // This title is visible in both collapsed and expanded states.
+            // When the "middle" parameter is omitted, the widget provided
+            // in the "largeTitle" parameter is used instead in the collapsed state.
+            largeTitle: Text(widget.info.title,
+              style: styles.titleTextStyle,
+            ),
           ),
-        ),
-        // This widget fills the remaining space in the viewport.
-        // Drag the scrollable area to collapse the CupertinoSliverNavigationBar.
-        SliverFillRemaining(
-          hasScrollBody: false,
-          fillOverscroll: true,
-          child: SingleChildScrollView(
-            child: _body(context),
+          // This widget fills the remaining space in the viewport.
+          // Drag the scrollable area to collapse the CupertinoSliverNavigationBar.
+          SliverFillRemaining(
+            hasScrollBody: false,
+            fillOverscroll: true,
+            child: SingleChildScrollView(
+              child: _body(context,
+                backgroundColor: colors.sectionItemBackgroundColor,
+                backgroundColorActivated: colors.sectionItemDividerColor,
+                dividerColor: colors.sectionItemDividerColor,
+                primaryTextColor: colors.primaryTextColor,
+                secondaryTextColor: colors.tertiaryTextColor,
+                dangerousTextColor: CupertinoColors.systemRed,
+              ),
+            ),
           ),
-        ),
-      ],
-    ),
-  );
+        ],
+      ),
+    );
+  }
 
-  Widget _body(BuildContext context) => Column(
+  Widget _body(BuildContext context, {
+    required Color backgroundColor,
+    required Color backgroundColorActivated,
+    required Color dividerColor,
+    required Color primaryTextColor,
+    required Color secondaryTextColor,
+    required Color dangerousTextColor,
+  }) => Column(
     crossAxisAlignment: CrossAxisAlignment.center,
     children: [
+
+      /// Avatar
       const SizedBox(height: 32,),
       _avatarImage(context),
-      const SizedBox(height: 8,),
-      _idLabel(context),
       const SizedBox(height: 32,),
 
-      /// add friend
-      if (!widget.info.isFriend)
-        _addButton(context),
-      if (widget.info.isFriend)
-        Column(
-          children: [
-            if (!widget.info.isBlocked)
-              _sendButton(context),
-            /// clear history / delete contact
-            const SizedBox(height: 8,),
-            if (widget.fromChat != null)
-            _clearButton(context),
-            if (widget.fromChat == null)
-            _deleteButton(context),
-          ],
-        ),
-      const SizedBox(height: 32,),
+      CupertinoListSection(
+        backgroundColor: dividerColor,
+        topMargin: 0,
+        additionalDividerMargin: 32,
+        children: [
+          /// ID
+          CupertinoListTile(
+            backgroundColor: backgroundColor,
+            backgroundColorActivated: backgroundColorActivated,
+            padding: Styles.settingsSectionItemPadding,
+            title: Text('ID', style: TextStyle(color: primaryTextColor)),
+            additionalInfo: SelectableText(widget.info.identifier.toString(),
+              style: Facade.of(context).styles.identifierTextStyle,
+            ),
+          ),
+          /// Remark
+          CupertinoListTile(
+            backgroundColor: backgroundColor,
+            backgroundColorActivated: backgroundColorActivated,
+            padding: Styles.settingsSectionItemPadding,
+            title: Text('Remark', style: TextStyle(color: primaryTextColor)),
+            additionalInfo: SizedBox(
+              width: 160,
+              child: _remarkTextField(context),
+            ),
+          ),
+        ],
+      ),
 
-      /// block/unblock
-      if (!widget.info.isBlocked)
-        _blockButton(context),
-      if (widget.info.isBlocked)
-        _unblockButton(context),
+      CupertinoListSection(
+        backgroundColor: dividerColor,
+        topMargin: 0,
+        additionalDividerMargin: 32,
+        children: [
+          /// Block
+          CupertinoListTile(
+            backgroundColor: backgroundColor,
+            backgroundColorActivated: backgroundColorActivated,
+            padding: Styles.settingsSectionItemPadding,
+            leading: Icon(Styles.blockListIcon, color: primaryTextColor),
+            title: Text('Block Messages', style: TextStyle(color: primaryTextColor)),
+            additionalInfo: CupertinoSwitch(
+              value: widget.info.isBlocked,
+              onChanged: (bool value) => setState(() {
+                if (value) {
+                  widget.info.block(context: context);
+                } else {
+                  widget.info.unblock(context: context);
+                }
+              }),
+            ),
+          ),
+          /// Mute
+          CupertinoListTile(
+            backgroundColor: backgroundColor,
+            backgroundColorActivated: backgroundColorActivated,
+            padding: Styles.settingsSectionItemPadding,
+            leading: Icon(Styles.muteListIcon, color: primaryTextColor),
+            title: Text('Mute Notifications', style: TextStyle(color: primaryTextColor)),
+            additionalInfo: CupertinoSwitch(
+              value: widget.info.isMuted,
+              onChanged: (bool value) => setState(() {
+                if (value) {
+                  widget.info.mute(context: context);
+                } else {
+                  widget.info.unmute(context: context);
+                }
+              }),
+            ),
+          ),
+        ],
+      ),
+
+      CupertinoListSection(
+        backgroundColor: dividerColor,
+        dividerMargin: 0,
+        additionalDividerMargin: 0,
+        children: [
+          /// add friend
+          if (!widget.info.isFriend)
+            _addButton(context, backgroundColor: backgroundColor, textColor: primaryTextColor),
+          /// send message
+          if (widget.info.isFriend && !widget.info.isBlocked)
+            _sendButton(context, backgroundColor: backgroundColor, textColor: primaryTextColor),
+          /// clear history
+          if (widget.info.isFriend && widget.fromChat != null)
+            _clearButton(context, backgroundColor: backgroundColor, textColor: dangerousTextColor),
+          /// delete contact
+          if (widget.info.isFriend && widget.fromChat == null)
+            _deleteButton(context, backgroundColor: backgroundColor, textColor: dangerousTextColor),
+        ],
+      ),
 
       const SizedBox(height: 64,),
+
     ],
   );
 
@@ -187,83 +265,75 @@ class _ProfileState extends State<ProfilePage> implements lnc.Observer {
         });
       });
 
-  Widget _idLabel(BuildContext context) => Row(
-    // mainAxisSize: MainAxisSize.min,
-    mainAxisAlignment: MainAxisAlignment.center,
+  Widget _remarkTextField(BuildContext context) => CupertinoTextField(
+    textAlign: TextAlign.end,
+    controller: TextEditingController(text: widget.info.remark.alias),
+    placeholder: 'Please input alias.',
+    decoration: Facade.of(context).styles.textFieldDecoration,
+    style: Facade.of(context).styles.textFieldStyle,
+    focusNode: _focusNode,
+    onChanged: (value) => _alias = value,
+    onTapOutside: (event) => _changeAlias(context),
+    onSubmitted: (value) => _changeAlias(context),
+  );
+
+  void _changeAlias(BuildContext context) {
+    _focusNode.unfocus();
+    // get alias value
+    String? text = _alias;
+    if (text == null) {
+      // nothing input
+      return;
+    }
+    ContactRemark remark = widget.info.remark;
+    if (remark.alias == text) {
+      Log.warning('alias not change: $remark');
+      return;
+    }
+    setState(() {
+      widget.info.setRemark(context: context, alias: text);
+    });
+  }
+
+  Widget _addButton(BuildContext context, {required Color textColor, required Color backgroundColor}) =>
+      _button('  Add Contact', Styles.addFriendIcon, textColor: textColor, backgroundColor: backgroundColor,
+        onPressed: () => widget.info.add(context: context),
+      );
+
+  Widget _sendButton(BuildContext context, {required Color textColor, required Color backgroundColor}) =>
+      _button('  Send Message', Styles.sendMsgIcon, textColor: textColor, backgroundColor: backgroundColor,
+        onPressed: () => _sendMessage(context, widget.info, widget.fromChat),
+      );
+
+  Widget _clearButton(BuildContext context, {required Color textColor, required Color backgroundColor}) =>
+      _button('  Clear History', Styles.clearChatIcon, textColor: textColor, backgroundColor: backgroundColor,
+        onPressed: () => _clearHistory(context, widget.info),
+      );
+
+  Widget _deleteButton(BuildContext context, {required Color textColor, required Color backgroundColor}) =>
+      _button('  Delete Contact', Styles.deleteIcon, textColor: textColor, backgroundColor: backgroundColor,
+        onPressed: () => widget.info.delete(context: context),
+      );
+
+  Widget _button(String title, IconData icon, {required Color textColor, required Color backgroundColor,
+    VoidCallback? onPressed}) => Row(
     children: [
-      const Text('ID: ',
-        style: TextStyle(fontSize: 12,
-          color: Colors.blueGrey,
-          fontWeight: FontWeight.bold,
+      Expanded(child: Container(
+        color: backgroundColor,
+        child: CupertinoButton(
+          onPressed: onPressed,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(icon, color: textColor,),
+              Text(title,
+                style: TextStyle(color: textColor, fontWeight: FontWeight.bold,),
+              ),
+            ],
+          ),
         ),
-      ),
-      Container(
-        constraints: const BoxConstraints(maxWidth: 336),
-        child: SelectableText(widget.info.identifier.toString(),
-          style: Facade.of(context).styles.identifierTextStyle,
-        ),
-      ),
+      ))
     ],
-  );
-
-  Widget _addButton(BuildContext context) => SizedBox(
-    width: 256,
-    child: CupertinoButton(
-      color: Facade.of(context).colors.normalButtonColor,
-      child: Text('Add Contact', style: Facade.of(context).styles.buttonStyle),
-      onPressed: () => widget.info.add(context: context),
-    ),
-  );
-
-  Widget _sendButton(BuildContext context) => SizedBox(
-    width: 256,
-    child: CupertinoButton(
-      color: Facade.of(context).colors.normalButtonColor,
-      child: Text('Send Message', style: Facade.of(context).styles.buttonStyle),
-      onPressed: () => _sendMessage(context, widget.info, widget.fromChat),
-    ),
-  );
-
-  Widget _clearButton(BuildContext context) => SizedBox(
-    width: 256,
-    child: CupertinoButton(
-      color: Facade.of(context).colors.importantButtonColor,
-      child: Text('Clear History', style: Facade.of(context).styles.buttonStyle),
-      onPressed: () => _clearHistory(context, widget.info),
-    ),
-  );
-
-  Widget _deleteButton(BuildContext context) => SizedBox(
-    width: 256,
-    child: CupertinoButton(
-      color: Facade.of(context).colors.criticalButtonColor,
-      child: Text(widget.info.identifier.isUser ? 'Delete Contact' : 'Delete Group',
-        style: Facade.of(context).styles.buttonStyle,
-      ),
-      onPressed: () => widget.info.delete(context: context),
-    ),
-  );
-
-  Widget _blockButton(BuildContext context) => SizedBox(
-    width: 256,
-    child: CupertinoButton(
-      color: Facade.of(context).colors.importantButtonColor,
-      child: Text('Block',
-        style: Facade.of(context).styles.buttonStyle,
-      ),
-      onPressed: () => _doBlock(context, widget.info),
-    ),
-  );
-
-  Widget _unblockButton(BuildContext context) => SizedBox(
-    width: 256,
-    child: CupertinoButton(
-      color: Facade.of(context).colors.importantButtonColor,
-      child: Text('Unblock',
-        style: Facade.of(context).styles.buttonStyle,
-      ),
-      onPressed: () => _unblock(context, widget.info),
-    ),
   );
 
 }
@@ -278,12 +348,9 @@ void _sendMessage(BuildContext ctx, ContactInfo info, ID? fromChat) {
 }
 
 void _clearHistory(BuildContext ctx, ContactInfo info) {
-  String msg;
-  if (info.identifier.isUser) {
-    msg = 'Are you sure want to clear chat history of this friend?';
-  } else {
-    msg = 'Are you sure want to clear chat history of this group?';
-  }
+  String name = info.identifier.isUser ? 'this friend' : 'this group';
+  String msg = 'Are you sure want to clear chat history of $name?'
+      ' This action cannot be restored.';
   Alert.confirm(ctx, 'Confirm', msg,
     okAction: () => _doClear(ctx, info.identifier),
   );
@@ -297,20 +364,6 @@ void _doClear(BuildContext ctx, ID chat) {
       Alert.show(ctx, 'Error', 'Failed to clear chat history');
     }
   });
-}
-
-void _doBlock(BuildContext ctx, ContactInfo info) {
-  String msg = 'Are you sure want to block this contact?'
-      ' You will never receive it\'s message again.';
-  Alert.confirm(ctx, 'Confirm Block', msg,
-    okAction: () => info.block(context: ctx),
-  );
-}
-void _unblock(BuildContext ctx, ContactInfo info) {
-  String msg = 'Are you sure want to unblock this contact?';
-  Alert.confirm(ctx, 'Confirm Unblock', msg,
-    okAction: () => info.unblock(context: ctx),
-  );
 }
 
 //
@@ -333,11 +386,13 @@ class _ProfileTableState extends State<_ProfileTableCell> implements lnc.Observe
 
     var nc = lnc.NotificationCenter();
     nc.addObserver(this, NotificationNames.kDocumentUpdated);
+    nc.addObserver(this, NotificationNames.kRemarkUpdated);
   }
 
   @override
   void dispose() {
     var nc = lnc.NotificationCenter();
+    nc.removeObserver(this, NotificationNames.kRemarkUpdated);
     nc.removeObserver(this, NotificationNames.kDocumentUpdated);
     super.dispose();
   }
@@ -345,13 +400,21 @@ class _ProfileTableState extends State<_ProfileTableCell> implements lnc.Observe
   @override
   Future<void> onReceiveNotification(lnc.Notification notification) async {
     String name = notification.name;
-    Map? info = notification.userInfo;
-    assert(name == NotificationNames.kDocumentUpdated, 'notification error: $notification');
-    ID? identifier = info?['ID'];
-    if (identifier == null) {
-      Log.error('notification error: $notification');
-    } else if (identifier == widget.info.identifier) {
-      await _reload();
+    Map? userInfo = notification.userInfo;
+    if (name == NotificationNames.kDocumentUpdated) {
+      ID? did = userInfo?['ID'];
+      assert(did != null, 'notification error: $notification');
+      if (did == widget.info.identifier) {
+        Log.info('document updated: $did');
+        await _reload();
+      }
+    } else if (name == NotificationNames.kRemarkUpdated) {
+      ID? cid = userInfo?['contact'];
+      assert(cid != null, 'notification error: $notification');
+      if (cid == widget.info.identifier) {
+        Log.info('remark updated: $cid');
+        await _reload();
+      }
     }
   }
 
@@ -373,7 +436,7 @@ class _ProfileTableState extends State<_ProfileTableCell> implements lnc.Observe
   @override
   Widget build(BuildContext context) => CupertinoTableCell(
     leading: widget.info.getImage(),
-    title: Text(widget.info.name),
+    title: Text(widget.info.title),
     subtitle: Text(widget.info.identifier.toString()),
     onTap: () => ProfilePage.open(context, widget.info.identifier),
     onLongPress: widget.onLongPress,

@@ -49,13 +49,16 @@ class _StrangerListState extends State<StrangerListPage> implements lnc.Observer
     Map? userInfo = notification.userInfo;
     if (name == NotificationNames.kConversationUpdated) {
       ID? chat = userInfo?['ID'];
-      Log.warning('conversation updated: $chat');
+      Log.info('conversation updated: $chat');
       await _reload();
     } else if (name == NotificationNames.kContactsUpdated) {
-      Log.warning('contacts updated');
+      ID? contact = userInfo?['contact'];
+      Log.info('contact updated: $contact');
       await _reload();
     } else if (name == NotificationNames.kBlockListUpdated) {
-      Log.warning('block-list updated');
+      ID? contact = userInfo?['blocked'];
+      contact ??= userInfo?['unblocked'];
+      Log.info('blocked contact updated: $contact');
       await _reload();
     }
   }
@@ -126,11 +129,13 @@ class _ChatTableCellState extends State<_ChatTableCell> implements lnc.Observer 
 
     var nc = lnc.NotificationCenter();
     nc.addObserver(this, NotificationNames.kDocumentUpdated);
+    nc.addObserver(this, NotificationNames.kRemarkUpdated);
   }
 
   @override
   void dispose() {
     var nc = lnc.NotificationCenter();
+    nc.removeObserver(this, NotificationNames.kRemarkUpdated);
     nc.removeObserver(this, NotificationNames.kDocumentUpdated);
     super.dispose();
   }
@@ -139,15 +144,20 @@ class _ChatTableCellState extends State<_ChatTableCell> implements lnc.Observer 
   Future<void> onReceiveNotification(lnc.Notification notification) async {
     String name = notification.name;
     Map? userInfo = notification.userInfo;
-    ID? cid = userInfo?['ID'];
-    if (cid == null) {
-      Log.error('notification error: $notification');
-    }
     if (name == NotificationNames.kDocumentUpdated) {
-      if (cid == widget.info.identifier) {
+      ID? did = userInfo?['ID'];
+      assert(did != null, 'notification error: $notification');
+      if (did == widget.info.identifier) {
         await _reload();
       } else {
         // TODO: check members for group chat?
+      }
+    } else if (name == NotificationNames.kRemarkUpdated) {
+      ID? cid = userInfo?['contact'];
+      assert(cid != null, 'notification error: $notification');
+      if (cid == widget.info.identifier) {
+        Log.info('remark updated: $cid');
+        await _reload();
       }
     } else {
       assert(false, 'notification error: $notification');
@@ -172,7 +182,7 @@ class _ChatTableCellState extends State<_ChatTableCell> implements lnc.Observer 
   @override
   Widget build(BuildContext context) => CupertinoTableCell(
     leading: _leading(widget.info),
-    title: Text(widget.info.name),
+    title: Text(widget.info.title),
     subtitle: _lastMessage(widget.info.lastMessage),
     additionalInfo: _timeLabel(widget.info.lastTime),
     // trailing: const CupertinoListTileChevron(),
@@ -199,7 +209,8 @@ class _ChatTableCellState extends State<_ChatTableCell> implements lnc.Observer 
     });
   }
 
-  Widget _leading(Conversation info) => BadgeView(info.getImage(), info.unread);
+  Widget _leading(Conversation info) =>
+      IconView.from(info.getImage(), info.unread);
 
   Widget? _lastMessage(String? last) {
     if (last == null) {

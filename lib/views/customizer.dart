@@ -120,7 +120,7 @@ class SettingsPage extends StatelessWidget {
             primaryTextColor: primaryTextColor,
             secondaryTextColor: secondaryTextColor,
             onTap: () => Config().termsURL.then((url) => Browser.open(context,
-              url: 'https://github.com/dimgame/tarsier', title: 'Open Source',
+              url: 'https://github.com/dimpart/tarsier', title: 'Open Source',
             )),
           ),
           /// Privacy Policy

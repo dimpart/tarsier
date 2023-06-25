@@ -41,6 +41,7 @@ class _ChatBoxState extends State<ChatBox> implements lnc.Observer {
     var nc = lnc.NotificationCenter();
     nc.addObserver(this, NotificationNames.kMessageUpdated);
     nc.addObserver(this, NotificationNames.kDocumentUpdated);
+    nc.addObserver(this, NotificationNames.kRemarkUpdated);
     nc.addObserver(this, NotificationNames.kBlockListUpdated);
   }
 
@@ -48,6 +49,7 @@ class _ChatBoxState extends State<ChatBox> implements lnc.Observer {
   void dispose() {
     var nc = lnc.NotificationCenter();
     nc.removeObserver(this, NotificationNames.kBlockListUpdated);
+    nc.removeObserver(this, NotificationNames.kRemarkUpdated);
     nc.removeObserver(this, NotificationNames.kDocumentUpdated);
     nc.removeObserver(this, NotificationNames.kMessageUpdated);
     super.dispose();
@@ -57,19 +59,26 @@ class _ChatBoxState extends State<ChatBox> implements lnc.Observer {
   Future<void> onReceiveNotification(lnc.Notification notification) async {
     String name = notification.name;
     Map? userInfo = notification.userInfo;
-    ID? cid = userInfo?['ID'];
-    if (cid == null) {
-      Log.error('notification error: $notification');
-    }
     if (name == NotificationNames.kMessageUpdated) {
+      ID? cid = userInfo?['ID'];
+      assert(cid != null, 'notification error: $notification');
       if (cid == widget.info.identifier) {
         await _reload();
       }
     } else if (name == NotificationNames.kDocumentUpdated) {
-      if (cid == widget.info.identifier) {
+      ID? did = userInfo?['ID'];
+      assert(did != null, 'notification error: $notification');
+      if (did == widget.info.identifier) {
         await _reload();
       } else {
         // TODO: check members for group chat?
+      }
+    } else if (name == NotificationNames.kRemarkUpdated) {
+      ID? cid = userInfo?['contact'];
+      assert(cid != null, 'notification error: $notification');
+      if (cid == widget.info.identifier) {
+        Log.info('remark updated: $cid');
+        await _reload();
       }
     } else if (name == NotificationNames.kBlockListUpdated) {
       ID? contact = userInfo?['blocked'];
@@ -114,7 +123,7 @@ class _ChatBoxState extends State<ChatBox> implements lnc.Observer {
     backgroundColor: Facade.of(context).colors.scaffoldBackgroundColor,
     appBar: CupertinoNavigationBar(
       backgroundColor: Facade.of(context).colors.appBardBackgroundColor,
-      middle: StatedTitleView.from(context, () => widget.info.name),
+      middle: StatedTitleView.from(context, () => widget.info.title),
       trailing: IconButton(
         iconSize: Styles.navigationBarIconSize,
         icon: const Icon(Styles.chatDetailIcon),
@@ -158,12 +167,37 @@ class _ChatBoxState extends State<ChatBox> implements lnc.Observer {
 
 }
 
+const prompt = 'Your messages will be encrypted before sending out from this app,'
+    ' which is powered by DIMP - a decentralized E2EE (End-to-End Encrypted) technology.';
+
 class _HistoryAdapter with SectionAdapterMixin {
   _HistoryAdapter(ContactInfo conversation, {required _HistoryDataSource dataSource})
       : _conversation = conversation, _dataSource = dataSource;
 
   final ContactInfo _conversation;
   final _HistoryDataSource _dataSource;
+
+  @override
+  bool shouldExistSectionFooter(int section) => true;
+
+  @override
+  Widget getSectionFooter(BuildContext context, int section) => Container(
+    color: Facade.of(context).colors.appBardBackgroundColor,
+    padding: const EdgeInsets.all(16),
+    alignment: Alignment.center,
+    child: Row(
+      children: [
+        const Icon(CupertinoIcons.padlock_solid,
+          size: 24,
+          color: CupertinoColors.systemGrey,
+        ),
+        const SizedBox(width: 8,),
+        Expanded(child: Text(prompt,
+          style: Facade.of(context).styles.sectionFooterTextStyle,
+        )),
+      ],
+    ),
+  );
 
   @override
   int numberOfItems(int section) {

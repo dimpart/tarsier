@@ -9,6 +9,7 @@ import 'profile.dart';
 import 'search.dart';
 import 'strangers.dart';
 import 'block_list.dart';
+import 'mute_list.dart';
 
 
 class ContactListPage extends StatefulWidget {
@@ -29,9 +30,7 @@ class _ContactListState extends State<ContactListPage> implements lnc.Observer {
     _adapter = _ContactListAdapter(dataSource: _dataSource);
 
     var nc = lnc.NotificationCenter();
-    nc.addObserver(this, NotificationNames.kConversationUpdated);
     nc.addObserver(this, NotificationNames.kContactsUpdated);
-    nc.addObserver(this, NotificationNames.kBlockListUpdated);
     nc.addObserver(this, NotificationNames.kDocumentUpdated);
   }
 
@@ -39,9 +38,7 @@ class _ContactListState extends State<ContactListPage> implements lnc.Observer {
   void dispose() {
     var nc = lnc.NotificationCenter();
     nc.removeObserver(this, NotificationNames.kDocumentUpdated);
-    nc.removeObserver(this, NotificationNames.kBlockListUpdated);
     nc.removeObserver(this, NotificationNames.kContactsUpdated);
-    nc.removeObserver(this, NotificationNames.kConversationUpdated);
     super.dispose();
   }
 
@@ -52,20 +49,13 @@ class _ContactListState extends State<ContactListPage> implements lnc.Observer {
   Future<void> onReceiveNotification(lnc.Notification notification) async {
     String name = notification.name;
     Map? userInfo = notification.userInfo;
-    // Map? info = notification.userInfo;
-    if (name == NotificationNames.kConversationUpdated) {
-      ID? chat = userInfo?['ID'];
-      Log.warning('conversation updated: $chat');
-      await _reload();
-    } else if (name == NotificationNames.kContactsUpdated) {
-      Log.warning('contacts updated');
-      await _reload();
-    } else if (name == NotificationNames.kBlockListUpdated) {
-      Log.warning('block-list updated');
+    if (name == NotificationNames.kContactsUpdated) {
+      ID? contact = userInfo?['contact'];
+      Log.info('contact updated: $contact');
       await _reload();
     } else if (name == NotificationNames.kDocumentUpdated) {
       ID? did = userInfo?['ID'];
-      Log.warning('document updated: $did');
+      Log.info('document updated: $did');
       await _reload();
     }
   }
@@ -162,7 +152,7 @@ class _ContactListAdapter with SectionAdapterMixin {
   int numberOfItems(int section) {
     if (section == 0) {
       // fixed section
-      return 2;
+      return 3;
     }
     return _dataSource.getItemCount(section - 1);
   }
@@ -177,6 +167,8 @@ class _ContactListAdapter with SectionAdapterMixin {
         return _newFriendsItem(context);
       } else if (index == 1) {
         return _blockListIcon(context);
+      } else if (index == 2) {
+        return _muteListIcon(context);
       } else {
         // error
         return const Text('error');
@@ -195,10 +187,10 @@ class _ContactListAdapter with SectionAdapterMixin {
 
   Widget _newFriendsItem(BuildContext context) => CupertinoTableCell(
       leading: Container(
-        color: Colors.orange,
+        color: CupertinoColors.systemOrange,
         padding: const EdgeInsets.all(2),
         child: const Icon(Styles.newFriendsIcon,
-          color: Colors.white,
+          color: CupertinoColors.white,
         ),
       ),
       title: const Text('New Friends'),
@@ -207,7 +199,7 @@ class _ContactListAdapter with SectionAdapterMixin {
       onTap: () => StrangerListPage.open(context),
   );
 
-  Widget _newFriendCounter() {
+  Widget? _newFriendCounter() {
     Amanuensis clerk = Amanuensis();
     List<Conversation> strangers = clerk.strangers;
     int count = 0;
@@ -216,38 +208,34 @@ class _ContactListAdapter with SectionAdapterMixin {
         count += 1;
       }
     }
-    return NumberView(count);
+    return NumberBubble.fromInt(count);
   }
 
   Widget _blockListIcon(BuildContext context) => CupertinoTableCell(
       leading: Container(
-        color: Colors.black,
+        color: CupertinoColors.systemGrey,
         padding: const EdgeInsets.all(2),
         child: const Icon(Styles.blockListIcon,
-          color: Colors.white,
+          color: CupertinoColors.white,
         ),
       ),
-      title: const Text('Blocked'),
+      title: const Text('Blocked List'),
       trailing: const CupertinoListTileChevron(),
       onTap: () => BlockListPage.open(context),
   );
 
-  /*
-  Widget _groupChatsItem(BuildContext context) => CupertinoTableCell(
-      leading: Container(
-        color: Colors.green,
-        padding: const EdgeInsets.all(2),
-        child: const Icon(Styles.groupChatsIcon,
-          color: Colors.white,
-        ),
+  Widget _muteListIcon(BuildContext context) => CupertinoTableCell(
+    leading: Container(
+      color: CupertinoColors.systemGrey,
+      padding: const EdgeInsets.all(2),
+      child: const Icon(Styles.muteListIcon,
+        color: CupertinoColors.white,
       ),
-      title: const Text('Group Chats'),
-      trailing: const CupertinoListTileChevron(),
-      onTap: () {
-        Alert.show(context, 'Coming soon', 'Conversations for groups.');
-      }
+    ),
+    title: const Text('Muted List'),
+    trailing: const CupertinoListTileChevron(),
+    onTap: () => MuteListPage.open(context),
   );
-   */
 
 }
 
