@@ -148,17 +148,21 @@ class _ChatBoxState extends State<ChatBox> implements lnc.Observer {
       Container(
         color: Facade.of(context).colors.inputTrayBackgroundColor,
         padding: const EdgeInsets.only(bottom: 16),
-        child: _inputTray(),
+        child: _inputTray(context),
       ),
     ],
   );
 
-  Widget _inputTray() {
+  Widget _inputTray(BuildContext context) {
     if (widget.info.isBlocked) {
       return Center(
         child: Container(
           padding: const EdgeInsets.all(16),
-          child: const Text('Blocked'),
+          child: Text('Blocked',
+            style: TextStyle(
+              color: Facade.of(context).colors.primaryTextColor,
+            ),
+          ),
         ),
       );
     }
@@ -166,9 +170,6 @@ class _ChatBoxState extends State<ChatBox> implements lnc.Observer {
   }
 
 }
-
-const prompt = 'Your messages will be encrypted before sending out from this app,'
-    ' which is powered by DIMP - a decentralized E2EE (End-to-End Encrypted) technology.';
 
 class _HistoryAdapter with SectionAdapterMixin {
   _HistoryAdapter(ContactInfo conversation, {required _HistoryDataSource dataSource})
@@ -181,23 +182,29 @@ class _HistoryAdapter with SectionAdapterMixin {
   bool shouldExistSectionFooter(int section) => true;
 
   @override
-  Widget getSectionFooter(BuildContext context, int section) => Container(
-    color: Facade.of(context).colors.appBardBackgroundColor,
-    padding: const EdgeInsets.all(16),
-    alignment: Alignment.center,
-    child: Row(
-      children: [
-        const Icon(CupertinoIcons.padlock_solid,
-          size: 24,
-          color: CupertinoColors.systemGrey,
-        ),
-        const SizedBox(width: 8,),
-        Expanded(child: Text(prompt,
-          style: Facade.of(context).styles.sectionFooterTextStyle,
-        )),
-      ],
-    ),
-  );
+  Widget getSectionFooter(BuildContext context, int section) {
+    String tag = _conversation.isUser ? 'receiver' : 'group members';
+    String prompt = 'This app is powered by E2EE (End-to-End Encrypted) technology.'
+        ' Your messages will be encrypted before sending out,'
+        ' no one can decrypt the contents except the $tag.';
+    return Container(
+      color: Facade.of(context).colors.appBardBackgroundColor,
+      padding: const EdgeInsets.all(16),
+      child: Row(
+        // crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Icon(CupertinoIcons.padlock_solid,
+            size: 24,
+            color: CupertinoColors.systemGrey,
+          ),
+          const SizedBox(width: 8,),
+          Expanded(child: Text(prompt,
+            style: Facade.of(context).styles.sectionFooterTextStyle,
+          )),
+        ],
+      ),
+    );
+  }
 
   @override
   int numberOfItems(int section) {

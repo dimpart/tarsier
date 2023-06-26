@@ -70,67 +70,100 @@ class _AccountState extends State<AccountPage> {
   }
 
   @override
-  Widget build(BuildContext context) => Scaffold(
-    backgroundColor: Facade.of(context).colors.scaffoldBackgroundColor,
-    // A ScrollView that creates custom scroll effects using slivers.
-    body: CustomScrollView(
-      // A list of sliver widgets.
-      slivers: <Widget>[
-        CupertinoSliverNavigationBar(
-          backgroundColor: Facade.of(context).colors.appBardBackgroundColor,
-          // This title is visible in both collapsed and expanded states.
-          // When the "middle" parameter is omitted, the widget provided
-          // in the "largeTitle" parameter is used instead in the collapsed state.
-          largeTitle: Text('Edit Profile', style: Facade.of(context).styles.titleTextStyle),
-        ),
-        // This widget fills the remaining space in the viewport.
-        // Drag the scrollable area to collapse the CupertinoSliverNavigationBar.
-        SliverFillRemaining(
-          hasScrollBody: false,
-          fillOverscroll: true,
-          child: _body(context),
-        ),
-      ],
-    ),
-  );
+  Widget build(BuildContext context) {
+    var colors = Facade.of(context).colors;
+    var styles = Facade.of(context).styles;
+    return Scaffold(
+      backgroundColor: colors.scaffoldBackgroundColor,
+      // A ScrollView that creates custom scroll effects using slivers.
+      body: CustomScrollView(
+        // A list of sliver widgets.
+        slivers: <Widget>[
+          CupertinoSliverNavigationBar(
+            backgroundColor: colors.appBardBackgroundColor,
+            // This title is visible in both collapsed and expanded states.
+            // When the "middle" parameter is omitted, the widget provided
+            // in the "largeTitle" parameter is used instead in the collapsed state.
+            largeTitle: Text('Edit Profile', style: styles.titleTextStyle),
+          ),
+          // This widget fills the remaining space in the viewport.
+          // Drag the scrollable area to collapse the CupertinoSliverNavigationBar.
+          SliverFillRemaining(
+            hasScrollBody: false,
+            fillOverscroll: true,
+            child: _body(context,
+              backgroundColor: colors.sectionItemBackgroundColor,
+              backgroundColorActivated: colors.sectionItemDividerColor,
+              dividerColor: colors.sectionItemDividerColor,
+              primaryTextColor: colors.primaryTextColor,
+              secondaryTextColor: colors.tertiaryTextColor,
+              dangerousTextColor: CupertinoColors.systemRed,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 
-  Widget _body(BuildContext context) => Column(
+  Widget _body(BuildContext context, {
+    required Color backgroundColor,
+    required Color backgroundColorActivated,
+    required Color dividerColor,
+    required Color primaryTextColor,
+    required Color secondaryTextColor,
+    required Color dangerousTextColor,
+  }) => Column(
     mainAxisAlignment: MainAxisAlignment.start,
     children: [
+
+      /// Avatar
       const SizedBox(height: 32,),
       _avatarImage(context),
-      const SizedBox(height: 16,),
-      SizedBox(
-        width: 360,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            const Text('Name:', style: TextStyle(
-              fontSize: 14,
-              color: CupertinoColors.systemGrey,
-            )),
-            _nicknameText(context),
-          ],
-        ),
+      const SizedBox(height: 32,),
+
+      CupertinoListSection(
+        backgroundColor: dividerColor,
+        topMargin: 0,
+        additionalDividerMargin: 32,
+        children: [
+
+          /// ID
+          CupertinoListTile(
+            backgroundColor: backgroundColor,
+            backgroundColorActivated: backgroundColorActivated,
+            padding: Styles.settingsSectionItemPadding,
+            title: Text('ID', style: TextStyle(color: primaryTextColor)),
+            additionalInfo: SelectableText(
+              widget.user.identifier.toString(),
+              style: Facade.of(context).styles.identifierTextStyle,
+            ),
+          ),
+
+          /// Nickname
+          CupertinoListTile(
+            backgroundColor: backgroundColor,
+            backgroundColorActivated: backgroundColorActivated,
+            padding: Styles.settingsSectionItemPadding,
+            title: Text('Nickname', style: TextStyle(color: primaryTextColor)),
+            additionalInfo: SizedBox(
+              width: 160,
+              child: _nicknameText(context),
+            ),
+          ),
+
+        ],
       ),
-      const SizedBox(height: 8,),
-      SizedBox(
-        width: 360,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            const Text('ID:', style: TextStyle(
-              fontSize: 12,
-              color: CupertinoColors.systemGrey,
-            )),
-            _idLabel(context),
-          ],
-        ),
+
+      CupertinoListSection(
+        backgroundColor: dividerColor,
+        dividerMargin: 0,
+        additionalDividerMargin: 0,
+        children: [
+          /// update profile
+          _updateButton(context, backgroundColor: backgroundColor, textColor: dangerousTextColor),
+        ],
       ),
-      const SizedBox(height: 64,),
-      _saveButton(context),
-      // const SizedBox(height: 8,),
-      // _exportButton(context),
+
       const SizedBox(height: 128,),
     ],
   );
@@ -175,36 +208,37 @@ class _AccountState extends State<AccountPage> {
     ),
   );
 
-  Widget _idLabel(BuildContext context) => SelectableText(
-    widget.user.identifier.toString(),
-    style: Facade.of(context).styles.identifierTextStyle,
-  );
+  Widget _updateButton(BuildContext context, {required Color textColor, required Color backgroundColor}) =>
+      _button('  Update & Broadcast', Styles.updateDocIcon, textColor: textColor, backgroundColor: backgroundColor,
+        onPressed: () => _saveInfo(context).then((ok) {
+          if (ok) {
+            Alert.show(context, 'Success', 'Your profile is updated and broadcast to all friends!');
+          } else {
+            Alert.show(context, 'Error', 'Failed to update visa document.');
+          }
+        }),
+      );
 
-  Widget _saveButton(BuildContext context) => SizedBox(
-    width: 256,
-    child: CupertinoButton(
-      color: Facade.of(context).colors.importantButtonColor,
-      child: Text('Save', style: Facade.of(context).styles.buttonStyle),
-      onPressed: () => _saveInfo(context).then((ok) {
-        if (ok) {
-          Alert.show(context, 'Success', 'Your visa document is updated!');
-        } else {
-          Alert.show(context, 'Error', 'Failed to update visa document.');
-        }
-      }),
-    ),
+  Widget _button(String title, IconData icon, {required Color textColor, required Color backgroundColor,
+    VoidCallback? onPressed}) => Row(
+    children: [
+      Expanded(child: Container(
+        color: backgroundColor,
+        child: CupertinoButton(
+          onPressed: onPressed,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(icon, color: textColor,),
+              Text(title,
+                style: TextStyle(color: textColor, fontWeight: FontWeight.bold,),
+              ),
+            ],
+          ),
+        ),
+      ))
+    ],
   );
-
-  /*
-  Widget _exportButton(BuildContext context) => SizedBox(
-    width: 256,
-    child: CupertinoButton(
-      color: Colors.red,
-      child: const Text('Export'),
-      onPressed: () => _exportKey(context),
-    ),
-  );
-   */
 
   void _editAvatar(BuildContext context) => openImagePicker(context, onPicked: (path) {
     if (mounted) {

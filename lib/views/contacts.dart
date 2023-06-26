@@ -16,7 +16,7 @@ class ContactListPage extends StatefulWidget {
   const ContactListPage({super.key});
 
   static BottomNavigationBarItem barItem() => const BottomNavigationBarItem(
-    icon: Icon(Styles.contactsTabIcon),
+    icon: _ContactsIconView(icon: Icon(Styles.contactsTabIcon)),
     label: 'Contacts',
   );
 
@@ -194,22 +194,10 @@ class _ContactListAdapter with SectionAdapterMixin {
         ),
       ),
       title: const Text('New Friends'),
-      additionalInfo: _newFriendCounter(),
+      additionalInfo: _NewFriendCounter(),
       trailing: const CupertinoListTileChevron(),
       onTap: () => StrangerListPage.open(context),
   );
-
-  Widget? _newFriendCounter() {
-    Amanuensis clerk = Amanuensis();
-    List<Conversation> strangers = clerk.strangers;
-    int count = 0;
-    for (Conversation item in strangers) {
-      if (item.unread > 0) {
-        count += 1;
-      }
-    }
-    return NumberBubble.fromInt(count);
-  }
 
   Widget _blockListIcon(BuildContext context) => CupertinoTableCell(
       leading: Container(
@@ -258,4 +246,131 @@ class _ContactDataSource {
   int getItemCount(int sec) => _items[sec]?.length ?? 0;
 
   ContactInfo getItem(int sec, int idx) => _items[sec]![idx];
+}
+
+
+///
+///   Greeting State
+///
+abstract class _GreetingState<T extends StatefulWidget> extends State<T> implements lnc.Observer {
+  _GreetingState() {
+
+    var nc = lnc.NotificationCenter();
+    nc.addObserver(this, NotificationNames.kConversationUpdated);
+    nc.addObserver(this, NotificationNames.kContactsUpdated);
+    nc.addObserver(this, NotificationNames.kBlockListUpdated);
+    nc.addObserver(this, NotificationNames.kMuteListUpdated);
+  }
+
+  int _count = 0;
+
+  int get count => _count;
+
+  @override
+  void dispose() {
+    var nc = lnc.NotificationCenter();
+    nc.removeObserver(this, NotificationNames.kMuteListUpdated);
+    nc.removeObserver(this, NotificationNames.kBlockListUpdated);
+    nc.removeObserver(this, NotificationNames.kContactsUpdated);
+    nc.removeObserver(this, NotificationNames.kConversationUpdated);
+    super.dispose();
+  }
+
+  @override
+  Future<void> onReceiveNotification(lnc.Notification notification) async {
+    String name = notification.name;
+    Map? userInfo = notification.userInfo;
+    if (name == NotificationNames.kConversationUpdated) {
+      ID? chat = userInfo?['ID'];
+      Log.info('conversation updated: $chat');
+      await _reload();
+    } else if (name == NotificationNames.kContactsUpdated) {
+      ID? contact = userInfo?['contact'];
+      Log.info('contact updated: $contact');
+      await _reload();
+    } else if (name == NotificationNames.kBlockListUpdated) {
+      ID? contact = userInfo?['blocked'];
+      contact ??= userInfo?['unblocked'];
+      Log.info('blocked contact updated: $contact');
+      await _reload();
+    } else if (name == NotificationNames.kMuteListUpdated) {
+      ID? contact = userInfo?['muted'];
+      contact ??= userInfo?['unmuted'];
+      Log.info('muted contact updated: $contact');
+      await _reload();
+    }
+  }
+
+  Future<void> _reload() async {
+    Amanuensis clerk = Amanuensis();
+    List<Conversation> strangers = clerk.strangers;
+    int count = 0;
+    for (Conversation item in strangers) {
+      await item.reloadData();
+      if (item.isMuted) {
+        Log.warning('muted stranger: $item');
+        continue;
+      }
+      Log.warning('stranger: $item');
+      if (item.unread > 0) {
+        count += 1;
+      }
+    }
+    if (mounted) {
+      setState(() {
+        _count = count;
+      });
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _reload();
+  }
+
+}
+
+///
+///   New Friend Counter
+///
+class _NewFriendCounter extends StatefulWidget {
+
+  @override
+  State<StatefulWidget> createState() => _NewFriendState();
+
+}
+
+class _NewFriendState extends _GreetingState<_NewFriendCounter> {
+
+  @override
+  Widget build(BuildContext context) {
+    Log.warning('greeting count: $count');
+    Widget? bubble = NumberBubble.fromInt(count);
+    return bubble ?? Container();
+  }
+
+}
+
+///
+///   Contacts Tab Item
+///
+class _ContactsIconView extends StatefulWidget {
+  const _ContactsIconView({required this.icon});
+
+  final Widget icon;
+
+  @override
+  State<StatefulWidget> createState() => _ContactsIconState();
+
+}
+
+class _ContactsIconState extends _GreetingState<_ContactsIconView> {
+
+  @override
+  Widget build(BuildContext context) {
+    Log.warning('greeting count: $count');
+    return IconView.fromSpot(widget.icon, count);
+  }
+
 }

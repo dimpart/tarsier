@@ -44,6 +44,8 @@ class _ProfileState extends State<ProfilePage> implements lnc.Observer {
     var nc = lnc.NotificationCenter();
     nc.addObserver(this, NotificationNames.kDocumentUpdated);
     nc.addObserver(this, NotificationNames.kContactsUpdated);
+    nc.addObserver(this, NotificationNames.kBlockListUpdated);
+    nc.addObserver(this, NotificationNames.kMuteListUpdated);
   }
 
   final FocusNode _focusNode = FocusNode();
@@ -53,6 +55,8 @@ class _ProfileState extends State<ProfilePage> implements lnc.Observer {
   void dispose() {
     _focusNode.dispose();
     var nc = lnc.NotificationCenter();
+    nc.removeObserver(this, NotificationNames.kMuteListUpdated);
+    nc.removeObserver(this, NotificationNames.kBlockListUpdated);
     nc.removeObserver(this, NotificationNames.kContactsUpdated);
     nc.removeObserver(this, NotificationNames.kDocumentUpdated);
     super.dispose();
@@ -76,6 +80,20 @@ class _ProfileState extends State<ProfilePage> implements lnc.Observer {
     } else if (name == NotificationNames.kContactsUpdated) {
       ID? contact = userInfo?['contact'];
       Log.info('contact updated: $contact');
+      if (contact == widget.info.identifier) {
+        await _reload();
+      }
+    } else if (name == NotificationNames.kBlockListUpdated) {
+      ID? contact = userInfo?['blocked'];
+      contact ??= userInfo?['unblocked'];
+      Log.info('blocked contact updated: $contact');
+      if (contact == widget.info.identifier) {
+        await _reload();
+      }
+    } else if (name == NotificationNames.kMuteListUpdated) {
+      ID? contact = userInfo?['muted'];
+      contact ??= userInfo?['unmuted'];
+      Log.info('muted contact updated: $contact');
       if (contact == widget.info.identifier) {
         await _reload();
       }
@@ -113,7 +131,7 @@ class _ProfileState extends State<ProfilePage> implements lnc.Observer {
             // This title is visible in both collapsed and expanded states.
             // When the "middle" parameter is omitted, the widget provided
             // in the "largeTitle" parameter is used instead in the collapsed state.
-            largeTitle: Text(widget.info.title,
+            largeTitle: Text(widget.info.name,
               style: styles.titleTextStyle,
             ),
           ),
@@ -165,9 +183,7 @@ class _ProfileState extends State<ProfilePage> implements lnc.Observer {
             backgroundColorActivated: backgroundColorActivated,
             padding: Styles.settingsSectionItemPadding,
             title: Text('ID', style: TextStyle(color: primaryTextColor)),
-            additionalInfo: SelectableText(widget.info.identifier.toString(),
-              style: Facade.of(context).styles.identifierTextStyle,
-            ),
+            additionalInfo: _idLabel(context),
           ),
           /// Remark
           CupertinoListTile(
@@ -236,7 +252,7 @@ class _ProfileState extends State<ProfilePage> implements lnc.Observer {
           if (!widget.info.isFriend)
             _addButton(context, backgroundColor: backgroundColor, textColor: primaryTextColor),
           /// send message
-          if (widget.info.isFriend && !widget.info.isBlocked)
+          if (widget.info.isFriend/* && !widget.info.isBlocked*/)
             _sendButton(context, backgroundColor: backgroundColor, textColor: primaryTextColor),
           /// clear history
           if (widget.info.isFriend && widget.fromChat != null)
@@ -265,6 +281,16 @@ class _ProfileState extends State<ProfilePage> implements lnc.Observer {
         });
       });
 
+  Widget _idLabel(BuildContext context) => Expanded(
+    flex: 9,
+    child: SelectableText(widget.info.identifier.toString(),
+      textAlign: TextAlign.right,
+      minLines: 1,
+      maxLines: 2,
+      style: Facade.of(context).styles.identifierTextStyle,
+    ),
+  );
+
   Widget _remarkTextField(BuildContext context) => CupertinoTextField(
     textAlign: TextAlign.end,
     controller: TextEditingController(text: widget.info.remark.alias),
@@ -284,6 +310,8 @@ class _ProfileState extends State<ProfilePage> implements lnc.Observer {
     if (text == null) {
       // nothing input
       return;
+    } else {
+      text = text.trim();
     }
     ContactRemark remark = widget.info.remark;
     if (remark.alias == text) {

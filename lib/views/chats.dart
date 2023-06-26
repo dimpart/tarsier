@@ -99,6 +99,27 @@ class _ChatListAdapter with SectionAdapterMixin {
   final Amanuensis _dataSource;
 
   @override
+  bool shouldExistSectionFooter(int section) => true;
+
+  @override
+  Widget getSectionFooter(BuildContext context, int section) {
+    String prompt = '* Here shows chat histories of your friends only;\n'
+        '* Strangers will be placed in "Contacts -> New Friends".';
+    return Container(
+      color: Facade.of(context).colors.appBardBackgroundColor,
+      padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+      child: Row(
+        // crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Expanded(child: Text(prompt,
+            style: Facade.of(context).styles.sectionFooterTextStyle,
+          )),
+        ],
+      ),
+    );
+  }
+
+  @override
   int numberOfItems(int section) => _dataSource.conversations.length;
 
   @override
@@ -132,11 +153,13 @@ class _ChatTableCellState extends State<_ChatTableCell> implements lnc.Observer 
     var nc = lnc.NotificationCenter();
     nc.addObserver(this, NotificationNames.kDocumentUpdated);
     nc.addObserver(this, NotificationNames.kRemarkUpdated);
+    nc.addObserver(this, NotificationNames.kMuteListUpdated);
   }
 
   @override
   void dispose() {
     var nc = lnc.NotificationCenter();
+    nc.removeObserver(this, NotificationNames.kMuteListUpdated);
     nc.removeObserver(this, NotificationNames.kRemarkUpdated);
     nc.removeObserver(this, NotificationNames.kDocumentUpdated);
     super.dispose();
@@ -159,6 +182,13 @@ class _ChatTableCellState extends State<_ChatTableCell> implements lnc.Observer 
       assert(cid != null, 'notification error: $notification');
       if (cid == widget.info.identifier) {
         Log.info('remark updated: $cid');
+        await _reload();
+      }
+    } else if (name == NotificationNames.kMuteListUpdated) {
+      ID? contact = userInfo?['muted'];
+      contact ??= userInfo?['unmuted'];
+      Log.info('muted contact updated: $contact');
+      if (contact == widget.info.identifier) {
         await _reload();
       }
     } else {
@@ -211,8 +241,13 @@ class _ChatTableCellState extends State<_ChatTableCell> implements lnc.Observer 
     });
   }
 
-  Widget _leading(Conversation info) =>
-      IconView.from(info.getImage(), info.unread);
+  Widget _leading(Conversation info) {
+    if (widget.info.isMuted) {
+      return IconView.fromSpot(info.getImage(), info.unread);
+    } else {
+      return IconView.fromNumber(info.getImage(), info.unread);
+    }
+  }
 
   Widget? _lastMessage(String? last) {
     if (last == null) {

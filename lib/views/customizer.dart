@@ -159,7 +159,7 @@ class SettingsPage extends StatelessWidget {
         onTap: () => Config().aboutURL.then((url) => GaussianInfo.show(context,
           'About Tarsier',
           'Secure chat application,'
-              ' powered by DIM, E2EE (End-to-End Encryption) technology.\n'
+              ' powered by DIM, E2EE (End-to-End Encrypted) technology.\n'
               '\n'
               'Version: ${client.versionName} (build ${client.buildNumber})\n'
               'Website: $url',
