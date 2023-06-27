@@ -1,12 +1,12 @@
 # Tarsier
 
-[![GitHub License](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/dimgame/tarsier/master/LICENSE)
-[![Version](https://img.shields.io/badge/alpha-1.0.0-red.svg)](https://github.com/dimgame/tarsier/archive/master.zip)
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/dimgame/tarsier/pulls)
-[![Platform](https://img.shields.io/badge/Platform-Flutter%203-brightgreen.svg)](https://github.com/dimgame/tarsier/wiki)
-[![GitHub Issues](https://img.shields.io/github/issues/dimgame/tarsier.svg)](https://github.com/dimgame/tarsier/issues)
-[![GitHub Forks](https://img.shields.io/github/forks/dimgame/tarsier.svg)](https://github.com/dimgame/tarsier/network)
-[![GitHub Stars](https://img.shields.io/github/stars/dimgame/tarsier.svg)](https://github.com/dimgame/tarsier/stargazers)
+[![GitHub License](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/dimpart/tarsier/master/LICENSE)
+[![Version](https://img.shields.io/badge/alpha-1.0.0-red.svg)](https://github.com/dimpart/tarsier/archive/master.zip)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/dimpart/tarsier/pulls)
+[![Platform](https://img.shields.io/badge/Platform-Flutter%203-brightgreen.svg)](https://github.com/dimpart/tarsier/wiki)
+[![GitHub Issues](https://img.shields.io/github/issues/dimpart/tarsier.svg)](https://github.com/dimpart/tarsier/issues)
+[![GitHub Forks](https://img.shields.io/github/forks/dimpart/tarsier.svg)](https://github.com/dimpart/tarsier/network)
+[![GitHub Stars](https://img.shields.io/github/stars/dimpart/tarsier.svg)](https://github.com/dimpart/tarsier/stargazers)
 
 Secure chat application, powered by [DIM-Flutter](https://github.com/dimchat/demo-flutter).
 
@@ -27,8 +27,8 @@ git clone https://github.com/dimchat/demo-flutter.git
 cd ..
 
 # project source codes
-mkdir dimgame; cd dimgame/
-git clone https://github.com/dimgame/tarsier.git
+mkdir dimpart; cd dimpart/
+git clone https://github.com/dimpart/tarsier.git
 ```
 
 ### 1. Test Android

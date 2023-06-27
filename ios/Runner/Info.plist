@@ -31,7 +31,7 @@
 	<key>NSCameraUsageDescription</key>
 	<string>Allow to use the camera.</string>
 	<key>NSMicrophoneUsageDescription</key>
-	<string>Allow to user the microphone.</string>
+	<string>Allow to use the microphone.</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
 	<string>Allow to save photos to the album.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
