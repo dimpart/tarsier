@@ -339,6 +339,8 @@ class _HistoryAdapter with SectionAdapterMixin {
       return ContentViewUtils.getAudioContentView(ctx, content, sender);
     } else if (content is VideoContent) {
       return ContentViewUtils.getVideoContentView(ctx, content, sender);
+    } else if (content is PageContent) {
+      return ContentViewUtils.getPageContentView(ctx, content, sender);
     } else {
       return ContentViewUtils.getTextContentView(ctx, content, sender);
     }

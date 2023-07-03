@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
 import 'package:dim_flutter/dim_flutter.dart';
@@ -156,16 +157,38 @@ class SettingsPage extends StatelessWidget {
         backgroundColorActivated: backgroundColorActivated,
         primaryTextColor: primaryTextColor,
         secondaryTextColor: secondaryTextColor,
-        onTap: () => Config().aboutURL.then((url) => GaussianInfo.show(context,
-          'About Tarsier',
-          'Secure chat application,'
+        onTap: () => Config().aboutURL.then((url) => _showAbout(context, url, client)),
+    );
+  }
+
+  void _showAbout(BuildContext context, String url, Client client) =>
+      FrostedGlassPage.show(context, title: 'About Tarsier', body: RichText(
+        text: TextSpan(
+          text: 'Secure chat application,'
               ' powered by DIM, E2EE (End-to-End Encrypted) technology.\n'
               '\n'
               'Version: ${client.versionName} (build ${client.buildNumber})\n'
-              'Website: $url',
-        ))
-    );
-  }
+              'Website: ',
+          style: const TextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.normal,
+            color: CupertinoColors.systemGrey,
+            decoration: TextDecoration.none,
+          ),
+          children: [
+            TextSpan(
+              text: url,
+              style: const TextStyle(
+                color: CupertinoColors.activeBlue,
+                decoration: TextDecoration.underline,
+              ),
+              recognizer: TapGestureRecognizer()..onTap = () => Browser.open(context,
+                url: url, title: 'Decentralized Instant Messaging',
+              ),
+            ),
+          ],
+        ),
+      ));
 
 }
 

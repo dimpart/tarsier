@@ -205,7 +205,7 @@ class _SendState extends State<ChatSendFlag> implements lnc.Observer {
         return Styles.msgReceivedIcon;
       }
       case _MsgStatus.kExpired: {
-        return Styles.msgExpired;
+        return Styles.msgExpiredIcon;
       }
       default: {
         return Styles.msgDefaultIcon;
