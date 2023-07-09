@@ -77,22 +77,10 @@ class _NetworkState extends State<NetworkSettingPage> {
   }
   Future<void> _refreshStations() async {
     // disable the refresh button to avoid refresh frequently
-    setState(() {
-      _refreshing = true;
-    });
-    // clear expired records
-    GlobalVariable shared = GlobalVariable();
-    await shared.database.removeExpiredSpeed(null);
-    // test all stations
-    int sections = _dataSource.getSectionCount();
-    int items;
-    StationInfo info;
-    for (int sec = 0; sec < sections; ++sec) {
-      items = _dataSource.getItemCount(sec);
-      for (int idx = 0; idx < items; ++idx) {
-        info = _dataSource.getItem(sec, idx);
-        VelocityMeter.ping(info);
-      }
+    if (mounted) {
+      setState(() {
+        _refreshing = true;
+      });
     }
     // enable the refresh button after 5 seconds
     Future.delayed(const Duration(seconds: 5)).then((value) {
@@ -102,6 +90,28 @@ class _NetworkState extends State<NetworkSettingPage> {
         });
       }
     });
+    // clear expired records
+    GlobalVariable shared = GlobalVariable();
+    await shared.database.removeExpiredSpeed(null);
+    // test all stations
+    int sections = _dataSource.getSectionCount();
+    int items;
+    ID pid;
+    StationInfo info;
+    for (int sec = 0; sec < sections; ++sec) {
+      pid = _dataSource.getSection(sec);
+      items = _dataSource.getItemCount(sec);
+      // check all stations of this provider
+      List<Future<VelocityMeter>> futures = [];
+      for (int idx = 0; idx < items; ++idx) {
+        info = _dataSource.getItem(sec, idx);
+        futures.add(VelocityMeter.ping(info));
+      }
+      // report speeds after all stations tested
+      Future.wait(futures).then((meters) {
+        shared.messenger?.reportSpeeds(meters, pid);
+      });
+    }
   }
 }
 
@@ -125,7 +135,7 @@ class _StationListAdapter with SectionAdapterMixin {
   Widget getSectionHeader(BuildContext context, int section) => Container(
     color: Facade.of(context).colors.sectionHeaderBackgroundColor,
     padding: Styles.sectionHeaderPadding,
-    child: Text(_dataSource.getSection(section),
+    child: Text('Provider (${_dataSource.getSection(section)})',
       style: Facade.of(context).styles.sectionHeaderTextStyle,
     ),
   );
@@ -188,9 +198,9 @@ class _StationDataSource {
 
   int getSectionCount() => _sections.length;
 
-  String getSection(int sec) {
-    ID pid = _sections[sec];
-    return 'Provider ($pid)';
+  /// provider ID
+  ID getSection(int sec) {
+    return _sections[sec];
   }
 
   int getItemCount(int sec) {
