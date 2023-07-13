@@ -199,6 +199,7 @@ class _ProfileState extends State<ProfilePage> implements lnc.Observer {
         ],
       ),
 
+      if (widget.info.identifier.type != EntityType.kStation)
       CupertinoListSection(
         backgroundColor: dividerColor,
         topMargin: 0,

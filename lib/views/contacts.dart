@@ -76,7 +76,7 @@ class _ContactListState extends State<ContactListPage> implements lnc.Observer {
       List<ID> candidates = await Config().contacts;
       Log.warning('default contacts: $candidates');
       for (ID item in candidates) {
-        database.addContact(item, user: user.identifier);
+        await database.addContact(item, user: user.identifier);
       }
       if (candidates.isNotEmpty) {
         contacts = await database.getContacts(user: user.identifier);

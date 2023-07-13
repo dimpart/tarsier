@@ -184,7 +184,7 @@ class _HistoryAdapter with SectionAdapterMixin {
   @override
   Widget getSectionFooter(BuildContext context, int section) {
     String tag = _conversation.isUser ? 'receiver' : 'group members';
-    String prompt = 'This app is powered by E2EE (End-to-End Encrypted) technology.'
+    String prompt = 'This app is powered by DIM, an E2EE (End-to-End Encrypted) technology.'
         ' Your messages will be encrypted before sending out,'
         ' no one can decrypt the contents except the $tag.';
     return Container(
