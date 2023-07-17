@@ -224,7 +224,9 @@ class _HistoryAdapter with SectionAdapterMixin {
       Widget? nameLabel = _getNameLabel(context, sender);
       int mainFlex = 3;
       // show content
-      if (content is FileContent) {
+      if (content is PageContent) {
+        mainFlex = 2;
+      } else if (content is FileContent) {
         mainFlex = 1;
       }
       bool isMine = sender == ContentViewUtils.currentUser?.identifier;
@@ -341,6 +343,10 @@ class _HistoryAdapter with SectionAdapterMixin {
       return ContentViewUtils.getVideoContentView(ctx, content, sender);
     } else if (content is PageContent) {
       return ContentViewUtils.getPageContentView(ctx, content, sender);
+    } else if (content is NameCard) {
+      return ContentViewUtils.getNameCardView(ctx, content,
+        onTap: () => ProfilePage.open(ctx, content.identifier),
+      );
     } else {
       return ContentViewUtils.getTextContentView(ctx, content, sender);
     }

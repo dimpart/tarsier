@@ -5,6 +5,7 @@ import 'package:dim_flutter/dim_flutter.dart';
 import 'package:lnc/lnc.dart' as lnc;
 
 import 'chat_box.dart';
+import 'pick_chat.dart';
 
 
 class ProfilePage extends StatefulWidget {
@@ -255,6 +256,9 @@ class _ProfileState extends State<ProfilePage> implements lnc.Observer {
           /// send message
           if (widget.info.isFriend/* && !widget.info.isBlocked*/)
             _sendButton(context, backgroundColor: backgroundColor, textColor: primaryTextColor),
+          /// share contact
+          if (widget.info.isFriend)
+            _shareButton(context, backgroundColor: backgroundColor, textColor: primaryTextColor),
           /// clear history
           if (widget.info.isFriend && widget.fromChat != null)
             _clearButton(context, backgroundColor: backgroundColor, textColor: dangerousTextColor),
@@ -334,6 +338,11 @@ class _ProfileState extends State<ProfilePage> implements lnc.Observer {
         onPressed: () => _sendMessage(context, widget.info, widget.fromChat),
       );
 
+  Widget _shareButton(BuildContext context, {required Color textColor, required Color backgroundColor}) =>
+      _button('  Share Contact', Styles.shareIcon, textColor: textColor, backgroundColor: backgroundColor,
+        onPressed: () => _shareContact(context, widget.info),
+      );
+
   Widget _clearButton(BuildContext context, {required Color textColor, required Color backgroundColor}) =>
       _button('  Clear History', Styles.clearChatIcon, textColor: textColor, backgroundColor: backgroundColor,
         onPressed: () => _clearHistory(context, widget.info),
@@ -374,6 +383,25 @@ void _sendMessage(BuildContext ctx, ContactInfo info, ID? fromChat) {
   } else {
     ChatBox.open(ctx, info);
   }
+}
+
+void _shareContact(BuildContext ctx, ContactInfo info) {
+  PickChatPage.open(ctx, (chat) {
+    Log.debug('sharing contact: $info => $chat');
+    ID cid = info.identifier;
+    if (chat.identifier == cid) {
+      Alert.show(ctx, 'Share error', 'Cannot share to itself');
+      return;
+    }
+    Alert.confirm(ctx, 'Confirm', 'Share "${info.name}" with ${chat.name}?',
+      okAction: () {
+        NameCard content = NameCard.create(cid, name: info.name, avatar: info.avatar);
+        Log.debug('name card: $content');
+        GlobalVariable shared = GlobalVariable();
+        shared.emitter.sendContent(content, chat.identifier);
+      }
+    );
+  });
 }
 
 void _clearHistory(BuildContext ctx, ContactInfo info) {
