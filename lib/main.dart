@@ -37,6 +37,27 @@ void main() {
     );
   }
 
+  GlobalVariable shared = GlobalVariable();
+
+  SystemChannels.lifecycle.setMessageHandler((msg) async {
+    AppLifecycleState? state;
+    if (msg == null) {
+    } else if (msg == AppLifecycleState.resumed.toString()) {
+      state = AppLifecycleState.resumed;
+    } else if (msg == AppLifecycleState.inactive.toString()) {
+      state = AppLifecycleState.inactive;
+    } else if (msg == AppLifecycleState.paused.toString()) {
+      state = AppLifecycleState.paused;
+    } else if (msg == AppLifecycleState.detached.toString()) {
+      state = AppLifecycleState.detached;
+    }
+    Log.info('SystemChannels: $msg, state=$state');
+    if (state != null) {
+      await shared.terminal.onAppLifecycleStateChanged(state);
+    }
+    return msg;
+  });
+
   // Check permission to launch the app: Storage
   checkStoragePermissions().then((value) {
     if (!value) {
@@ -46,7 +67,7 @@ void main() {
     } else {
       // check current user
       Log.debug('check current user');
-      GlobalVariable().facebook.currentUser.then((user) {
+      shared.facebook.currentUser.then((user) {
         Log.info('current user: $user');
         if (user == null) {
           runApp(_Application(RegisterPage()));
