@@ -121,7 +121,7 @@ class SettingsPage extends StatelessWidget {
             primaryTextColor: primaryTextColor,
             secondaryTextColor: secondaryTextColor,
             onTap: () => Config().termsURL.then((url) => Browser.open(context,
-              url: 'https://github.com/dimpart/tarsier', title: 'Open Source',
+              url: 'https://github.com/dimpart/tarsier',
             )),
           ),
           /// Privacy Policy
@@ -133,7 +133,7 @@ class SettingsPage extends StatelessWidget {
             primaryTextColor: primaryTextColor,
             secondaryTextColor: secondaryTextColor,
             onTap: () => Config().termsURL.then((url) => Browser.open(context,
-              url: url, title: 'Privacy Policy',
+              url: url,
             )),
           ),
           /// About Tarsier
@@ -183,7 +183,7 @@ class SettingsPage extends StatelessWidget {
                 decoration: TextDecoration.underline,
               ),
               recognizer: TapGestureRecognizer()..onTap = () => Browser.open(context,
-                url: url, title: 'Decentralized Instant Messaging',
+                url: url,
               ),
             ),
           ],

@@ -414,7 +414,6 @@ class _RegisterState extends State<RegisterPage> {
         ),
         onPressed: () => Config().termsURL.then((url) => Browser.open(context,
           url: url,
-          title: 'Privacy Policy',
         )),
       ),
     ],

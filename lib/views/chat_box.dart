@@ -351,48 +351,53 @@ class _HistoryAdapter with SectionAdapterMixin {
     } else if (content is VideoContent) {
       return ContentViewUtils.getVideoContentView(ctx, content, sender);
     } else if (content is PageContent) {
-      return ContentViewUtils.getPageContentView(ctx, content, sender);
+      return ContentViewUtils.getPageContentView(ctx, content, sender,
+        onWebShare: (url, {required title, desc, icon}) =>
+            _shareWeb(ctx, url, title: title, desc: desc, icon: icon),);
     } else if (content is NameCard) {
       return ContentViewUtils.getNameCardView(ctx, content,
         onTap: () => ProfilePage.open(ctx, content.identifier),
       );
     } else {
-      return ContentViewUtils.getTextContentView(ctx, content, sender);
+      return ContentViewUtils.getTextContentView(ctx, content, sender,
+        onWebShare: (url, {required title, desc, icon}) =>
+            _shareWeb(ctx, url, title: title, desc: desc, icon: icon),
+      );
     }
   }
 
   Widget _getContentFrame(BuildContext context, ID sender, int mainFlex, bool isMine,
-      {required Widget image, Widget? name, required Widget body,
-        required Widget? flag}) => Row(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      if (isMine)
-        Expanded(flex: 1, child: Container()),
-      if (!isMine)
-        IconButton(
-            padding: Styles.messageSenderAvatarPadding,
-            onPressed: () => _openProfile(context, sender, _conversation),
-            icon: image
-        ),
-      Expanded(flex: mainFlex, child: Column(
-        crossAxisAlignment: isMine ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+      {required Widget image, Widget? name, required Widget body, required Widget? flag}) =>
+      Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          if (name != null)
-            name,
-          body,
-          if (flag != null)
-            flag,
+          if (isMine)
+            Expanded(flex: 1, child: Container()),
+          if (!isMine)
+            IconButton(
+                padding: Styles.messageSenderAvatarPadding,
+                onPressed: () => _openProfile(context, sender, _conversation),
+                icon: image
+            ),
+          Expanded(flex: mainFlex, child: Column(
+            crossAxisAlignment: isMine ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+            children: [
+              if (name != null)
+                name,
+              body,
+              if (flag != null)
+                flag,
+            ],
+          )),
+          if (isMine)
+            Container(
+              padding: Styles.messageSenderAvatarPadding,
+              child: image,
+            ),
+          if (!isMine)
+            Expanded(flex: 1, child: Container()),
         ],
-      )),
-      if (isMine)
-        Container(
-          padding: Styles.messageSenderAvatarPadding,
-          child: image,
-        ),
-      if (!isMine)
-        Expanded(flex: 1, child: Container()),
-    ],
-  );
+      );
 
 }
 
@@ -468,6 +473,25 @@ Future<void> _sendImage(ID receiver,
   content['traces'] = traces;
   Log.debug('forwarding image to $receiver: "$filename.$ext", traces: $traces');
   // send image content
+  GlobalVariable shared = GlobalVariable();
+  await shared.emitter.sendContent(content, receiver);
+}
+
+void _shareWeb(BuildContext ctx, Uri url, {required String title, String? desc, Uint8List? icon}) {
+  PickChatPage.open(ctx, onPicked: (chat) {
+    _sendWebPage(chat.identifier, url, title: title, desc: desc, icon: icon
+    ).then((value) {
+      Alert.show(ctx, 'Shared', 'Web page "$title" sent to ${chat.name}');
+    });
+  });
+}
+Future<void> _sendWebPage(ID receiver, Uri url,
+    {required String title, String? desc, Uint8List? icon}) async {
+  // create web page content
+  PageContent content = PageContent.create(url: url.toString(),
+      title: title, desc: desc, icon: icon);
+  Log.debug('share web page to $receiver: "$title", $url');
+  // send web page content
   GlobalVariable shared = GlobalVariable();
   await shared.emitter.sendContent(content, receiver);
 }
