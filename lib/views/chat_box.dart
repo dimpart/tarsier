@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_section_list/flutter_section_list.dart';
@@ -7,6 +9,7 @@ import 'package:lnc/lnc.dart' as lnc;
 
 import 'chat_flag.dart';
 import 'chat_tray.dart';
+import 'pick_chat.dart';
 import 'profile.dart';
 
 ///
@@ -336,7 +339,13 @@ class _HistoryAdapter with SectionAdapterMixin {
 
   Widget _getContentView(BuildContext ctx, Content content, ID sender) {
     if (content is ImageContent) {
-      return ContentViewUtils.getImageContentView(ctx, content, sender, _dataSource.allMessages);
+      return ContentViewUtils.getImageContentView(ctx,
+        content, sender, _dataSource.allMessages,
+        onLongPress: () => Alert.actionSheet(ctx, null, null,
+          'Forward Image', () => _forwardImage(ctx, content, sender),
+          // 'Save Image', () { },
+        ),
+      );
     } else if (content is AudioContent) {
       return ContentViewUtils.getAudioContentView(ctx, content, sender);
     } else if (content is VideoContent) {
@@ -405,15 +414,60 @@ class _HistoryDataSource {
 
 //--------
 
-void _openDetail(BuildContext context, ContactInfo info) {
+void _openDetail(BuildContext ctx, ContactInfo info) {
   ID identifier = info.identifier;
   if (identifier.isUser) {
-    _openProfile(context, identifier, info);
+    _openProfile(ctx, identifier, info);
   } else {
-    Alert.show(context, 'Coming soon', 'show group detail: $info');
+    Alert.show(ctx, 'Coming soon', 'show group detail: $info');
   }
 }
 
-void _openProfile(BuildContext context, ID uid, ContactInfo info) {
-  ProfilePage.open(context, uid, fromChat: info.identifier);
+void _openProfile(BuildContext ctx, ID uid, ContactInfo info) {
+  ProfilePage.open(ctx, uid, fromChat: info.identifier);
+}
+
+void _forwardImage(BuildContext ctx, ImageContent content, ID sender) {
+  // get local file path, if not exists
+  // try to download from file server
+  FileTransfer ftp = FileTransfer();
+  ftp.getFilePath(content).then((path) {
+    if (path == null) {
+      Alert.show(ctx, 'Image Not Found', 'Failed to load image: ${content.filename}');
+    } else {
+      String filename = content.filename ?? Paths.filename(path) ?? 'a.jpeg';
+      Uint8List? thumbnail = content.thumbnail;
+      List traces = content['traces'] ?? [];
+      traces.add({
+        'ID': sender.toString(),
+        'time': content.getDouble('time'),
+      });
+      PickChatPage.open(ctx, onPicked: (chat) {
+        _sendImage(chat.identifier, path: path, filename: filename,
+          thumbnail: thumbnail, traces: traces,
+        ).then((value) {
+          Alert.show(ctx, 'Forwarded', 'Image message sent to ${chat.name}');
+        });
+      });
+    }
+  });
+}
+Future<void> _sendImage(ID receiver,
+    {required String path, required String filename,
+      Uint8List? thumbnail, required List traces}) async {
+  // load image data
+  Uint8List jpeg = await ExternalStorage.loadBinary(path);
+  // build image filename
+  String ext = Paths.extension(filename) ?? 'jpeg';
+  filename = Hex.encode(MD5.digest(jpeg));
+  // create image content
+  ImageContent content = FileContent.image('$filename.$ext', binary: jpeg);
+  // add image data length & thumbnail into message content
+  content['length'] = jpeg.length;
+  content.thumbnail = thumbnail;
+  content['traces'] = traces;
+  Log.debug('forwarding image to $receiver: "$filename.$ext", traces: $traces');
+  // send image content
+  GlobalVariable shared = GlobalVariable();
+  await shared.emitter.sendContent(content, receiver);
 }

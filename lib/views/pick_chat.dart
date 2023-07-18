@@ -11,7 +11,7 @@ class PickChatPage extends StatefulWidget {
 
   final PickChatCallback onPicked;
 
-  static void open(BuildContext context, PickChatCallback onPicked) =>
+  static void open(BuildContext context, {required PickChatCallback onPicked}) =>
       showCupertinoDialog(
         context: context,
         builder: (context) => PickChatPage(onPicked: onPicked),

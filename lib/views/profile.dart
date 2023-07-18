@@ -386,7 +386,7 @@ void _sendMessage(BuildContext ctx, ContactInfo info, ID? fromChat) {
 }
 
 void _shareContact(BuildContext ctx, ContactInfo info) {
-  PickChatPage.open(ctx, (chat) {
+  PickChatPage.open(ctx, onPicked: (chat) {
     Log.debug('sharing contact: $info => $chat');
     ID cid = info.identifier;
     if (chat.identifier == cid) {
