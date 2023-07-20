@@ -352,8 +352,12 @@ class _HistoryAdapter with SectionAdapterMixin {
       return ContentViewUtils.getVideoContentView(ctx, content, sender);
     } else if (content is PageContent) {
       return ContentViewUtils.getPageContentView(ctx, content, sender,
+        onLongPress: () => Alert.actionSheet(ctx, null, null,
+          'Forward Web Page', () => _forwardWebPage(ctx, content, sender),
+          // 'Save Image', () { },
+        ),
         onWebShare: (url, {required title, desc, icon}) =>
-            _shareWeb(ctx, url, title: title, desc: desc, icon: icon),);
+            _shareWebPage(ctx, url, title: title, desc: desc, icon: icon),);
     } else if (content is NameCard) {
       return ContentViewUtils.getNameCardView(ctx, content,
         onTap: () => ProfilePage.open(ctx, content.identifier),
@@ -361,7 +365,7 @@ class _HistoryAdapter with SectionAdapterMixin {
     } else {
       return ContentViewUtils.getTextContentView(ctx, content, sender,
         onWebShare: (url, {required title, desc, icon}) =>
-            _shareWeb(ctx, url, title: title, desc: desc, icon: icon),
+            _shareWebPage(ctx, url, title: title, desc: desc, icon: icon),
       );
     }
   }
@@ -447,13 +451,16 @@ void _forwardImage(BuildContext ctx, ImageContent content, ID sender) {
         'ID': sender.toString(),
         'time': content.getDouble('time'),
       });
-      PickChatPage.open(ctx, onPicked: (chat) {
-        _sendImage(chat.identifier, path: path, filename: filename,
-          thumbnail: thumbnail, traces: traces,
-        ).then((value) {
-          Alert.show(ctx, 'Forwarded', 'Image message sent to ${chat.name}');
-        });
-      });
+      PickChatPage.open(ctx,
+        onPicked: (chat) => Alert.confirm(ctx,
+          'Confirm', 'Are you sure to share image "$filename" with ${chat.name}?',
+          okAction: () => _sendImage(chat.identifier,
+            path: path, filename: filename, thumbnail: thumbnail, traces: traces,
+          ).then((value) {
+            Alert.show(ctx, 'Shared', 'Image message forwarded to ${chat.name}');
+          }),
+        ),
+      );
     }
   });
 }
@@ -477,13 +484,25 @@ Future<void> _sendImage(ID receiver,
   await shared.emitter.sendContent(content, receiver);
 }
 
-void _shareWeb(BuildContext ctx, Uri url, {required String title, String? desc, Uint8List? icon}) {
-  PickChatPage.open(ctx, onPicked: (chat) {
-    _sendWebPage(chat.identifier, url, title: title, desc: desc, icon: icon
-    ).then((value) {
-      Alert.show(ctx, 'Shared', 'Web page "$title" sent to ${chat.name}');
-    });
-  });
+void _forwardWebPage(BuildContext ctx, PageContent content, ID sender) {
+  Uri? url = Browser.parseUri(content.url);
+  if (url == null) {
+    Alert.show(ctx, 'URL Error', content.url);
+  } else {
+    _shareWebPage(ctx, url, title: content.title, desc: content.desc, icon: content.icon);
+  }
+}
+void _shareWebPage(BuildContext ctx, Uri url, {required String title, String? desc, Uint8List? icon}) {
+  PickChatPage.open(ctx,
+    onPicked: (chat) => Alert.confirm(ctx,
+      'Confirm', 'Are you sure to share web page "$title" with ${chat.name}?',
+      okAction: () => _sendWebPage(chat.identifier,
+        url, title: title, desc: desc, icon: icon,
+      ).then((value) {
+        Alert.show(ctx, 'Shared', 'Web page "$title" forwarded to ${chat.name}');
+      }),
+    ),
+  );
 }
 Future<void> _sendWebPage(ID receiver, Uri url,
     {required String title, String? desc, Uint8List? icon}) async {
