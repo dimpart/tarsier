@@ -17,7 +17,7 @@ void main() {
   WidgetsFlutterBinding.ensureInitialized();
 
   // Set log level
-  Log.level = Log.kRelease;
+  Log.level = Log.kDevelop;
   if (Platform.isIOS) {
     Log.colorful = false;
     Log.showTime = true;
@@ -37,27 +37,6 @@ void main() {
     );
   }
 
-  GlobalVariable shared = GlobalVariable();
-
-  SystemChannels.lifecycle.setMessageHandler((msg) async {
-    AppLifecycleState? state;
-    if (msg == null) {
-    } else if (msg == AppLifecycleState.resumed.toString()) {
-      state = AppLifecycleState.resumed;
-    } else if (msg == AppLifecycleState.inactive.toString()) {
-      state = AppLifecycleState.inactive;
-    } else if (msg == AppLifecycleState.paused.toString()) {
-      state = AppLifecycleState.paused;
-    } else if (msg == AppLifecycleState.detached.toString()) {
-      state = AppLifecycleState.detached;
-    }
-    Log.info('SystemChannels: $msg, state=$state');
-    if (state != null) {
-      await shared.terminal.onAppLifecycleStateChanged(state);
-    }
-    return msg;
-  });
-
   // Check permission to launch the app: Storage
   checkStoragePermissions().then((value) {
     if (!value) {
@@ -67,6 +46,7 @@ void main() {
     } else {
       // check current user
       Log.debug('check current user');
+      GlobalVariable shared = GlobalVariable();
       shared.facebook.currentUser.then((user) {
         Log.info('current user: $user');
         if (user == null) {
@@ -106,8 +86,33 @@ class _Application extends StatelessWidget {
   );
 }
 
-class _MainPage extends StatelessWidget {
+class _MainPage extends StatefulWidget {
   const _MainPage();
+
+  @override
+  State<_MainPage> createState() => _MainPageState();
+}
+
+class _MainPageState extends State<_MainPage> with WidgetsBindingObserver {
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    Log.info('didChangeAppLifecycleState: state=$state');
+    GlobalVariable shared = GlobalVariable();
+    shared.terminal.onAppLifecycleStateChanged(state);
+  }
 
   @override
   Widget build(BuildContext context) => CupertinoTabScaffold(

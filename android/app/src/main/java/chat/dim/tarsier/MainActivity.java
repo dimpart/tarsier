@@ -91,8 +91,8 @@ public class MainActivity extends FlutterActivity {
 
     static {
 
-        chat.dim.utils.Log.LEVEL = chat.dim.utils.Log.DEBUG;
-        Log.w("INIT", "set Log.LEVEL = DEBUG");
+        chat.dim.utils.Log.LEVEL = chat.dim.utils.Log.DEVELOP;
+        Log.w("INIT", "set Log.LEVEL = DEVELOP");
 
     }
 }
