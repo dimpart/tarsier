@@ -394,14 +394,20 @@ void _shareContact(BuildContext ctx, ContactInfo info) {
       return;
     }
     Alert.confirm(ctx, 'Confirm', 'Share "${info.name}" with ${chat.name}?',
-      okAction: () {
-        NameCard content = NameCard.create(cid, name: info.name, avatar: info.avatar);
-        Log.debug('name card: $content');
-        GlobalVariable shared = GlobalVariable();
-        shared.emitter.sendContent(content, chat.identifier);
-      }
+      okAction: () => _sendContact(chat.identifier,
+        identifier: info.identifier, name: info.name, avatar: info.avatar,
+      ).then((value) {
+        Alert.show(ctx, 'Shared', 'Contact "${info.name}" sent to ${chat.name}');
+      }),
     );
   });
+}
+Future<void> _sendContact(ID receiver,
+    {required ID identifier, String? name, String? avatar}) async {
+  NameCard content = NameCard.create(identifier, name: name, avatar: avatar);
+  Log.debug('name card: $content');
+  GlobalVariable shared = GlobalVariable();
+  await shared.emitter.sendContent(content, receiver);
 }
 
 void _clearHistory(BuildContext ctx, ContactInfo info) {

@@ -361,6 +361,9 @@ class _HistoryAdapter with SectionAdapterMixin {
     } else if (content is NameCard) {
       return ContentViewUtils.getNameCardView(ctx, content,
         onTap: () => ProfilePage.open(ctx, content.identifier),
+        onLongPress: () => Alert.actionSheet(ctx, null, null,
+          'Forward Name Card', () => _forwardNameCard(ctx, content, sender),
+        ),
       );
     } else {
       return ContentViewUtils.getTextContentView(ctx, content, sender,
@@ -447,28 +450,36 @@ void _forwardImage(BuildContext ctx, ImageContent content, ID sender) {
       String filename = content.filename ?? Paths.filename(path) ?? 'a.jpeg';
       Uint8List? thumbnail = content.thumbnail;
       List traces = content['traces'] ?? [];
-      traces.add({
+      traces = [...traces, {
         'ID': sender.toString(),
         'time': content.getDouble('time'),
-      });
+      }];
       PickChatPage.open(ctx,
         onPicked: (chat) => Alert.confirm(ctx,
           'Confirm', 'Are you sure to share image "$filename" with ${chat.name}?',
           okAction: () => _sendImage(chat.identifier,
             path: path, filename: filename, thumbnail: thumbnail, traces: traces,
           ).then((value) {
-            Alert.show(ctx, 'Shared', 'Image message forwarded to ${chat.name}');
+            if (value) {
+              Alert.show(ctx, 'Shared', 'Image message forwarded to ${chat.name}');
+            } else {
+              Alert.show(ctx, 'Error', 'Failed to share image with ${chat.name}');
+            }
           }),
         ),
       );
     }
   });
 }
-Future<void> _sendImage(ID receiver,
-    {required String path, required String filename,
-      Uint8List? thumbnail, required List traces}) async {
+Future<bool> _sendImage(ID receiver,
+    {required String path, required String filename, Uint8List? thumbnail,
+      required List traces}) async {
   // load image data
-  Uint8List jpeg = await ExternalStorage.loadBinary(path);
+  Uint8List? jpeg = await ExternalStorage.loadBinary(path);
+  if (jpeg == null) {
+    Log.error('failed to load image: $path');
+    return false;
+  }
   // build image filename
   String ext = Paths.extension(filename) ?? 'jpeg';
   filename = Hex.encode(MD5.digest(jpeg));
@@ -482,6 +493,7 @@ Future<void> _sendImage(ID receiver,
   // send image content
   GlobalVariable shared = GlobalVariable();
   await shared.emitter.sendContent(content, receiver);
+  return true;
 }
 
 void _forwardWebPage(BuildContext ctx, PageContent content, ID sender) {
@@ -511,6 +523,34 @@ Future<void> _sendWebPage(ID receiver, Uri url,
       title: title, desc: desc, icon: icon);
   Log.debug('share web page to $receiver: "$title", $url');
   // send web page content
+  GlobalVariable shared = GlobalVariable();
+  await shared.emitter.sendContent(content, receiver);
+}
+
+void _forwardNameCard(BuildContext ctx, NameCard content, ID sender) {
+  List traces = content['traces'] ?? [];
+  traces = [...traces, {
+    'ID': sender.toString(),
+    'time': content.getDouble('time'),
+  }];
+  PickChatPage.open(ctx,
+    onPicked: (chat) => Alert.confirm(ctx,
+      'Confirm', 'Are you sure to share name card "${content.name}" with ${chat.name}?',
+      okAction: () => _sendContact(chat.identifier,
+        identifier: content.identifier, name: content.name, avatar: content.avatar,
+        traces: traces,
+      ).then((value) {
+        Alert.show(ctx, 'Shared', 'Name Card "${content.name}" forwarded to ${chat.name}');
+      }),
+    ),
+  );
+}
+Future<void> _sendContact(ID receiver,
+    {required ID identifier, String? name, String? avatar,
+      required List traces}) async {
+  NameCard content = NameCard.create(identifier, name: name, avatar: avatar);
+  content['traces'] = traces;
+  Log.debug('forward name card to receiver: $receiver, $content');
   GlobalVariable shared = GlobalVariable();
   await shared.emitter.sendContent(content, receiver);
 }
