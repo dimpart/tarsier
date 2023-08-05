@@ -1,0 +1,871 @@
+<!DOCTYPE html>
+<html prefix="og: http://ogp.me/ns#" dir="ltr" lang="en-US">
+<head>
+    <base href="https://apps.apple.com/app/tarsier-secure-chat/">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="applicable-device" content="pc,mobile">
+    <script id="perfkit">
+            window.initialPageRequestTime = +new Date();
+        </script>
+    <link rel="preconnect" href="https://amp-api.apps.apple.com" crossorigin="">
+    <link rel="preconnect" href="https://api-edge.apps.apple.com" crossorigin="">
+    <link rel="preconnect" href="https://is1-ssl.mzstatic.com" crossorigin="">
+    <link rel="preconnect" href="https://is2-ssl.mzstatic.com" crossorigin="">
+    <link rel="preconnect" href="https://is3-ssl.mzstatic.com" crossorigin="">
+    <link rel="preconnect" href="https://is4-ssl.mzstatic.com" crossorigin="">
+    <link rel="preconnect" href="https://is5-ssl.mzstatic.com" crossorigin="">
+    <link rel="preconnect" href="https://xp.apple.com" crossorigin="">
+    <link rel="preconnect" href="https://js-cdn.music.apple.com" crossorigin="">
+    <link rel="preconnect" href="https://www.apple.com" crossorigin="">
+    <meta name="web-experience-app/config/environment" content="%7B%22appVersion%22%3A1%2C%22modulePrefix%22%3A%22web-experience-app%22%2C%22environment%22%3A%22production%22%2C%22rootURL%22%3A%22%2F%22%2C%22locationType%22%3A%22history-hash-router-scroll%22%2C%22historySupportMiddleware%22%3Atrue%2C%22EmberENV%22%3A%7B%22FEATURES%22%3A%7B%7D%2C%22EXTEND_PROTOTYPES%22%3A%7B%22Date%22%3Afalse%7D%2C%22_APPLICATION_TEMPLATE_WRAPPER%22%3Afalse%2C%22_DEFAULT_ASYNC_OBSERVERS%22%3Atrue%2C%22_JQUERY_INTEGRATION%22%3Afalse%2C%22_TEMPLATE_ONLY_GLIMMER_COMPONENTS%22%3Atrue%7D%2C%22APP%22%3A%7B%22PROGRESS_BAR_DELAY%22%3A3000%2C%22CLOCK_INTERVAL%22%3A1000%2C%22LOADING_SPINNER_SPY%22%3Atrue%2C%22BREAKPOINTS%22%3A%7B%22large%22%3A%7B%22min%22%3A1069%2C%22max%22%3A1440%2C%22content%22%3A980%7D%2C%22medium%22%3A%7B%22min%22%3A735%2C%22max%22%3A1068%2C%22content%22%3A692%7D%2C%22small%22%3A%7B%22min%22%3A320%2C%22max%22%3A734%2C%22content%22%3A280%7D%7D%2C%22buildVariant%22%3A%22apps%22%2C%22name%22%3A%22web-experience-app%22%2C%22version%22%3A%222328.0.0%2B5235d75a%22%7D%2C%22MEDIA_API%22%3A%7B%22token%22%3A%22eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IlU4UlRZVjVaRFMifQ.eyJpc3MiOiI3TktaMlZQNDhaIiwiaWF0IjoxNjg4Mzg5NTc1LCJleHAiOjE2OTU2NDcxNzUsInJvb3RfaHR0cHNfb3JpZ2luIjpbImFwcGxlLmNvbSJdfQ.9wlcKMoQYQQ5JgUaOLEzg36zkvBbpLkd191jyCs60SSbDTH6v0dMXnHlCqFljP8KfreFdrcfEXoVGXz9J6kvdQ%22%7D%2C%22i18n%22%3A%7B%22defaultLocale%22%3A%22en-gb%22%2C%22useDevLoc%22%3Afalse%2C%22pathToLocales%22%3A%22dist%2Flocales%22%7D%2C%22MEDIA_ARTWORK%22%3A%7B%22BREAKPOINTS%22%3A%7B%22large%22%3A%7B%22min%22%3A1069%2C%22max%22%3A1440%2C%22content%22%3A980%7D%2C%22medium%22%3A%7B%22min%22%3A735%2C%22max%22%3A1068%2C%22content%22%3A692%7D%2C%22small%22%3A%7B%22min%22%3A320%2C%22max%22%3A734%2C%22content%22%3A280%7D%7D%7D%2C%22API%22%3A%7B%22AppHost%22%3A%22https%3A%2F%2Famp-api.apps.apple.com%22%2C%22AppEventHost%22%3A%22https%3A%2F%2Famp-api-edge.apps.apple.com%22%2C%22globalElementsPath%22%3A%22%2Fglobal-elements%22%7D%2C%22fastboot%22%3A%7B%22hostWhitelist%22%3A%5B%7B%7D%5D%7D%2C%22ember-short-number%22%3A%7B%22locales%22%3A%5B%22ar-dz%22%2C%22ar-bh%22%2C%22ar-eg%22%2C%22ar-iq%22%2C%22ar-jo%22%2C%22ar-kw%22%2C%22ar-lb%22%2C%22ar-ly%22%2C%22ar-ma%22%2C%22ar-om%22%2C%22ar-qa%22%2C%22ar-sa%22%2C%22ar-sd%22%2C%22ar-sy%22%2C%22ar-tn%22%2C%22ar-ae%22%2C%22ar-ye%22%2C%22he-il%22%2C%22iw-il%22%2C%22ca-es%22%2C%22cs-cz%22%2C%22da-dk%22%2C%22de-ch%22%2C%22de-de%22%2C%22el-gr%22%2C%22en-au%22%2C%22en-ca%22%2C%22en-gb%22%2C%22en-us%22%2C%22es-419%22%2C%22es-es%22%2C%22es-mx%22%2C%22es-xl%22%2C%22et-ee%22%2C%22fi-fi%22%2C%22fr-ca%22%2C%22fr-fr%22%2C%22hi-in%22%2C%22hr-hr%22%2C%22hu-hu%22%2C%22id-id%22%2C%22is-is%22%2C%22it-it%22%2C%22iw-il%22%2C%22ja-jp%22%2C%22ko-kr%22%2C%22lt-lt%22%2C%22lv-lv%22%2C%22ms-my%22%2C%22nl-nl%22%2C%22no-no%22%2C%22no-nb%22%2C%22nb-no%22%2C%22pl-pl%22%2C%22pt-br%22%2C%22pt-pt%22%2C%22ro-ro%22%2C%22ru-ru%22%2C%22sk-sk%22%2C%22sv-se%22%2C%22th-th%22%2C%22tr-tr%22%2C%22uk-ua%22%2C%22vi-vi%22%2C%22vi-vn%22%2C%22zh-cn%22%2C%22zh-hans%22%2C%22zh-hans-cn%22%2C%22zh-hant%22%2C%22zh-hant-hk%22%2C%22zh-hant-tw%22%2C%22zh-hk%22%2C%22zh-tw%22%2C%22ar%22%2C%22ca%22%2C%22cs%22%2C%22da%22%2C%22de%22%2C%22el%22%2C%22en%22%2C%22es%22%2C%22fi%22%2C%22fr%22%2C%22he%22%2C%22hi%22%2C%22hr%22%2C%22hu%22%2C%22id%22%2C%22is%22%2C%22it%22%2C%22ja%22%2C%22ko%22%2C%22lt%22%2C%22lv%22%2C%22ms%22%2C%22nb%22%2C%22nl%22%2C%22no%22%2C%22pl%22%2C%22pt%22%2C%22ro%22%2C%22ru%22%2C%22sk%22%2C%22sv%22%2C%22th%22%2C%22tr%22%2C%22uk%22%2C%22vi%22%2C%22zh%22%5D%7D%2C%22ember-cli-mirage%22%3A%7B%22enabled%22%3Afalse%2C%22usingProxy%22%3Afalse%2C%22useDefaultPassthroughs%22%3Atrue%7D%2C%22BREAKPOINTS%22%3A%7B%22large%22%3A%7B%22min%22%3A1069%2C%22max%22%3A1440%2C%22content%22%3A980%7D%2C%22medium%22%3A%7B%22min%22%3A735%2C%22max%22%3A1068%2C%22content%22%3A692%7D%2C%22small%22%3A%7B%22min%22%3A320%2C%22max%22%3A734%2C%22content%22%3A280%7D%7D%2C%22METRICS%22%3A%7B%22variant%22%3A%22web%22%2C%22baseFields%22%3A%7B%22appName%22%3A%22web-experience-app%22%2C%22constraintProfiles%22%3A%5B%22AMPWeb%22%5D%7D%2C%22clickstream%22%3A%7B%22enabled%22%3Atrue%2C%22topic%22%3A%5B%22xp_amp_web_exp%22%5D%2C%22autoTrackClicks%22%3Atrue%7D%2C%22performance%22%3A%7B%22enabled%22%3Atrue%2C%22topic%22%3A%22xp_amp_appstore_perf%22%7D%7D%2C%22MEDIA_SHELF%22%3A%7B%22GRID_CONFIG%22%3A%7B%22books-brick-row%22%3A%7B%22small%22%3A1%2C%22medium%22%3A2%2C%22large%22%3A3%7D%7D%2C%22BREAKPOINTS%22%3A%7B%22large%22%3A%7B%22min%22%3A1069%2C%22max%22%3A1440%2C%22content%22%3A980%7D%2C%22medium%22%3A%7B%22min%22%3A735%2C%22max%22%3A1068%2C%22content%22%3A692%7D%2C%22small%22%3A%7B%22min%22%3A320%2C%22max%22%3A734%2C%22content%22%3A280%7D%7D%7D%2C%22SASSKIT_GENERATOR%22%3A%7B%22VIEWPORT_CONFIG%22%3A%7B%22BREAKPOINTS%22%3A%7B%22large%22%3A%7B%22min%22%3A1069%2C%22max%22%3A1440%2C%22content%22%3A980%7D%2C%22medium%22%3A%7B%22min%22%3A735%2C%22max%22%3A1068%2C%22content%22%3A692%7D%2C%22small%22%3A%7B%22min%22%3A320%2C%22max%22%3A734%2C%22content%22%3A280%7D%7D%7D%7D%2C%22features%22%3A%7B%22BUILD_VARIANT_APPS%22%3Atrue%2C%22BUILD_VARIANT_BOOKS%22%3Afalse%2C%22BUILD_VARIANT_FITNESS%22%3Afalse%2C%22BUILD_VARIANT_PODCASTS%22%3Afalse%2C%22BUILD_VARIANT_DEFAULT%22%3Afalse%2C%22TV%22%3Afalse%2C%22PODCASTS%22%3Afalse%2C%22BOOKS%22%3Afalse%2C%22APPS%22%3Atrue%2C%22ARTISTS%22%3Afalse%2C%22DEEPLINK_ROUTE%22%3Afalse%2C%22EMBER_DATA%22%3Afalse%2C%22CHARTS%22%3Atrue%2C%22FITNESS%22%3Afalse%2C%22SHARE_UI%22%3Afalse%2C%22SEPARATE_RTL_STYLESHEET%22%3Atrue%7D%2C%22ember-cli-content-security-policy%22%3A%7B%22policy%22%3A%22upgrade-insecure-requests%20%3B%20default-src%20'none'%3B%20img-src%20'self'%20https%3A%2F%2F*.apple.com%20https%3A%2F%2F*.mzstatic.com%20data%3A%3B%20style-src%20'self'%20https%3A%2F%2F*.apple.com%20'unsafe-inline'%3B%20font-src%20'self'%20https%3A%2F%2F*.apple.com%3B%20media-src%20'self'%20https%3A%2F%2F*.apple.com%20blob%3A%3B%20connect-src%20'self'%20https%3A%2F%2F*.apple.com%20https%3A%2F%2F*.mzstatic.com%3B%20script-src%20'self'%20https%3A%2F%2F*.apple.com%20'unsafe-eval'%20'sha256-4ywTGAe4rEpoHt8XkjbkdOWklMJ%2F1Py%2Fx6b3%2FaGbtSQ%3D'%20blob%3A%3B%20frame-src%20'self'%20https%3A%2F%2F*.apple.com%20itmss%3A%20itms-appss%3A%20itms-bookss%3A%20itms-itunesus%3A%20itms-messagess%3A%20itms-podcasts%3A%20itms-watchs%3A%20macappstores%3A%20musics%3A%20apple-musics%3A%20podcasts%3A%20videos%3A%3B%22%2C%22reportOnly%22%3Afalse%7D%2C%22exportApplicationGlobal%22%3Afalse%7D">
+    <!-- EMBER_CLI_FASTBOOT_TITLE -->
+    <link rel="stylesheet preload" name="fonts" href="//www.apple.com/wss/fonts?families=SF+Pro,v2|SF+Pro+Icons,v1|SF+Pro+Rounded,v1|New+York+Small,v1|New+York+Medium,v1" as="style">
+    <link rel="stylesheet" type="text/css" href="https://www.apple.com/api-www/global-elements/global-header/v1/assets/globalheader.css" data-global-elements-nav-styles>
+    <link rel="stylesheet" type="text/css" href="/global-elements/2306.1.0/en_US/ac-global-footer.4a7162bbfb49c42f9ba734511824ad69.css" data-global-elements-footer-styles>
+    <meta name="ac-gn-search-suggestions-enabled" content="false"/>
+    <meta name="globalnav-search-suggestions-enabled" content="false"/>
+    <title>‎Tarsier - Secure Chat on the App Store
+    </title>
+    <meta name="keywords" content="Tarsier - Secure Chat, 奇 莫, Social Networking,News, ios apps, app, appstore, app store, iphone, ipad, ipod touch, itouch, itunes">
+    <meta name="description" content="Read reviews, compare customer ratings, see screenshots, and learn more about Tarsier - Secure Chat. Download Tarsier - Secure Chat and enjoy it on your iPhone, iPad, and iPod touch.">
+    <!---->
+    <link rel="canonical" href="https://apps.apple.com/us/app/tarsier-secure-chat/id6449430440">
+    <meta name="apple-itunes-app" content="app-id=6449430440">
+    <!--    <meta name="apple-itunes-app" content="app-id=375380948, app-argument=https://apps.apple.com/us/app/tarsier-secure-chat/id6449430440">-->
+    <!---->
+    <!---->
+    <meta name="apple:content_id" content="6449430440">
+    <script name="schema:software-application" type="application/ld+json">
+
+        {"@context":"http://schema.org","@type":"SoftwareApplication","name":"Tarsier - Secure Chat","description":"Imagine a world where you can message anyone without being forced to install the same app,\nImagine a world where you can host your own communication and still be part of a huge network.\nThis will be brought to you by Tarsier Secure Chat, which is powered by DIM.\n\nDIM - an open source project that provides the protocol and system architecture.\nwhich is designed for the next generation Internet that is coming.\nDIM network could serve as a social network, in which users can send messages or digital assets freely.\nBesides that, DIM can serve the Internet of Things as well. Allowing software to communicate autonomously.\n\nAlthough other platforms are owned and operated by a single corporation, who has full control over everything,\nDIM network is decentralized, and there is no one server, company, or person running it.\nAnyone can join and run their own services on DIM network.\n\nBut, how does this work?\n\nWhen someone joins DIM network with their servers, they are called Service Providers.\nSince DIM network is open, a Service Provider can have its own set of services, while complying with DIM Protocol.\nUser identification is generated and verified using a cryptographically algorithm,\nand no longer authenticated by a single corporation.\nBecause of this, Service Providers cannot monetize the user’s privacy or data,\nthey must compete by providing better services, and a better ecosystem.\n\nThis means that all the Service Providers share the same potential user base.\nAnd users could choose the Service Provider that fits their needs at anytime.\n\nNowadays, the internet users place greater emphasis on protecting their privacy,\nmany people are concerned that their private information may be illegally used.\nI hope this app can build a more safety social network to allow who don't want to provide too much information to the man-in-the-middle,\ncan still keep in touch with their friends freely.\n\nHope this application can bring you more convenience. Enjoy it!","screenshot":["https://is1-ssl.mzstatic.com/image/thumb/PurpleSource116/v4/6b/2f/4e/6b2f4ea9-839e-0919-9d6d-3bc2d3365b3f/a8af2fba-7fa6-4a72-8aed-5e9de09058a6_ipad2_1.png/643x0w.jpg","https://is1-ssl.mzstatic.com/image/thumb/PurpleSource116/v4/e9/80/8b/e9808bb5-2415-e9f5-de58-aa54888437cd/d8ab56da-24b7-4e85-b0da-4db6c17004e0_ipad2_2.png/643x0w.jpg","https://is1-ssl.mzstatic.com/image/thumb/PurpleSource126/v4/3b/c5/97/3bc59728-1ce9-b8e6-b566-c67c762e1171/9c538a90-11d0-41a7-b726-92513dd1d974_ipad2_3b.png/643x0w.jpg","https://is1-ssl.mzstatic.com/image/thumb/PurpleSource126/v4/1b/f9/b1/1bf9b1b5-f751-6ad2-29ca-3010c48e308b/3cb60442-8c51-410f-9e4a-a66d9ac06162_ipad2_4.png/643x0w.jpg","https://is1-ssl.mzstatic.com/image/thumb/PurpleSource116/v4/49/c6/54/49c6540c-83ee-8b3f-4ae5-2f55ce17656c/c1ae835b-b0da-4903-8919-de13fcdbf525_ipad2_5.png/643x0w.jpg","https://is1-ssl.mzstatic.com/image/thumb/PurpleSource126/v4/17/11/4b/17114b2a-b58f-a5ca-631f-cc4dfc588be9/8f7a8f71-3911-4146-a324-8af7d61f7ddd_ipad2_6b.png/643x0w.jpg","https://is1-ssl.mzstatic.com/image/thumb/PurpleSource116/v4/0a/90/89/0a90895d-ae58-1fb4-dafb-d50508a0dad6/0b22503b-f27d-44b6-bb94-3bcef1476c16_ipad2_7.png/643x0w.jpg","https://is1-ssl.mzstatic.com/image/thumb/PurpleSource126/v4/5e/04/20/5e04201a-1cda-38c1-8423-3ca7d246ad67/7390e68b-108b-4c22-9b64-480b1f378323_ipad2_8.png/643x0w.jpg","https://is1-ssl.mzstatic.com/image/thumb/PurpleSource116/v4/2e/26/26/2e262689-c07a-363e-d6e8-021c9cf778aa/c1dbcfaf-44c6-4c2d-b3a2-500a4d8fe8cb_iphone12_1.png/300x0w.jpg","https://is1-ssl.mzstatic.com/image/thumb/PurpleSource126/v4/a9/29/56/a9295656-9db4-234a-1e89-096fdcf3f59b/34412383-29e6-4543-bbbf-36648e0c0c96_iphone12_2.png/300x0w.jpg","https://is1-ssl.mzstatic.com/image/thumb/PurpleSource126/v4/7b/28/3c/7b283cab-5e5e-b57c-28a4-44bbedc8284a/8e877ea4-d3ff-424b-a9f4-a45222e6e218_iphone12_4b.png/300x0w.jpg","https://is1-ssl.mzstatic.com/image/thumb/PurpleSource116/v4/bd/d5/ca/bdd5ca7c-9a4a-6fef-2ebe-347fe4498bfd/0c696d11-999d-4c35-a8ed-1427872daf99_iphone12_5.png/300x0w.jpg","https://is1-ssl.mzstatic.com/image/thumb/PurpleSource126/v4/a3/b2/ce/a3b2ced5-780d-f8b4-8239-4ebb78cc6835/1a1840e3-2651-4bf4-8604-84337c26896a_iphone12_6.png/300x0w.jpg","https://is1-ssl.mzstatic.com/image/thumb/PurpleSource116/v4/da/79/e7/da79e757-8a03-65ba-4aab-bb5406124de1/aea48068-0aa6-4279-9c76-c3bf42126073_iphone12_7b.png/300x0w.jpg","https://is1-ssl.mzstatic.com/image/thumb/PurpleSource116/v4/b9/9f/17/b99f1716-5b0a-396e-f0d7-ef285b2846da/c3738ab3-75b0-4e12-a8bc-51f038ce740f_iphone12_8.png/300x0w.jpg","https://is1-ssl.mzstatic.com/image/thumb/PurpleSource116/v4/6c/f4/a8/6cf4a812-6217-5bfc-81f1-d6e01973bd1e/e6c3c40c-79dd-4819-a3f8-f4ded333032d_iphone12_9.png/300x0w.jpg"],"image":"https://is1-ssl.mzstatic.com/image/thumb/Purple126/v4/2e/d9/b5/2ed9b53a-8cc0-d865-3756-bb51bb2e80b3/AppIcon-0-0-1x_U007emarketing-0-0-0-7-0-0-sRGB-0-0-0-GLES2_U002c0-512MB-85-220-0-0.png/1200x630wa.png","applicationCategory":"Social Networking","datePublished":"May 30, 2023","operatingSystem":"Requires iOS 12.0 or later. Compatible with iPhone, iPad, and iPod touch.","author":{"@type":"Person","name":"奇 莫","url":"https://apps.apple.com/us/developer/%E5%A5%87-%E8%8E%AB/id1688970482"},"aggregateRating":{"@type":"AggregateRating","ratingValue":5,"reviewCount":3},"offers":{"@type":"Offer","price":0,"category":"free"}}
+
+    </script>
+    <!---->
+    <meta property="og:title" content="‎Tarsier - Secure Chat">
+    <meta property="og:description" content="‎Imagine a world where you can message anyone without being forced to install the same app,
+Imagine a world where you can host your own communication and still be part of a huge network.
+This will be brought to you by Tarsier Secure Chat, which is powered by DIM.
+
+DIM - an open source project that pr…">
+    <meta property="og:site_name" content="App Store">
+    <meta property="og:url" content="https://apps.apple.com/us/app/tarsier-secure-chat/id6449430440">
+    <meta property="og:image" content="https://is1-ssl.mzstatic.com/image/thumb/Purple126/v4/2e/d9/b5/2ed9b53a-8cc0-d865-3756-bb51bb2e80b3/AppIcon-0-0-1x_U007emarketing-0-0-0-7-0-0-sRGB-0-0-0-GLES2_U002c0-512MB-85-220-0-0.png/1200x630wa.png">
+    <meta property="og:image:alt" content="Tarsier - Secure Chat on the App Store">
+    <meta property="og:image:type" content="image/png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:secure_url" content="https://is1-ssl.mzstatic.com/image/thumb/Purple126/v4/2e/d9/b5/2ed9b53a-8cc0-d865-3756-bb51bb2e80b3/AppIcon-0-0-1x_U007emarketing-0-0-0-7-0-0-sRGB-0-0-0-GLES2_U002c0-512MB-85-220-0-0.png/1200x630wa.png">
+    <meta property="og:type" content="website">
+    <meta property="og:locale" content="en_US">
+    <meta name="twitter:title" content="‎Tarsier - Secure Chat">
+    <meta name="twitter:description" content="‎Imagine a world where you can message anyone without being forced to install the same app,
+Imagine a world where you can host your own communication and still be part of a huge network.
+This will be brought to you by Tarsier Secure Chat, which is powered by DIM.
+
+DIM - an open source project that pr…">
+    <meta name="twitter:site" content="@AppStore">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content="https://is1-ssl.mzstatic.com/image/thumb/Purple126/v4/2e/d9/b5/2ed9b53a-8cc0-d865-3756-bb51bb2e80b3/AppIcon-0-0-1x_U007emarketing-0-0-0-7-0-0-sRGB-0-0-0-GLES2_U002c0-512MB-85-220-0-0.png/1200x600wa.png">
+    <meta name="twitter:image:alt" content="Tarsier - Secure Chat on the App Store">
+    <!---->
+    <meta name="version" content="2328.0.0">
+    <script src="https://js-cdn.music.apple.com/musickit/v2/amp/musickit.js?t=1688389651822"></script>
+    <script type="module" data-resources-url="https://js-cdn.music.apple.com/musickit/v2/components/musickit-components/" src="https://js-cdn.music.apple.com/musickit/v2/components/musickit-components//musickit-components.esm.js?t=1688389651822"></script>
+    <script nomodule data-resources-url="https://js-cdn.music.apple.com/musickit/v2/components/musickit-components/" src="https://js-cdn.music.apple.com/musickit/v2/components/musickit-components//musickit-components.js?t=1688389651822"></script>
+    <link integrity="" rel="stylesheet" href="/assets/web-experience-app-real-06448a5362d4dfbd5eeef6e9d8f92935.css" data-rtl="/assets/web-experience-rtl-app-9ab2f7127d10686d9b01384096718166.css">
+</head>
+<body class="no-js no-touch globalnav-scrim">
+<script type="x/boundary" id="fastboot-body-start"></script>
+<div id="globalheader">
+    <nav class="css-sticky we-localnav localnav   we-localnav--app-store" data-sticky>
+        <div class="localnav-wrapper">
+            <div class="localnav-background we-localnav__background"></div>
+            <div class="localnav-content we-localnav__content">
+                <div class="localnav-title we-localnav__title">
+                    <span class="we-localnav__title__product" data-test-we-localnav-store-title>Designed for iOS / Android</span>
+                </div>
+            </div>
+        </div>
+    </nav>
+</div>
+<div class="ember-view">
+    <!---->
+    <!---->
+    <!---->
+    <!---->
+    <!---->
+    <!---->
+    <main class="selfclear is-apps-theme">
+        <!---->
+        <!---->
+        <!---->
+        <style>
+            .install_btn {
+                font-size: 16px;
+                font-weight: bold;
+                color: white;
+                background-color: green;
+                display: inline;
+                padding: 12px 40px;
+                border-radius: 24px;
+            }
+        </style>
+        <!---->
+        <!---->
+        <!---->
+        <!---->
+        <input id="localnav-menustate" class="localnav-menustate" type="checkbox">
+        <nav id="localnav" class="css-sticky we-localnav localnav   we-localnav--app-store" data-sticky>
+            <div class="localnav-wrapper">
+                <div class="localnav-background we-localnav__background"></div>
+                <div class="localnav-content we-localnav__content">
+                    <div class="localnav-title we-localnav__title">
+                        <span class="we-localnav__title__product" data-test-we-localnav-store-title>App Store</span>
+                        <span class="we-localnav__title__qualifier" data-test-we-localnav-preview-title>Preview</span>
+                    </div>
+                    <div class="localnav-menu we-localnav__menu we-localnav__menu--apps">
+                        <!---->
+                        <div class="localnav-actions we-localnav__actions">
+                            <!---->
+                            <!---->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </nav>
+        <span class="we-localnav__shim" aria-hidden="true"></span>
+        <label id="localnav-curtain" for="localnav-menustate"></label>
+        <div class="animation-wrapper is-visible">
+            <!---->
+            <!---->
+            <!---->
+            <section class="l-content-width section section--hero product-hero">
+                <div class="l-row">
+                    <div class="product-hero__media l-column small-5 medium-4 large-3 small-valign-top">
+                        <picture class="we-artwork we-artwork--downloaded product-hero__artwork we-artwork--fullwidth we-artwork--ios-app-icon" style="--background-color: #32c0f3;" id="ember99917">
+                            <source srcset="https://is1-ssl.mzstatic.com/image/thumb/Purple126/v4/2e/d9/b5/2ed9b53a-8cc0-d865-3756-bb51bb2e80b3/AppIcon-0-0-1x_U007emarketing-0-0-0-7-0-0-sRGB-0-0-0-GLES2_U002c0-512MB-85-220-0-0.png/246x0w.webp 246w, https://is1-ssl.mzstatic.com/image/thumb/Purple126/v4/2e/d9/b5/2ed9b53a-8cc0-d865-3756-bb51bb2e80b3/AppIcon-0-0-1x_U007emarketing-0-0-0-7-0-0-sRGB-0-0-0-GLES2_U002c0-512MB-85-220-0-0.png/217x0w.webp 217w, https://is1-ssl.mzstatic.com/image/thumb/Purple126/v4/2e/d9/b5/2ed9b53a-8cc0-d865-3756-bb51bb2e80b3/AppIcon-0-0-1x_U007emarketing-0-0-0-7-0-0-sRGB-0-0-0-GLES2_U002c0-512MB-85-220-0-0.png/230x0w.webp 230w, https://is1-ssl.mzstatic.com/image/thumb/Purple126/v4/2e/d9/b5/2ed9b53a-8cc0-d865-3756-bb51bb2e80b3/AppIcon-0-0-1x_U007emarketing-0-0-0-7-0-0-sRGB-0-0-0-GLES2_U002c0-512MB-85-220-0-0.png/492x0w.webp 492w, https://is1-ssl.mzstatic.com/image/thumb/Purple126/v4/2e/d9/b5/2ed9b53a-8cc0-d865-3756-bb51bb2e80b3/AppIcon-0-0-1x_U007emarketing-0-0-0-7-0-0-sRGB-0-0-0-GLES2_U002c0-512MB-85-220-0-0.png/434x0w.webp 434w, https://is1-ssl.mzstatic.com/image/thumb/Purple126/v4/2e/d9/b5/2ed9b53a-8cc0-d865-3756-bb51bb2e80b3/AppIcon-0-0-1x_U007emarketing-0-0-0-7-0-0-sRGB-0-0-0-GLES2_U002c0-512MB-85-220-0-0.png/460x0w.webp 460w" sizes="(max-width: 734px) 246px, (min-width: 735px) and (max-width: 1068px) 217px, 230px" type="image/webp">
+                            <source srcset="https://is1-ssl.mzstatic.com/image/thumb/Purple126/v4/2e/d9/b5/2ed9b53a-8cc0-d865-3756-bb51bb2e80b3/AppIcon-0-0-1x_U007emarketing-0-0-0-7-0-0-sRGB-0-0-0-GLES2_U002c0-512MB-85-220-0-0.png/246x0w.png 246w, https://is1-ssl.mzstatic.com/image/thumb/Purple126/v4/2e/d9/b5/2ed9b53a-8cc0-d865-3756-bb51bb2e80b3/AppIcon-0-0-1x_U007emarketing-0-0-0-7-0-0-sRGB-0-0-0-GLES2_U002c0-512MB-85-220-0-0.png/217x0w.png 217w, https://is1-ssl.mzstatic.com/image/thumb/Purple126/v4/2e/d9/b5/2ed9b53a-8cc0-d865-3756-bb51bb2e80b3/AppIcon-0-0-1x_U007emarketing-0-0-0-7-0-0-sRGB-0-0-0-GLES2_U002c0-512MB-85-220-0-0.png/230x0w.png 230w, https://is1-ssl.mzstatic.com/image/thumb/Purple126/v4/2e/d9/b5/2ed9b53a-8cc0-d865-3756-bb51bb2e80b3/AppIcon-0-0-1x_U007emarketing-0-0-0-7-0-0-sRGB-0-0-0-GLES2_U002c0-512MB-85-220-0-0.png/492x0w.png 492w, https://is1-ssl.mzstatic.com/image/thumb/Purple126/v4/2e/d9/b5/2ed9b53a-8cc0-d865-3756-bb51bb2e80b3/AppIcon-0-0-1x_U007emarketing-0-0-0-7-0-0-sRGB-0-0-0-GLES2_U002c0-512MB-85-220-0-0.png/434x0w.png 434w, https://is1-ssl.mzstatic.com/image/thumb/Purple126/v4/2e/d9/b5/2ed9b53a-8cc0-d865-3756-bb51bb2e80b3/AppIcon-0-0-1x_U007emarketing-0-0-0-7-0-0-sRGB-0-0-0-GLES2_U002c0-512MB-85-220-0-0.png/460x0w.png 460w" sizes="(max-width: 734px) 246px, (min-width: 735px) and (max-width: 1068px) 217px, 230px" type="image/png">
+                            <img src="/assets/artwork/1x1-42817eea7ade52607a760cbee00d1495.gif" decoding="async" class="we-artwork__image ember99917 " alt role="presentation" height="246" width="246">
+                            <style>
+                                        .ember99917, #ember99917::before {
+                                            width: 246px;
+                                            height: 246px;
+                                        }
+
+                                        .ember99917::before {
+                                            padding-top: 100%;
+                                        }
+
+                                        @media (min-width: 735px) {
+                                            .ember99917, #ember99917::before {
+                                                width: 217px;
+                                                height: 217px;
+                                            }
+
+                                            .ember99917::before {
+                                                padding-top: 100%;
+                                            }
+                                        }
+
+                                        @media (min-width: 1069px) {
+                                            .ember99917, #ember99917::before {
+                                                width: 230px;
+                                                height: 230px;
+                                            }
+
+                                            .ember99917::before {
+                                                padding-top: 100%;
+                                            }
+                                        }
+                                    </style>
+                        </picture>
+                    </div>
+                    <div class="l-column small-7 medium-8 large-9 small-valign-top">
+                        <header class="product-header app-header product-header--padded-start">
+                            <!---->
+                            <h1 class="product-header__title app-header__title">
+                                Tarsier - Secure Chat
+
+                                <!---->
+                                <span class="badge badge--product-title">17+</span>
+                            </h1>
+                            <h2 class="product-header__subtitle app-header__subtitle">Decentralized Instant Messaging
+                            </h2>
+                            <h2 class="product-header__identity app-header__identity">
+                                <a href="https://apps.apple.com/us/developer/%E5%A5%87-%E8%8E%AB/id1688970482" class="link" data-metrics-click="{&quot;actionDetails&quot;:{&quot;type&quot;:&quot;developer&quot;},&quot;actionType&quot;:&quot;navigate&quot;,&quot;actionUrl&quot;:&quot;https://apps.apple.com/us/developer/%E5%A5%87-%E8%8E%AB/id1688970482&quot;,&quot;targetType&quot;:&quot;link&quot;,&quot;targetId&quot;:&quot;1688970482&quot;}" dir="auto">奇 莫
+                                </a>
+                            </h2>
+                            <h3 class="app-header__designed-for">Designed for iOS / Android
+                            </h3>
+                            <ul class="product-header__list app-header__list">
+                                <!---->
+                                <li class="product-header__list__item app-header__list__item--user-rating">
+                                    <ul class="inline-list inline-list--mobile-compact">
+                                        <li class="inline-list__item">
+                                            <figure class="we-star-rating" aria-label="5 out of 5">
+                                                        <span class="we-star-rating-stars-outlines">
+                                                            <span class="we-star-rating-stars we-star-rating-stars-5"></span>
+                                                        </span>
+                                                <figcaption class="we-rating-count star-rating__count">5.0 • 3 Ratings</figcaption>
+                                            </figure>
+                                        </li>
+                                    </ul>
+                                </li>
+                            </ul>
+                            <ul class="product-header__list app-header__list">
+                                <!---->
+                                <li class="product-header__list__item">
+                                    <ul class="inline-list inline-list--mobile-compact">
+                                        <li class="inline-list__item inline-list__item--bulleted app-header__list__item--price">Free</li>
+                                        <!---->
+                                    </ul>
+                                </li>
+                                <!---->
+                                <!---->
+                            </ul>
+                            <!---->
+                            <!---->
+                            <ul class="product-header__list app-header__list">
+                                <!---->
+                                <li class="product-header__list__item">
+                                    <ul class="inline-list inline-list--mobile-compact">
+                                        <li class="inline-list__item inline-list__item--bulleted app-header__list__item--price">
+                                            <a class="install_btn" href="http://tarsier.dim.chat/downloads/tarsier.apk">Download APK</a>
+                                        </li>
+                                        <!---->
+                                    </ul>
+                                </li>
+                                <!---->
+                                <!---->
+                            </ul>
+                            <!---->
+                            <!---->
+                        </header>
+                    </div>
+                </div>
+            </section>
+            <!---->
+            <section class="l-content-width section section--bordered">
+                <div class="section__nav section__nav--align-start">
+                    <h2 class="section__headline">Screenshots</h2>
+                    <nav class="gallery-nav">
+                        <ul class="gallery-nav__items">
+                            <li class="gallery-nav__item">
+                                <a id="ember99918" class="ember-view link link--no-decoration" href="/app/tarsier-secure-chat/id6449430440?platform=ipad">iPad
+                                </a>
+                            </li>
+                            <li class="gallery-nav__item">
+                                <a id="ember99919" class="ember-view active link link--no-decoration is-active" href="/app/tarsier-secure-chat/id6449430440?platform=iphone">iPhone
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+                <div>
+                    <div class="we-screenshot-viewer__screenshots">
+                        <ul class="l-row l-row--peek we-screenshot-viewer__screenshots-list">
+                            <!---->
+                            <li class="l-column small-2 medium-3 large-3">
+                                <picture class="we-artwork we-artwork--downloaded we-artwork--fullwidth we-artwork--screenshot-platform-iphone we-artwork--screenshot-version-iphone-d74 we-artwork--screenshot-orientation-portrait" style="--background-color: #61bcee;" id="ember99920">
+                                    <source srcset="https://is1-ssl.mzstatic.com/image/thumb/PurpleSource116/v4/2e/26/26/2e262689-c07a-363e-d6e8-021c9cf778aa/c1dbcfaf-44c6-4c2d-b3a2-500a4d8fe8cb_iphone12_1.png/300x0w.webp 300w, https://is1-ssl.mzstatic.com/image/thumb/PurpleSource116/v4/2e/26/26/2e262689-c07a-363e-d6e8-021c9cf778aa/c1dbcfaf-44c6-4c2d-b3a2-500a4d8fe8cb_iphone12_1.png/157x0w.webp 157w, https://is1-ssl.mzstatic.com/image/thumb/PurpleSource116/v4/2e/26/26/2e262689-c07a-363e-d6e8-021c9cf778aa/c1dbcfaf-44c6-4c2d-b3a2-500a4d8fe8cb_iphone12_1.png/230x0w.webp 230w, https://is1-ssl.mzstatic.com/image/thumb/PurpleSource116/v4/2e/26/26/2e262689-c07a-363e-d6e8-021c9cf778aa/c1dbcfaf-44c6-4c2d-b3a2-500a4d8fe8cb_iphone12_1.png/600x0w.webp 600w, https://is1-ssl.mzstatic.com/image/thumb/PurpleSource116/v4/2e/26/26/2e262689-c07a-363e-d6e8-021c9cf778aa/c1dbcfaf-44c6-4c2d-b3a2-500a4d8fe8cb_iphone12_1.png/314x0w.webp 314w, https://is1-ssl.mzstatic.com/image/thumb/PurpleSource116/v4/2e/26/26/2e262689-c07a-363e-d6e8-021c9cf778aa/c1dbcfaf-44c6-4c2d-b3a2-500a4d8fe8cb_iphone12_1.png/460x0w.webp 460w" sizes="(max-width: 734px) 300px, (min-width: 735px) and (max-width: 1068px) 157px, 230px" type="image/webp">
+                                    <source srcset="https://is1-ssl.mzstatic.com/image/thumb/PurpleSource116/v4/2e/26/26/2e262689-c07a-363e-d6e8-021c9cf778aa/c1dbcfaf-44c6-4c2d-b3a2-500a4d8fe8cb_iphone12_1.png/300x0w.png 300w, https://is1-ssl.mzstatic.com/image/thumb/PurpleSource116/v4/2e/26/26/2e262689-c07a-363e-d6e8-021c9cf778aa/c1dbcfaf-44c6-4c2d-b3a2-500a4d8fe8cb_iphone12_1.png/157x0w.png 157w, https://is1-ssl.mzstatic.com/image/thumb/PurpleSource116/v4/2e/26/26/2e262689-c07a-363e-d6e8-021c9cf778aa/c1dbcfaf-44c6-4c2d-b3a2-500a4d8fe8cb_iphone12_1.png/230x0w.png 230w, https://is1-ssl.mzstatic.com/image/thumb/PurpleSource116/v4/2e/26/26/2e262689-c07a-363e-d6e8-021c9cf778aa/c1dbcfaf-44c6-4c2d-b3a2-500a4d8fe8cb_iphone12_1.png/600x0w.png 600w, https://is1-ssl.mzstatic.com/image/thumb/PurpleSource116/v4/2e/26/26/2e262689-c07a-363e-d6e8-021c9cf778aa/c1dbcfaf-44c6-4c2d-b3a2-500a4d8fe8cb_iphone12_1.png/314x0w.png 314w, https://is1-ssl.mzstatic.com/image/thumb/PurpleSource116/v4/2e/26/26/2e262689-c07a-363e-d6e8-021c9cf778aa/c1dbcfaf-44c6-4c2d-b3a2-500a4d8fe8cb_iphone12_1.png/460x0w.png 460w" sizes="(max-width: 734px) 300px, (min-width: 735px) and (max-width: 1068px) 157px, 230px" type="image/png">
+                                    <img src="/assets/artwork/1x1-42817eea7ade52607a760cbee00d1495.gif" decoding="async" loading="lazy" class="we-artwork__image ember99920  we-artwork__image--lazyload" alt role="presentation" height="650" width="300">
+                                    <style>
+                                                .ember99920, #ember99920::before {
+                                                    width: 300px;
+                                                    height: 650px;
+                                                }
+
+                                                .ember99920::before {
+                                                    padding-top: 216.66666666666666%;
+                                                }
+
+                                                @media (min-width: 735px) {
+                                                    .ember99920, #ember99920::before {
+                                                        width: 157px;
+                                                        height: 340px;
+                                                    }
+
+                                                    .ember99920::before {
+                                                        padding-top: 216.5605095541401%;
+                                                    }
+                                                }
+
+                                                @media (min-width: 1069px) {
+                                                    .ember99920, #ember99920::before {
+                                                        width: 230px;
+                                                        height: 498px;
+                                                    }
+
+                                                    .ember99920::before {
+                                                        padding-top: 216.52173913043478%;
+                                                    }
+                                                }
+                                            </style>
+                                </picture>
+                            </li>
+                            <li class="l-column small-2 medium-3 large-3">
+                                <picture class="we-artwork we-artwork--downloaded we-artwork--fullwidth we-artwork--screenshot-platform-iphone we-artwork--screenshot-version-iphone-d74 we-artwork--screenshot-orientation-portrait" style="--background-color: #61bcee;" id="ember99921">
+                                    <source srcset="https://is1-ssl.mzstatic.com/image/thumb/PurpleSource126/v4/a9/29/56/a9295656-9db4-234a-1e89-096fdcf3f59b/34412383-29e6-4543-bbbf-36648e0c0c96_iphone12_2.png/300x0w.webp 300w, https://is1-ssl.mzstatic.com/image/thumb/PurpleSource126/v4/a9/29/56/a9295656-9db4-234a-1e89-096fdcf3f59b/34412383-29e6-4543-bbbf-36648e0c0c96_iphone12_2.png/157x0w.webp 157w, https://is1-ssl.mzstatic.com/image/thumb/PurpleSource126/v4/a9/29/56/a9295656-9db4-234a-1e89-096fdcf3f59b/34412383-29e6-4543-bbbf-36648e0c0c96_iphone12_2.png/230x0w.webp 230w, https://is1-ssl.mzstatic.com/image/thumb/PurpleSource126/v4/a9/29/56/a9295656-9db4-234a-1e89-096fdcf3f59b/34412383-29e6-4543-bbbf-36648e0c0c96_iphone12_2.png/600x0w.webp 600w, https://is1-ssl.mzstatic.com/image/thumb/PurpleSource126/v4/a9/29/56/a9295656-9db4-234a-1e89-096fdcf3f59b/34412383-29e6-4543-bbbf-36648e0c0c96_iphone12_2.png/314x0w.webp 314w, https://is1-ssl.mzstatic.com/image/thumb/PurpleSource126/v4/a9/29/56/a9295656-9db4-234a-1e89-096fdcf3f59b/34412383-29e6-4543-bbbf-36648e0c0c96_iphone12_2.png/460x0w.webp 460w" sizes="(max-width: 734px) 300px, (min-width: 735px) and (max-width: 1068px) 157px, 230px" type="image/webp">
+                                    <source srcset="https://is1-ssl.mzstatic.com/image/thumb/PurpleSource126/v4/a9/29/56/a9295656-9db4-234a-1e89-096fdcf3f59b/34412383-29e6-4543-bbbf-36648e0c0c96_iphone12_2.png/300x0w.png 300w, https://is1-ssl.mzstatic.com/image/thumb/PurpleSource126/v4/a9/29/56/a9295656-9db4-234a-1e89-096fdcf3f59b/34412383-29e6-4543-bbbf-36648e0c0c96_iphone12_2.png/157x0w.png 157w, https://is1-ssl.mzstatic.com/image/thumb/PurpleSource126/v4/a9/29/56/a9295656-9db4-234a-1e89-096fdcf3f59b/34412383-29e6-4543-bbbf-36648e0c0c96_iphone12_2.png/230x0w.png 230w, https://is1-ssl.mzstatic.com/image/thumb/PurpleSource126/v4/a9/29/56/a9295656-9db4-234a-1e89-096fdcf3f59b/34412383-29e6-4543-bbbf-36648e0c0c96_iphone12_2.png/600x0w.png 600w, https://is1-ssl.mzstatic.com/image/thumb/PurpleSource126/v4/a9/29/56/a9295656-9db4-234a-1e89-096fdcf3f59b/34412383-29e6-4543-bbbf-36648e0c0c96_iphone12_2.png/314x0w.png 314w, https://is1-ssl.mzstatic.com/image/thumb/PurpleSource126/v4/a9/29/56/a9295656-9db4-234a-1e89-096fdcf3f59b/34412383-29e6-4543-bbbf-36648e0c0c96_iphone12_2.png/460x0w.png 460w" sizes="(max-width: 734px) 300px, (min-width: 735px) and (max-width: 1068px) 157px, 230px" type="image/png">
+                                    <img src="/assets/artwork/1x1-42817eea7ade52607a760cbee00d1495.gif" decoding="async" loading="lazy" class="we-artwork__image ember99921  we-artwork__image--lazyload" alt role="presentation" height="650" width="300">
+                                    <style>
+                                                .ember99921, #ember99921::before {
+                                                    width: 300px;
+                                                    height: 650px;
+                                                }
+
+                                                .ember99921::before {
+                                                    padding-top: 216.66666666666666%;
+                                                }
+
+                                                @media (min-width: 735px) {
+                                                    .ember99921, #ember99921::before {
+                                                        width: 157px;
+                                                        height: 340px;
+                                                    }
+
+                                                    .ember99921::before {
+                                                        padding-top: 216.5605095541401%;
+                                                    }
+                                                }
+
+                                                @media (min-width: 1069px) {
+                                                    .ember99921, #ember99921::before {
+                                                        width: 230px;
+                                                        height: 498px;
+                                                    }
+
+                                                    .ember99921::before {
+                                                        padding-top: 216.52173913043478%;
+                                                    }
+                                                }
+                                            </style>
+                                </picture>
+                            </li>
+                            <li class="l-column small-2 medium-3 large-3">
+                                <picture class="we-artwork we-artwork--downloaded we-artwork--fullwidth we-artwork--screenshot-platform-iphone we-artwork--screenshot-version-iphone-d74 we-artwork--screenshot-orientation-portrait" style="--background-color: #efeff3;" id="ember99922">
+                                    <source srcset="https://is1-ssl.mzstatic.com/image/thumb/PurpleSource126/v4/7b/28/3c/7b283cab-5e5e-b57c-28a4-44bbedc8284a/8e877ea4-d3ff-424b-a9f4-a45222e6e218_iphone12_4b.png/300x0w.webp 300w, https://is1-ssl.mzstatic.com/image/thumb/PurpleSource126/v4/7b/28/3c/7b283cab-5e5e-b57c-28a4-44bbedc8284a/8e877ea4-d3ff-424b-a9f4-a45222e6e218_iphone12_4b.png/157x0w.webp 157w, https://is1-ssl.mzstatic.com/image/thumb/PurpleSource126/v4/7b/28/3c/7b283cab-5e5e-b57c-28a4-44bbedc8284a/8e877ea4-d3ff-424b-a9f4-a45222e6e218_iphone12_4b.png/230x0w.webp 230w, https://is1-ssl.mzstatic.com/image/thumb/PurpleSource126/v4/7b/28/3c/7b283cab-5e5e-b57c-28a4-44bbedc8284a/8e877ea4-d3ff-424b-a9f4-a45222e6e218_iphone12_4b.png/600x0w.webp 600w, https://is1-ssl.mzstatic.com/image/thumb/PurpleSource126/v4/7b/28/3c/7b283cab-5e5e-b57c-28a4-44bbedc8284a/8e877ea4-d3ff-424b-a9f4-a45222e6e218_iphone12_4b.png/314x0w.webp 314w, https://is1-ssl.mzstatic.com/image/thumb/PurpleSource126/v4/7b/28/3c/7b283cab-5e5e-b57c-28a4-44bbedc8284a/8e877ea4-d3ff-424b-a9f4-a45222e6e218_iphone12_4b.png/460x0w.webp 460w" sizes="(max-width: 734px) 300px, (min-width: 735px) and (max-width: 1068px) 157px, 230px" type="image/webp">
+                                    <source srcset="https://is1-ssl.mzstatic.com/image/thumb/PurpleSource126/v4/7b/28/3c/7b283cab-5e5e-b57c-28a4-44bbedc8284a/8e877ea4-d3ff-424b-a9f4-a45222e6e218_iphone12_4b.png/300x0w.png 300w, https://is1-ssl.mzstatic.com/image/thumb/PurpleSource126/v4/7b/28/3c/7b283cab-5e5e-b57c-28a4-44bbedc8284a/8e877ea4-d3ff-424b-a9f4-a45222e6e218_iphone12_4b.png/157x0w.png 157w, https://is1-ssl.mzstatic.com/image/thumb/PurpleSource126/v4/7b/28/3c/7b283cab-5e5e-b57c-28a4-44bbedc8284a/8e877ea4-d3ff-424b-a9f4-a45222e6e218_iphone12_4b.png/230x0w.png 230w, https://is1-ssl.mzstatic.com/image/thumb/PurpleSource126/v4/7b/28/3c/7b283cab-5e5e-b57c-28a4-44bbedc8284a/8e877ea4-d3ff-424b-a9f4-a45222e6e218_iphone12_4b.png/600x0w.png 600w, https://is1-ssl.mzstatic.com/image/thumb/PurpleSource126/v4/7b/28/3c/7b283cab-5e5e-b57c-28a4-44bbedc8284a/8e877ea4-d3ff-424b-a9f4-a45222e6e218_iphone12_4b.png/314x0w.png 314w, https://is1-ssl.mzstatic.com/image/thumb/PurpleSource126/v4/7b/28/3c/7b283cab-5e5e-b57c-28a4-44bbedc8284a/8e877ea4-d3ff-424b-a9f4-a45222e6e218_iphone12_4b.png/460x0w.png 460w" sizes="(max-width: 734px) 300px, (min-width: 735px) and (max-width: 1068px) 157px, 230px" type="image/png">
+                                    <img src="/assets/artwork/1x1-42817eea7ade52607a760cbee00d1495.gif" decoding="async" loading="lazy" class="we-artwork__image ember99922  we-artwork__image--lazyload" alt role="presentation" height="650" width="300">
+                                    <style>
+                                                .ember99922, #ember99922::before {
+                                                    width: 300px;
+                                                    height: 650px;
+                                                }
+
+                                                .ember99922::before {
+                                                    padding-top: 216.66666666666666%;
+                                                }
+
+                                                @media (min-width: 735px) {
+                                                    .ember99922, #ember99922::before {
+                                                        width: 157px;
+                                                        height: 340px;
+                                                    }
+
+                                                    .ember99922::before {
+                                                        padding-top: 216.5605095541401%;
+                                                    }
+                                                }
+
+                                                @media (min-width: 1069px) {
+                                                    .ember99922, #ember99922::before {
+                                                        width: 230px;
+                                                        height: 498px;
+                                                    }
+
+                                                    .ember99922::before {
+                                                        padding-top: 216.52173913043478%;
+                                                    }
+                                                }
+                                            </style>
+                                </picture>
+                            </li>
+                            <li class="l-column small-2 medium-3 large-3">
+                                <picture class="we-artwork we-artwork--downloaded we-artwork--fullwidth we-artwork--screenshot-platform-iphone we-artwork--screenshot-version-iphone-d74 we-artwork--screenshot-orientation-portrait" style="--background-color: #efeff3;" id="ember99923">
+                                    <source srcset="https://is1-ssl.mzstatic.com/image/thumb/PurpleSource116/v4/bd/d5/ca/bdd5ca7c-9a4a-6fef-2ebe-347fe4498bfd/0c696d11-999d-4c35-a8ed-1427872daf99_iphone12_5.png/300x0w.webp 300w, https://is1-ssl.mzstatic.com/image/thumb/PurpleSource116/v4/bd/d5/ca/bdd5ca7c-9a4a-6fef-2ebe-347fe4498bfd/0c696d11-999d-4c35-a8ed-1427872daf99_iphone12_5.png/157x0w.webp 157w, https://is1-ssl.mzstatic.com/image/thumb/PurpleSource116/v4/bd/d5/ca/bdd5ca7c-9a4a-6fef-2ebe-347fe4498bfd/0c696d11-999d-4c35-a8ed-1427872daf99_iphone12_5.png/230x0w.webp 230w, https://is1-ssl.mzstatic.com/image/thumb/PurpleSource116/v4/bd/d5/ca/bdd5ca7c-9a4a-6fef-2ebe-347fe4498bfd/0c696d11-999d-4c35-a8ed-1427872daf99_iphone12_5.png/600x0w.webp 600w, https://is1-ssl.mzstatic.com/image/thumb/PurpleSource116/v4/bd/d5/ca/bdd5ca7c-9a4a-6fef-2ebe-347fe4498bfd/0c696d11-999d-4c35-a8ed-1427872daf99_iphone12_5.png/314x0w.webp 314w, https://is1-ssl.mzstatic.com/image/thumb/PurpleSource116/v4/bd/d5/ca/bdd5ca7c-9a4a-6fef-2ebe-347fe4498bfd/0c696d11-999d-4c35-a8ed-1427872daf99_iphone12_5.png/460x0w.webp 460w" sizes="(max-width: 734px) 300px, (min-width: 735px) and (max-width: 1068px) 157px, 230px" type="image/webp">
+                                    <source srcset="https://is1-ssl.mzstatic.com/image/thumb/PurpleSource116/v4/bd/d5/ca/bdd5ca7c-9a4a-6fef-2ebe-347fe4498bfd/0c696d11-999d-4c35-a8ed-1427872daf99_iphone12_5.png/300x0w.png 300w, https://is1-ssl.mzstatic.com/image/thumb/PurpleSource116/v4/bd/d5/ca/bdd5ca7c-9a4a-6fef-2ebe-347fe4498bfd/0c696d11-999d-4c35-a8ed-1427872daf99_iphone12_5.png/157x0w.png 157w, https://is1-ssl.mzstatic.com/image/thumb/PurpleSource116/v4/bd/d5/ca/bdd5ca7c-9a4a-6fef-2ebe-347fe4498bfd/0c696d11-999d-4c35-a8ed-1427872daf99_iphone12_5.png/230x0w.png 230w, https://is1-ssl.mzstatic.com/image/thumb/PurpleSource116/v4/bd/d5/ca/bdd5ca7c-9a4a-6fef-2ebe-347fe4498bfd/0c696d11-999d-4c35-a8ed-1427872daf99_iphone12_5.png/600x0w.png 600w, https://is1-ssl.mzstatic.com/image/thumb/PurpleSource116/v4/bd/d5/ca/bdd5ca7c-9a4a-6fef-2ebe-347fe4498bfd/0c696d11-999d-4c35-a8ed-1427872daf99_iphone12_5.png/314x0w.png 314w, https://is1-ssl.mzstatic.com/image/thumb/PurpleSource116/v4/bd/d5/ca/bdd5ca7c-9a4a-6fef-2ebe-347fe4498bfd/0c696d11-999d-4c35-a8ed-1427872daf99_iphone12_5.png/460x0w.png 460w" sizes="(max-width: 734px) 300px, (min-width: 735px) and (max-width: 1068px) 157px, 230px" type="image/png">
+                                    <img src="/assets/artwork/1x1-42817eea7ade52607a760cbee00d1495.gif" decoding="async" loading="lazy" class="we-artwork__image ember99923  we-artwork__image--lazyload" alt role="presentation" height="650" width="300">
+                                    <style>
+                                                .ember99923, #ember99923::before {
+                                                    width: 300px;
+                                                    height: 650px;
+                                                }
+
+                                                .ember99923::before {
+                                                    padding-top: 216.66666666666666%;
+                                                }
+
+                                                @media (min-width: 735px) {
+                                                    .ember99923, #ember99923::before {
+                                                        width: 157px;
+                                                        height: 340px;
+                                                    }
+
+                                                    .ember99923::before {
+                                                        padding-top: 216.5605095541401%;
+                                                    }
+                                                }
+
+                                                @media (min-width: 1069px) {
+                                                    .ember99923, #ember99923::before {
+                                                        width: 230px;
+                                                        height: 498px;
+                                                    }
+
+                                                    .ember99923::before {
+                                                        padding-top: 216.52173913043478%;
+                                                    }
+                                                }
+                                            </style>
+                                </picture>
+                            </li>
+                            <li class="l-column small-2 medium-3 large-3">
+                                <picture class="we-artwork we-artwork--downloaded we-artwork--fullwidth we-artwork--screenshot-platform-iphone we-artwork--screenshot-version-iphone-d74 we-artwork--screenshot-orientation-portrait" style="--background-color: #efeff3;" id="ember99924">
+                                    <source srcset="https://is1-ssl.mzstatic.com/image/thumb/PurpleSource126/v4/a3/b2/ce/a3b2ced5-780d-f8b4-8239-4ebb78cc6835/1a1840e3-2651-4bf4-8604-84337c26896a_iphone12_6.png/300x0w.webp 300w, https://is1-ssl.mzstatic.com/image/thumb/PurpleSource126/v4/a3/b2/ce/a3b2ced5-780d-f8b4-8239-4ebb78cc6835/1a1840e3-2651-4bf4-8604-84337c26896a_iphone12_6.png/157x0w.webp 157w, https://is1-ssl.mzstatic.com/image/thumb/PurpleSource126/v4/a3/b2/ce/a3b2ced5-780d-f8b4-8239-4ebb78cc6835/1a1840e3-2651-4bf4-8604-84337c26896a_iphone12_6.png/230x0w.webp 230w, https://is1-ssl.mzstatic.com/image/thumb/PurpleSource126/v4/a3/b2/ce/a3b2ced5-780d-f8b4-8239-4ebb78cc6835/1a1840e3-2651-4bf4-8604-84337c26896a_iphone12_6.png/600x0w.webp 600w, https://is1-ssl.mzstatic.com/image/thumb/PurpleSource126/v4/a3/b2/ce/a3b2ced5-780d-f8b4-8239-4ebb78cc6835/1a1840e3-2651-4bf4-8604-84337c26896a_iphone12_6.png/314x0w.webp 314w, https://is1-ssl.mzstatic.com/image/thumb/PurpleSource126/v4/a3/b2/ce/a3b2ced5-780d-f8b4-8239-4ebb78cc6835/1a1840e3-2651-4bf4-8604-84337c26896a_iphone12_6.png/460x0w.webp 460w" sizes="(max-width: 734px) 300px, (min-width: 735px) and (max-width: 1068px) 157px, 230px" type="image/webp">
+                                    <source srcset="https://is1-ssl.mzstatic.com/image/thumb/PurpleSource126/v4/a3/b2/ce/a3b2ced5-780d-f8b4-8239-4ebb78cc6835/1a1840e3-2651-4bf4-8604-84337c26896a_iphone12_6.png/300x0w.png 300w, https://is1-ssl.mzstatic.com/image/thumb/PurpleSource126/v4/a3/b2/ce/a3b2ced5-780d-f8b4-8239-4ebb78cc6835/1a1840e3-2651-4bf4-8604-84337c26896a_iphone12_6.png/157x0w.png 157w, https://is1-ssl.mzstatic.com/image/thumb/PurpleSource126/v4/a3/b2/ce/a3b2ced5-780d-f8b4-8239-4ebb78cc6835/1a1840e3-2651-4bf4-8604-84337c26896a_iphone12_6.png/230x0w.png 230w, https://is1-ssl.mzstatic.com/image/thumb/PurpleSource126/v4/a3/b2/ce/a3b2ced5-780d-f8b4-8239-4ebb78cc6835/1a1840e3-2651-4bf4-8604-84337c26896a_iphone12_6.png/600x0w.png 600w, https://is1-ssl.mzstatic.com/image/thumb/PurpleSource126/v4/a3/b2/ce/a3b2ced5-780d-f8b4-8239-4ebb78cc6835/1a1840e3-2651-4bf4-8604-84337c26896a_iphone12_6.png/314x0w.png 314w, https://is1-ssl.mzstatic.com/image/thumb/PurpleSource126/v4/a3/b2/ce/a3b2ced5-780d-f8b4-8239-4ebb78cc6835/1a1840e3-2651-4bf4-8604-84337c26896a_iphone12_6.png/460x0w.png 460w" sizes="(max-width: 734px) 300px, (min-width: 735px) and (max-width: 1068px) 157px, 230px" type="image/png">
+                                    <img src="/assets/artwork/1x1-42817eea7ade52607a760cbee00d1495.gif" decoding="async" loading="lazy" class="we-artwork__image ember99924  we-artwork__image--lazyload" alt role="presentation" height="650" width="300">
+                                    <style>
+                                                .ember99924, #ember99924::before {
+                                                    width: 300px;
+                                                    height: 650px;
+                                                }
+
+                                                .ember99924::before {
+                                                    padding-top: 216.66666666666666%;
+                                                }
+
+                                                @media (min-width: 735px) {
+                                                    .ember99924, #ember99924::before {
+                                                        width: 157px;
+                                                        height: 340px;
+                                                    }
+
+                                                    .ember99924::before {
+                                                        padding-top: 216.5605095541401%;
+                                                    }
+                                                }
+
+                                                @media (min-width: 1069px) {
+                                                    .ember99924, #ember99924::before {
+                                                        width: 230px;
+                                                        height: 498px;
+                                                    }
+
+                                                    .ember99924::before {
+                                                        padding-top: 216.52173913043478%;
+                                                    }
+                                                }
+                                            </style>
+                                </picture>
+                            </li>
+                            <li class="l-column small-2 medium-3 large-3">
+                                <picture class="we-artwork we-artwork--downloaded we-artwork--fullwidth we-artwork--screenshot-platform-iphone we-artwork--screenshot-version-iphone-d74 we-artwork--screenshot-orientation-portrait" style="--background-color: #171717;" id="ember99925">
+                                    <source srcset="https://is1-ssl.mzstatic.com/image/thumb/PurpleSource116/v4/da/79/e7/da79e757-8a03-65ba-4aab-bb5406124de1/aea48068-0aa6-4279-9c76-c3bf42126073_iphone12_7b.png/300x0w.webp 300w, https://is1-ssl.mzstatic.com/image/thumb/PurpleSource116/v4/da/79/e7/da79e757-8a03-65ba-4aab-bb5406124de1/aea48068-0aa6-4279-9c76-c3bf42126073_iphone12_7b.png/157x0w.webp 157w, https://is1-ssl.mzstatic.com/image/thumb/PurpleSource116/v4/da/79/e7/da79e757-8a03-65ba-4aab-bb5406124de1/aea48068-0aa6-4279-9c76-c3bf42126073_iphone12_7b.png/230x0w.webp 230w, https://is1-ssl.mzstatic.com/image/thumb/PurpleSource116/v4/da/79/e7/da79e757-8a03-65ba-4aab-bb5406124de1/aea48068-0aa6-4279-9c76-c3bf42126073_iphone12_7b.png/600x0w.webp 600w, https://is1-ssl.mzstatic.com/image/thumb/PurpleSource116/v4/da/79/e7/da79e757-8a03-65ba-4aab-bb5406124de1/aea48068-0aa6-4279-9c76-c3bf42126073_iphone12_7b.png/314x0w.webp 314w, https://is1-ssl.mzstatic.com/image/thumb/PurpleSource116/v4/da/79/e7/da79e757-8a03-65ba-4aab-bb5406124de1/aea48068-0aa6-4279-9c76-c3bf42126073_iphone12_7b.png/460x0w.webp 460w" sizes="(max-width: 734px) 300px, (min-width: 735px) and (max-width: 1068px) 157px, 230px" type="image/webp">
+                                    <source srcset="https://is1-ssl.mzstatic.com/image/thumb/PurpleSource116/v4/da/79/e7/da79e757-8a03-65ba-4aab-bb5406124de1/aea48068-0aa6-4279-9c76-c3bf42126073_iphone12_7b.png/300x0w.png 300w, https://is1-ssl.mzstatic.com/image/thumb/PurpleSource116/v4/da/79/e7/da79e757-8a03-65ba-4aab-bb5406124de1/aea48068-0aa6-4279-9c76-c3bf42126073_iphone12_7b.png/157x0w.png 157w, https://is1-ssl.mzstatic.com/image/thumb/PurpleSource116/v4/da/79/e7/da79e757-8a03-65ba-4aab-bb5406124de1/aea48068-0aa6-4279-9c76-c3bf42126073_iphone12_7b.png/230x0w.png 230w, https://is1-ssl.mzstatic.com/image/thumb/PurpleSource116/v4/da/79/e7/da79e757-8a03-65ba-4aab-bb5406124de1/aea48068-0aa6-4279-9c76-c3bf42126073_iphone12_7b.png/600x0w.png 600w, https://is1-ssl.mzstatic.com/image/thumb/PurpleSource116/v4/da/79/e7/da79e757-8a03-65ba-4aab-bb5406124de1/aea48068-0aa6-4279-9c76-c3bf42126073_iphone12_7b.png/314x0w.png 314w, https://is1-ssl.mzstatic.com/image/thumb/PurpleSource116/v4/da/79/e7/da79e757-8a03-65ba-4aab-bb5406124de1/aea48068-0aa6-4279-9c76-c3bf42126073_iphone12_7b.png/460x0w.png 460w" sizes="(max-width: 734px) 300px, (min-width: 735px) and (max-width: 1068px) 157px, 230px" type="image/png">
+                                    <img src="/assets/artwork/1x1-42817eea7ade52607a760cbee00d1495.gif" decoding="async" loading="lazy" class="we-artwork__image ember99925  we-artwork__image--lazyload" alt role="presentation" height="650" width="300">
+                                    <style>
+                                                .ember99925, #ember99925::before {
+                                                    width: 300px;
+                                                    height: 650px;
+                                                }
+
+                                                .ember99925::before {
+                                                    padding-top: 216.66666666666666%;
+                                                }
+
+                                                @media (min-width: 735px) {
+                                                    .ember99925, #ember99925::before {
+                                                        width: 157px;
+                                                        height: 340px;
+                                                    }
+
+                                                    .ember99925::before {
+                                                        padding-top: 216.5605095541401%;
+                                                    }
+                                                }
+
+                                                @media (min-width: 1069px) {
+                                                    .ember99925, #ember99925::before {
+                                                        width: 230px;
+                                                        height: 498px;
+                                                    }
+
+                                                    .ember99925::before {
+                                                        padding-top: 216.52173913043478%;
+                                                    }
+                                                }
+                                            </style>
+                                </picture>
+                            </li>
+                            <li class="l-column small-2 medium-3 large-3">
+                                <picture class="we-artwork we-artwork--downloaded we-artwork--fullwidth we-artwork--screenshot-platform-iphone we-artwork--screenshot-version-iphone-d74 we-artwork--screenshot-orientation-portrait" style="--background-color: #171717;" id="ember99926">
+                                    <source srcset="https://is1-ssl.mzstatic.com/image/thumb/PurpleSource116/v4/b9/9f/17/b99f1716-5b0a-396e-f0d7-ef285b2846da/c3738ab3-75b0-4e12-a8bc-51f038ce740f_iphone12_8.png/300x0w.webp 300w, https://is1-ssl.mzstatic.com/image/thumb/PurpleSource116/v4/b9/9f/17/b99f1716-5b0a-396e-f0d7-ef285b2846da/c3738ab3-75b0-4e12-a8bc-51f038ce740f_iphone12_8.png/157x0w.webp 157w, https://is1-ssl.mzstatic.com/image/thumb/PurpleSource116/v4/b9/9f/17/b99f1716-5b0a-396e-f0d7-ef285b2846da/c3738ab3-75b0-4e12-a8bc-51f038ce740f_iphone12_8.png/230x0w.webp 230w, https://is1-ssl.mzstatic.com/image/thumb/PurpleSource116/v4/b9/9f/17/b99f1716-5b0a-396e-f0d7-ef285b2846da/c3738ab3-75b0-4e12-a8bc-51f038ce740f_iphone12_8.png/600x0w.webp 600w, https://is1-ssl.mzstatic.com/image/thumb/PurpleSource116/v4/b9/9f/17/b99f1716-5b0a-396e-f0d7-ef285b2846da/c3738ab3-75b0-4e12-a8bc-51f038ce740f_iphone12_8.png/314x0w.webp 314w, https://is1-ssl.mzstatic.com/image/thumb/PurpleSource116/v4/b9/9f/17/b99f1716-5b0a-396e-f0d7-ef285b2846da/c3738ab3-75b0-4e12-a8bc-51f038ce740f_iphone12_8.png/460x0w.webp 460w" sizes="(max-width: 734px) 300px, (min-width: 735px) and (max-width: 1068px) 157px, 230px" type="image/webp">
+                                    <source srcset="https://is1-ssl.mzstatic.com/image/thumb/PurpleSource116/v4/b9/9f/17/b99f1716-5b0a-396e-f0d7-ef285b2846da/c3738ab3-75b0-4e12-a8bc-51f038ce740f_iphone12_8.png/300x0w.png 300w, https://is1-ssl.mzstatic.com/image/thumb/PurpleSource116/v4/b9/9f/17/b99f1716-5b0a-396e-f0d7-ef285b2846da/c3738ab3-75b0-4e12-a8bc-51f038ce740f_iphone12_8.png/157x0w.png 157w, https://is1-ssl.mzstatic.com/image/thumb/PurpleSource116/v4/b9/9f/17/b99f1716-5b0a-396e-f0d7-ef285b2846da/c3738ab3-75b0-4e12-a8bc-51f038ce740f_iphone12_8.png/230x0w.png 230w, https://is1-ssl.mzstatic.com/image/thumb/PurpleSource116/v4/b9/9f/17/b99f1716-5b0a-396e-f0d7-ef285b2846da/c3738ab3-75b0-4e12-a8bc-51f038ce740f_iphone12_8.png/600x0w.png 600w, https://is1-ssl.mzstatic.com/image/thumb/PurpleSource116/v4/b9/9f/17/b99f1716-5b0a-396e-f0d7-ef285b2846da/c3738ab3-75b0-4e12-a8bc-51f038ce740f_iphone12_8.png/314x0w.png 314w, https://is1-ssl.mzstatic.com/image/thumb/PurpleSource116/v4/b9/9f/17/b99f1716-5b0a-396e-f0d7-ef285b2846da/c3738ab3-75b0-4e12-a8bc-51f038ce740f_iphone12_8.png/460x0w.png 460w" sizes="(max-width: 734px) 300px, (min-width: 735px) and (max-width: 1068px) 157px, 230px" type="image/png">
+                                    <img src="/assets/artwork/1x1-42817eea7ade52607a760cbee00d1495.gif" decoding="async" loading="lazy" class="we-artwork__image ember99926  we-artwork__image--lazyload" alt role="presentation" height="650" width="300">
+                                    <style>
+                                                .ember99926, #ember99926::before {
+                                                    width: 300px;
+                                                    height: 650px;
+                                                }
+
+                                                .ember99926::before {
+                                                    padding-top: 216.66666666666666%;
+                                                }
+
+                                                @media (min-width: 735px) {
+                                                    .ember99926, #ember99926::before {
+                                                        width: 157px;
+                                                        height: 340px;
+                                                    }
+
+                                                    .ember99926::before {
+                                                        padding-top: 216.5605095541401%;
+                                                    }
+                                                }
+
+                                                @media (min-width: 1069px) {
+                                                    .ember99926, #ember99926::before {
+                                                        width: 230px;
+                                                        height: 498px;
+                                                    }
+
+                                                    .ember99926::before {
+                                                        padding-top: 216.52173913043478%;
+                                                    }
+                                                }
+                                            </style>
+                                </picture>
+                            </li>
+                            <li class="l-column small-2 medium-3 large-3">
+                                <picture class="we-artwork we-artwork--downloaded we-artwork--fullwidth we-artwork--screenshot-platform-iphone we-artwork--screenshot-version-iphone-d74 we-artwork--screenshot-orientation-portrait" style="--background-color: #171717;" id="ember99927">
+                                    <source srcset="https://is1-ssl.mzstatic.com/image/thumb/PurpleSource116/v4/6c/f4/a8/6cf4a812-6217-5bfc-81f1-d6e01973bd1e/e6c3c40c-79dd-4819-a3f8-f4ded333032d_iphone12_9.png/300x0w.webp 300w, https://is1-ssl.mzstatic.com/image/thumb/PurpleSource116/v4/6c/f4/a8/6cf4a812-6217-5bfc-81f1-d6e01973bd1e/e6c3c40c-79dd-4819-a3f8-f4ded333032d_iphone12_9.png/157x0w.webp 157w, https://is1-ssl.mzstatic.com/image/thumb/PurpleSource116/v4/6c/f4/a8/6cf4a812-6217-5bfc-81f1-d6e01973bd1e/e6c3c40c-79dd-4819-a3f8-f4ded333032d_iphone12_9.png/230x0w.webp 230w, https://is1-ssl.mzstatic.com/image/thumb/PurpleSource116/v4/6c/f4/a8/6cf4a812-6217-5bfc-81f1-d6e01973bd1e/e6c3c40c-79dd-4819-a3f8-f4ded333032d_iphone12_9.png/600x0w.webp 600w, https://is1-ssl.mzstatic.com/image/thumb/PurpleSource116/v4/6c/f4/a8/6cf4a812-6217-5bfc-81f1-d6e01973bd1e/e6c3c40c-79dd-4819-a3f8-f4ded333032d_iphone12_9.png/314x0w.webp 314w, https://is1-ssl.mzstatic.com/image/thumb/PurpleSource116/v4/6c/f4/a8/6cf4a812-6217-5bfc-81f1-d6e01973bd1e/e6c3c40c-79dd-4819-a3f8-f4ded333032d_iphone12_9.png/460x0w.webp 460w" sizes="(max-width: 734px) 300px, (min-width: 735px) and (max-width: 1068px) 157px, 230px" type="image/webp">
+                                    <source srcset="https://is1-ssl.mzstatic.com/image/thumb/PurpleSource116/v4/6c/f4/a8/6cf4a812-6217-5bfc-81f1-d6e01973bd1e/e6c3c40c-79dd-4819-a3f8-f4ded333032d_iphone12_9.png/300x0w.png 300w, https://is1-ssl.mzstatic.com/image/thumb/PurpleSource116/v4/6c/f4/a8/6cf4a812-6217-5bfc-81f1-d6e01973bd1e/e6c3c40c-79dd-4819-a3f8-f4ded333032d_iphone12_9.png/157x0w.png 157w, https://is1-ssl.mzstatic.com/image/thumb/PurpleSource116/v4/6c/f4/a8/6cf4a812-6217-5bfc-81f1-d6e01973bd1e/e6c3c40c-79dd-4819-a3f8-f4ded333032d_iphone12_9.png/230x0w.png 230w, https://is1-ssl.mzstatic.com/image/thumb/PurpleSource116/v4/6c/f4/a8/6cf4a812-6217-5bfc-81f1-d6e01973bd1e/e6c3c40c-79dd-4819-a3f8-f4ded333032d_iphone12_9.png/600x0w.png 600w, https://is1-ssl.mzstatic.com/image/thumb/PurpleSource116/v4/6c/f4/a8/6cf4a812-6217-5bfc-81f1-d6e01973bd1e/e6c3c40c-79dd-4819-a3f8-f4ded333032d_iphone12_9.png/314x0w.png 314w, https://is1-ssl.mzstatic.com/image/thumb/PurpleSource116/v4/6c/f4/a8/6cf4a812-6217-5bfc-81f1-d6e01973bd1e/e6c3c40c-79dd-4819-a3f8-f4ded333032d_iphone12_9.png/460x0w.png 460w" sizes="(max-width: 734px) 300px, (min-width: 735px) and (max-width: 1068px) 157px, 230px" type="image/png">
+                                    <img src="/assets/artwork/1x1-42817eea7ade52607a760cbee00d1495.gif" decoding="async" loading="lazy" class="we-artwork__image ember99927  we-artwork__image--lazyload" alt role="presentation" height="650" width="300">
+                                    <style>
+                                                .ember99927, #ember99927::before {
+                                                    width: 300px;
+                                                    height: 650px;
+                                                }
+
+                                                .ember99927::before {
+                                                    padding-top: 216.66666666666666%;
+                                                }
+
+                                                @media (min-width: 735px) {
+                                                    .ember99927, #ember99927::before {
+                                                        width: 157px;
+                                                        height: 340px;
+                                                    }
+
+                                                    .ember99927::before {
+                                                        padding-top: 216.5605095541401%;
+                                                    }
+                                                }
+
+                                                @media (min-width: 1069px) {
+                                                    .ember99927, #ember99927::before {
+                                                        width: 230px;
+                                                        height: 498px;
+                                                    }
+
+                                                    .ember99927::before {
+                                                        padding-top: 216.52173913043478%;
+                                                    }
+                                                }
+                                            </style>
+                                </picture>
+                            </li>
+                            <!---->
+                        </ul>
+                    </div>
+                </div>
+            </section>
+            <section class="l-content-width section section--bordered">
+                <div class="section__description">
+                    <h2 class="section__headline visuallyhidden">Description</h2>
+                    <div class="l-row">
+                        <div class="we-truncate we-truncate--multi-line we-truncate--interactive  l-column small-12 medium-9 large-8" dir>
+                            <p dir="false" data-test-bidi>
+                                Tarsier is a brand new app focused on secure chat for protecting your privacy.<br/>
+                                It generates user ID locally, save the private key in your device only, not anywhere else.<br/>
+                                <br/>
+                                Imagine a world where you can message anyone without being forced to install the same app,<br/>
+                                Imagine a world where you can host your own communication and still be part of a huge network.<br/>
+                                This will be brought to you by Tarsier Secure Chat, which is powered by DIM.<br/>
+                                <br/>
+                                DIM - an open source project that provides the protocol and system architecture.<br/>
+                                which is designed for the next generation Internet that is coming.<br/>
+                                DIM network could serve as a social network, in which users can send messages or digital assets freely.<br/>
+                                Besides that, DIM can serve the Internet of Things as well. Allowing software to communicate autonomously.<br/>
+                                <br/>
+                                Although other platforms are owned and operated by a single corporation, who has full control over everything,<br/>
+                                DIM network is decentralized, and there is no one server, company, or person running it.<br/>
+                                Anyone can join and run their own services on DIM network.<br/>
+                                <br/>
+                                But, how does this work?<br/>
+                                <br/>
+                                When someone joins DIM network with their servers, they are called Service Providers.<br/>
+                                Since DIM network is open, a Service Provider can have its own set of services, while complying with DIM Protocol.<br/>
+                                User identification is generated and verified using a cryptographically algorithm,<br/>
+                                and no longer authenticated by a single corporation.<br/>
+                                Because of this, Service Providers cannot monetize the user’s privacy or data,<br/>
+                                they must compete by providing better services, and a better ecosystem.<br/>
+                                <br/>
+                                This means that all the Service Providers share the same potential user base.<br/>
+                                And users could choose the Service Provider that fits their needs at anytime.<br/>
+                                <br/>
+                                Nowadays, the internet users place greater emphasis on protecting their privacy,<br/>
+                                many people are concerned that their private information may be illegally used.<br/>
+                                I hope this app can build a more safety social network to allow who don &#39;t want to provide too much information to the man-in-the-middle,<br/>
+                                can still keep in touch with their friends freely.<br/>
+                                <br/>Hope this application can bring you more convenience. Enjoy it!
+                            </p>
+                            <!---->
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <!---->
+            <section class="l-content-width section section--bordered whats-new">
+                <div class="section__nav section__nav--small">
+                    <h2 class="whats-new__headline">What’s New</h2>
+                    <div class="version-history">
+                        <!---->
+                        <!---->
+                    </div>
+                </div>
+                <div class="l-row whats-new__content">
+                    <div class="l-column small-12 medium-3 large-4 small-valign-top whats-new__latest">
+                        <div class="l-row">
+                            <time data-test-we-datetime datetime="2023-08-01T00:00:00.000Z" aria-label="August 1, 2023" class="">Aug 1, 2023</time>
+                            <p class="l-column small-6 medium-12 whats-new__latest__version">Version 1.0.3</p>
+                        </div>
+                    </div>
+                    <div class="l-column small-12 medium-9 large-8 small-valign-top">
+                        <div class="we-truncate we-truncate--multi-line we-truncate--interactive " dir>
+                            <p dir="false" data-test-bidi>
+                                1. NameCard for sharing contacts;<br/>
+                                2. Sharing web pages;<br/>3. Forwarding image messages.
+                            </p>
+                            <!---->
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <section class="l-content-width section section--bordered">
+                <div class="section__nav">
+                    <h2 class="section__headline">Ratings and Reviews
+                    </h2>
+                    <!---->
+                </div>
+                <div class="we-customer-ratings lockup">
+                    <div class="l-row">
+                        <div class="we-customer-ratings__stats l-column small-4 medium-6 large-4">
+                            <div class="we-customer-ratings__averages">
+                                <span class="we-customer-ratings__averages__display">5.0</span>
+                                out of 5
+                            </div>
+                            <div class="we-customer-ratings__count small-hide medium-show">3 Ratings</div>
+                        </div>
+                        <div class=" l-column small-8 medium-6 large-4">
+                            <figure class="we-star-bar-graph">
+                                <div class="we-star-bar-graph__row">
+                                    <span class="we-star-bar-graph__stars we-star-bar-graph__stars--5"></span>
+                                    <div class="we-star-bar-graph__bar">
+                                        <div class="we-star-bar-graph__bar__foreground-bar" style="width: 100%;"></div>
+                                    </div>
+                                </div>
+                                <div class="we-star-bar-graph__row">
+                                    <span class="we-star-bar-graph__stars we-star-bar-graph__stars--4"></span>
+                                    <div class="we-star-bar-graph__bar">
+                                        <div class="we-star-bar-graph__bar__foreground-bar" style="width: 0%;"></div>
+                                    </div>
+                                </div>
+                                <div class="we-star-bar-graph__row">
+                                    <span class="we-star-bar-graph__stars we-star-bar-graph__stars--3"></span>
+                                    <div class="we-star-bar-graph__bar">
+                                        <div class="we-star-bar-graph__bar__foreground-bar" style="width: 0%;"></div>
+                                    </div>
+                                </div>
+                                <div class="we-star-bar-graph__row">
+                                    <span class="we-star-bar-graph__stars we-star-bar-graph__stars--2"></span>
+                                    <div class="we-star-bar-graph__bar">
+                                        <div class="we-star-bar-graph__bar__foreground-bar" style="width: 0%;"></div>
+                                    </div>
+                                </div>
+                                <div class="we-star-bar-graph__row">
+                                    <span class="we-star-bar-graph__stars "></span>
+                                    <div class="we-star-bar-graph__bar">
+                                        <div class="we-star-bar-graph__bar__foreground-bar" style="width: 0%;"></div>
+                                    </div>
+                                </div>
+                            </figure>
+                            <p class="we-customer-ratings__count medium-hide">3 Ratings</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="l-row l-row--peek">
+                    <div id="ember99929" class="small-valign-top l-column--equal-height l-column small-4 medium-6 large-4">
+                        <div>
+                            <!---->
+                            <!---->
+                        </div>
+                        <div aria-labelledby="we-customer-review-6505" class="we-customer-review lockup">
+                            <figure class="we-star-rating we-customer-review__rating we-star-rating--large" aria-label="5 out of 5">
+                                        <span class="we-star-rating-stars-outlines">
+                                            <span class="we-star-rating-stars we-star-rating-stars-5"></span>
+                                        </span>
+                                <!---->
+                            </figure>
+                            <div class="we-customer-review__header we-customer-review__header--user">
+                                        <span class="we-truncate we-truncate--single-line  we-customer-review__user" dir="ltr">深圳satoshi
+</span>
+                                <span class="we-customer-review__separator">, </span>
+                                <time data-test-customer-review-date datetime="2023-05-31T16:41:34.000Z" aria-label="May 31, 2023" class="we-customer-review__date">05/31/2023</time>
+                            </div>
+                            <h3 class="we-truncate we-truncate--single-line  we-customer-review__title" dir="ltr" id="we-customer-review-6505">我下了，我用了，我还看过协议和源码，是真的去中心化。
+                            </h3>
+                            <blockquote class="we-truncate we-truncate--multi-line we-truncate--interactive  we-customer-review__body" dir>
+                                <p dir="false" data-test-bidi>如果你也像我一样喜欢去中心化，那真的是泰裤辣！</p>
+                                <!---->
+                            </blockquote>
+                            <!---->
+                        </div>
+                    </div>
+                </div>
+                <div class="l-row l-row--margin-top medium-hide">
+                    <!---->
+                </div>
+            </section>
+            <!---->
+            <!---->
+            <!---->
+            <section class="l-content-width section section--bordered app-privacy">
+                <div class="section__nav">
+                    <h2 class="section__headline section__headline--app-privacy">App Privacy
+                    </h2>
+                    <div class="app-privacy--modal privacy-type--modal">
+                        <!---->
+                        <!---->
+                    </div>
+                </div>
+                <p>
+                    The developer, <span class="app-privacy__developer-name">奇 莫</span>
+                    , indicated that the app’s privacy practices may include handling of data as described below. For more information, see the <a href="https://wallet.dim.chat/dimchat/sechat/privacy.html">developer’s privacy policy</a>
+                    .
+
+                </p>
+                <div class="app-privacy__cards">
+                    <div class="app-privacy__card">
+                        <div class="privacy-type__icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" aria-hidden="true">
+                                <path d="M32.09 61.568c16.185 0 29.586-13.43 29.586-29.587 0-16.186-13.43-29.587-29.616-29.587-16.157 0-29.558 13.4-29.558 29.587 0 16.156 13.43 29.587 29.587 29.587zm0-4.932c-13.692 0-24.628-10.964-24.628-24.655 0-13.692 10.907-24.656 24.598-24.656 13.691 0 24.656 10.964 24.685 24.656.03 13.69-10.965 24.655-24.656 24.655zM28.897 45.76c.958 0 1.77-.464 2.35-1.363L44.504 23.54c.32-.551.696-1.219.696-1.857 0-1.276-1.16-2.117-2.378-2.117-.725 0-1.45.435-2.002 1.305l-12.038 19.29-5.714-7.368c-.696-.928-1.334-1.19-2.146-1.19-1.248 0-2.234 1.016-2.234 2.321 0 .61.261 1.247.667 1.799l7.078 8.673c.725.957 1.508 1.363 2.465 1.363z"/>
+                            </svg>
+                        </div>
+                        <h3 class="privacy-type__heading">Data Not Collected</h3>
+                        <p class="privacy-type__description">The developer does not collect any data from this app.</p>
+                        <!---->
+                    </div>
+                </div>
+                <p class="app-privacy__learn-more">
+                    Privacy practices may vary, for example, based on the features you use or your age. <a href="https://apps.apple.com/story/id1538632801">Learn More</a>
+                </p>
+            </section>
+            <section class="l-content-width section section--bordered section--information">
+                <div>
+                    <h2 class="section__headline">Information</h2>
+                    <dl class="information-list information-list--app medium-columns l-row">
+                        <div class="information-list__item l-column small-12 medium-6 large-4 small-valign-top">
+                            <dt class="information-list__item__term medium-valign-top">Seller</dt>
+                            <dd class="information-list__item__definition">奇 莫
+                            </dd>
+                        </div>
+                        <div class="information-list__item l-column small-12 medium-6 large-4 small-valign-top">
+                            <dt class="information-list__item__term medium-valign-top">Size</dt>
+                            <dd class="information-list__item__definition" aria-label="36.4 megabytes">36.4 MB</dd>
+                        </div>
+                        <div class="information-list__item l-column small-12 medium-6 large-4 small-valign-top">
+                            <dt class="information-list__item__term medium-valign-top">Category</dt>
+                            <dd class="information-list__item__definition">
+                                <a href="https://itunes.apple.com/us/genre/id6005" class="link" data-metrics-click="{&quot;actionType&quot;:&quot;navigate&quot;,&quot;actionUrl&quot;:&quot;https://itunes.apple.com/us/genre/id6005&quot;,&quot;targetType&quot;:&quot;link&quot;,&quot;targetId&quot;:&quot;GenrePage&quot;}">Social Networking
+                                </a>
+                            </dd>
+                        </div>
+                        <!---->
+                        <div class="information-list__item l-column small-12 medium-6 large-4 small-valign-top">
+                            <dt class="information-list__item__term medium-valign-top">Languages</dt>
+                            <dd class="we-truncate we-truncate--multi-line we-truncate--interactive  information-list__item__definition" dir>
+                                <p data-test-bidi>English</p>
+                                <!---->
+                            </dd>
+                        </div>
+                        <div class="information-list__item l-column small-12 medium-6 large-4 small-valign-top">
+                            <dt class="information-list__item__term medium-valign-top">Age Rating</dt>
+                            <dd class="information-list__item__definition">17+
+
+                                <!---->
+                            </dd>
+                        </div>
+                        <!---->
+                        <div class="information-list__item l-column small-12 medium-6 large-4 small-valign-top">
+                            <dt class="information-list__item__term medium-valign-top">Copyright</dt>
+                            <dd class="information-list__item__definition information-list__item__definition--copyright">© 2023 Albert Moky</dd>
+                        </div>
+                        <div class="information-list__item l-column small-12 medium-6 large-4 small-valign-top">
+                            <dt class="information-list__item__term medium-valign-top">Price</dt>
+                            <dd class="information-list__item__definition">Free</dd>
+                        </div>
+                        <!---->
+                    </dl>
+                </div>
+                <div class="small-hide medium-show">
+                    <ul class="inline-list inline-list--app-extensions">
+                        <!---->
+                        <li class="inline-list__item inline-list__item--margin-inline-end-large">
+                            <a class="link icon icon-after icon-external" data-metrics-click="{&quot;actionType&quot;:&quot;navigate&quot;,&quot;targetType&quot;:&quot;link&quot;,&quot;targetId&quot;:&quot;LinkToAppSupport&quot;}" href="https://dim.chat/index.html">App Support
+                            </a>
+                        </li>
+                        <!---->
+                        <li class="inline-list__item inline-list__item--margin-inline-end-large">
+                            <a class="link icon icon-after icon-external" data-metrics-click="{&quot;actionType&quot;:&quot;navigate&quot;,&quot;targetType&quot;:&quot;link&quot;,&quot;targetId&quot;:&quot;LinkToPrivacyPolicy&quot;}" href="https://wallet.dim.chat/dimchat/sechat/privacy.html">Privacy Policy
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </section>
+            <section class="section section--link-list l-content-width medium-hide">
+                <ul class="link-list link-list--a">
+                    <!---->
+                    <li class="link-list__item link-list__item--a">
+                        <a class="link icon icon-after icon-external" data-metrics-click="{&quot;actionType&quot;:&quot;navigate&quot;,&quot;targetType&quot;:&quot;link&quot;,&quot;targetId&quot;:&quot;LinkToAppSupport&quot;}" href="https://dim.chat/index.html">App Support
+                        </a>
+                    </li>
+                    <!---->
+                    <li class="link-list__item link-list__item--a">
+                        <a class="link icon icon-after icon-external" data-metrics-click="{&quot;actionType&quot;:&quot;navigate&quot;,&quot;targetType&quot;:&quot;link&quot;,&quot;targetId&quot;:&quot;LinkToPrivacyPolicy&quot;}" href="https://wallet.dim.chat/dimchat/sechat/privacy.html">Privacy Policy
+                        </a>
+                    </li>
+                </ul>
+            </section>
+            <!---->
+            <!---->
+            <!---->
+        </div>
+    </main>
+</div>
+<footer id="ac-globalfooter" class="no-js" role="contentinfo" lang="en-US" dir="ltr">
+    <div class="ac-gf-content">
+        <section class="ac-gf-footer">
+            <div class="ac-gf-footer-legal">
+                <div class="ac-gf-footer-legal-copyright">Copyright &#xA9;2023 Albert Moky. All rights reserved.
+                </div>
+            </div>
+        </section>
+    </div>
+</footer>
+</body>
+</html>
