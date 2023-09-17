@@ -97,6 +97,28 @@ class _StrangerListAdapter with SectionAdapterMixin {
   final Amanuensis _dataSource;
 
   @override
+  bool shouldExistSectionFooter(int section) => true;
+
+  @override
+  Widget getSectionFooter(BuildContext context, int section) {
+    String prompt = '* Here shows strangers who want to make friends with you;\n'
+        '* You can add them to your contacts, or just ignore them;\n'
+        '* Click "Block" will add to "Blocked List" and never receive message from them.';
+    return Container(
+      color: Facade.of(context).colors.appBardBackgroundColor,
+      padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+      child: Row(
+        // crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Expanded(child: Text(prompt,
+            style: Facade.of(context).styles.sectionFooterTextStyle,
+          )),
+        ],
+      ),
+    );
+  }
+
+  @override
   int numberOfItems(int section) => _dataSource.strangers.length;
 
   @override

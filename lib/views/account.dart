@@ -276,14 +276,14 @@ class _AccountState extends State<AccountPage> {
           Alert.show(context, 'Error', 'Failed to get visa');
           return null;
         });
-    if (visa?.key == null) {
+    if (visa?.publicKey == null) {
       assert(false, 'should not happen');
       Document? doc = Document.create(Document.kVisa, user.identifier);
       assert(doc is Visa, 'failed to create visa document');
       visa = doc as Visa;
       PrivateKey? key = PrivateKey.generate(AsymmetricKey.kRSA);
       assert(key is EncryptKey, 'failed to create visa key');
-      visa.key = key as EncryptKey;
+      visa.publicKey = key as EncryptKey;
     } else {
       // create new one for modifying
       Document? doc = Document.parse(visa?.copyMap(false));
@@ -302,9 +302,10 @@ class _AccountState extends State<AccountPage> {
       assert(false, 'should not happen');
       return false;
     }
+    visa.setProperty('app_id', 'chat.dim.tarsier');
     // 3. set name & avatar url in visa document and sign it
     visa.name = _nickname;
-    visa.avatar = _avatarUrl?.toString();
+    visa.avatar = PortableNetworkFile.parse(_avatarUrl?.toString());
     var sig = visa.sign(sKey);
     assert(sig != null, 'failed to sign visa: $user, $visa');
     // 4. save it

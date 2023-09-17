@@ -80,7 +80,7 @@ class _SendState extends State<ChatSendFlag> implements lnc.Observer {
     } else if (signature.length > 8) {
       signature = signature.substring(signature.length - 8);
     }
-    String? sig = iMsg.getString('signature');
+    String? sig = iMsg.getString('signature', null);
     if (sig == null) {
       Log.warning('signature not found');
       return false;
@@ -138,7 +138,7 @@ class _SendState extends State<ChatSendFlag> implements lnc.Observer {
   Future<_MsgStatus> _load() async {
     ID sender = widget.iMsg.sender;
     int sn = widget.iMsg.content.sn;
-    String? signature = widget.iMsg.getString('signature');
+    String? signature = widget.iMsg.getString('signature', null);
     ID? mta;
     GlobalVariable shared = GlobalVariable();
     List<String> traces = await shared.database.getTraces(sender, sn, signature);
@@ -297,7 +297,7 @@ class _SendState extends State<ChatSendFlag> implements lnc.Observer {
     if (rMsg == null) {
       Log.error('failed to send instant message: $iMsg');
     } else {
-      String? signature = rMsg.getString('signature');
+      String? signature = rMsg.getString('signature', null);
       Log.debug('keep signature: $signature');
       widget.iMsg['signature'] = signature;
     }

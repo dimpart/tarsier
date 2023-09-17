@@ -452,7 +452,7 @@ void _forwardImage(BuildContext ctx, ImageContent content, ID sender) {
       List traces = content['traces'] ?? [];
       traces = [...traces, {
         'ID': sender.toString(),
-        'time': content.getDouble('time'),
+        'time': content.getDouble('time', 0),
       }];
       PickChatPage.open(ctx,
         onPicked: (chat) => Alert.confirm(ctx,
@@ -484,7 +484,7 @@ Future<bool> _sendImage(ID receiver,
   String ext = Paths.extension(filename) ?? 'jpeg';
   filename = Hex.encode(MD5.digest(jpeg));
   // create image content
-  ImageContent content = FileContent.image('$filename.$ext', binary: jpeg);
+  ImageContent content = FileContent.image(filename: '$filename.$ext', data: jpeg);
   // add image data length & thumbnail into message content
   content['length'] = jpeg.length;
   content.thumbnail = thumbnail;
@@ -497,9 +497,9 @@ Future<bool> _sendImage(ID receiver,
 }
 
 void _forwardWebPage(BuildContext ctx, PageContent content, ID sender) {
-  Uri? url = Browser.parseUri(content.url);
+  Uri? url = Browser.parseUri(content.url.toString());
   if (url == null) {
-    Alert.show(ctx, 'URL Error', content.url);
+    Alert.show(ctx, 'URL Error', content.url.toString());
   } else {
     _shareWebPage(ctx, url, title: content.title, desc: content.desc, icon: content.icon);
   }
@@ -519,7 +519,7 @@ void _shareWebPage(BuildContext ctx, Uri url, {required String title, String? de
 Future<void> _sendWebPage(ID receiver, Uri url,
     {required String title, String? desc, Uint8List? icon}) async {
   // create web page content
-  PageContent content = PageContent.create(url: url.toString(),
+  PageContent content = PageContent.create(url: url,
       title: title, desc: desc, icon: icon);
   Log.debug('share web page to $receiver: "$title", $url');
   // send web page content
@@ -531,13 +531,13 @@ void _forwardNameCard(BuildContext ctx, NameCard content, ID sender) {
   List traces = content['traces'] ?? [];
   traces = [...traces, {
     'ID': sender.toString(),
-    'time': content.getDouble('time'),
+    'time': content.getDouble('time', 0),
   }];
   PickChatPage.open(ctx,
     onPicked: (chat) => Alert.confirm(ctx,
       'Confirm', 'Are you sure to share name card "${content.name}" with ${chat.name}?',
       okAction: () => _sendContact(chat.identifier,
-        identifier: content.identifier, name: content.name, avatar: content.avatar,
+        identifier: content.identifier, name: content.name, avatar: content.avatar?.url.toString(),
         traces: traces,
       ).then((value) {
         Alert.show(ctx, 'Shared', 'Name Card "${content.name}" forwarded to ${chat.name}');
@@ -546,9 +546,9 @@ void _forwardNameCard(BuildContext ctx, NameCard content, ID sender) {
   );
 }
 Future<void> _sendContact(ID receiver,
-    {required ID identifier, String? name, String? avatar,
+    {required ID identifier, required String name, String? avatar,
       required List traces}) async {
-  NameCard content = NameCard.create(identifier, name: name, avatar: avatar);
+  NameCard content = NameCard.create(identifier, name, PortableNetworkFile.parse(avatar));
   content['traces'] = traces;
   Log.debug('forward name card to receiver: $receiver, $content');
   GlobalVariable shared = GlobalVariable();

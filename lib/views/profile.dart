@@ -403,8 +403,8 @@ void _shareContact(BuildContext ctx, ContactInfo info) {
   });
 }
 Future<void> _sendContact(ID receiver,
-    {required ID identifier, String? name, String? avatar}) async {
-  NameCard content = NameCard.create(identifier, name: name, avatar: avatar);
+    {required ID identifier, required String name, String? avatar}) async {
+  NameCard content = NameCard.create(identifier, name, PortableNetworkFile.parse(avatar));
   Log.debug('name card: $content');
   GlobalVariable shared = GlobalVariable();
   await shared.emitter.sendContent(content, receiver);

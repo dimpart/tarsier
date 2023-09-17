@@ -108,10 +108,13 @@ class _MuteListAdapter with SectionAdapterMixin {
   final _MutedDataSource _dataSource;
 
   @override
-  int numberOfSections() => _dataSource.getSectionCount();
+  int numberOfSections() {
+    int sections = _dataSource.getSectionCount();
+    return sections > 0 ? sections : 1;
+  }
 
   @override
-  bool shouldExistSectionHeader(int section) => true;
+  bool shouldExistSectionHeader(int section) => _dataSource.getSectionCount() > 0;
 
   @override
   bool shouldSectionHeaderStick(int section) => true;
@@ -126,7 +129,12 @@ class _MuteListAdapter with SectionAdapterMixin {
   );
 
   @override
-  int numberOfItems(int section) => _dataSource.getItemCount(section);
+  int numberOfItems(int section) {
+    if (_dataSource.getSectionCount() == 0) {
+      return 0;
+    }
+    return _dataSource.getItemCount(section);
+  }
 
   @override
   Widget getItem(BuildContext context, IndexPath indexPath) {
@@ -137,18 +145,26 @@ class _MuteListAdapter with SectionAdapterMixin {
   }
 
   @override
-  bool shouldExistSectionFooter(int section) =>
-      section + 1 == _dataSource.getSectionCount();
+  bool shouldExistSectionFooter(int section) => section + 1 == numberOfSections();
 
   @override
-  Widget getSectionFooter(BuildContext context, int section) => Container(
-    color: Facade.of(context).colors.appBardBackgroundColor,
-    padding: const EdgeInsets.all(16),
-    alignment: Alignment.center,
-    child: Text('* You will never receive notification from this list.',
-      style: Facade.of(context).styles.sectionFooterTextStyle,
-    ),
-  );
+  Widget getSectionFooter(BuildContext context, int section) {
+    String prompt = '* Here shows noisy friends who you don\'t value very much;\n'
+        '* You can still chat with them, but never receive notification from this list.';
+    return Container(
+      color: Facade.of(context).colors.appBardBackgroundColor,
+      padding: const EdgeInsets.all(16),
+      alignment: Alignment.center,
+      child: Row(
+        // crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Expanded(child: Text(prompt,
+            style: Facade.of(context).styles.sectionFooterTextStyle,
+          )),
+        ],
+      ),
+    );
+  }
 
 }
 

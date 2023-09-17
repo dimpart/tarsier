@@ -68,7 +68,7 @@ class _NetworkState extends State<NetworkSettingPage> {
     );
     // // TEST:
     // GlobalVariable shared = GlobalVariable();
-    // final ID gsp = ProviderDBI.kGSP;
+    // final ID gsp = ProviderInfo.kGSP;
     // shared.database.addStation('192.168.31.152', 9394, provider: gsp);
     // // shared.database.addStation('203.195.224.155', 9394, provider: gsp);
     // // shared.database.addStation('47.254.237.224', 9394, provider: gsp);
@@ -97,7 +97,7 @@ class _NetworkState extends State<NetworkSettingPage> {
     int sections = _dataSource.getSectionCount();
     int items;
     ID pid;
-    StationInfo info;
+    NeighborInfo info;
     for (int sec = 0; sec < sections; ++sec) {
       pid = _dataSource.getSection(sec);
       items = _dataSource.getItemCount(sec);
@@ -152,34 +152,34 @@ class _StationListAdapter with SectionAdapterMixin {
 class _StationDataSource {
 
   List<ID> _sections = [];
-  final Map<ID, List<StationInfo>> _items = {};
+  final Map<ID, List<NeighborInfo>> _items = {};
 
-  static List<ID> _sortProviders(List<Pair<ID, int>> records) {
+  static List<ID> _sortProviders(List<ProviderInfo> records) {
     // 1. sort records
     records.sort((a, b) {
-      if (a.first.isBroadcast) {
-        if (b.first.isBroadcast) {} else {
+      if (a.identifier.isBroadcast) {
+        if (b.identifier.isBroadcast) {} else {
           return -1;
         }
-      } else if (b.first.isBroadcast) {
+      } else if (b.identifier.isBroadcast) {
         return 1;
       }
       // sort with chosen order
-      return b.second - a.second;
+      return b.chosen - a.chosen;
     });
     List<ID> providers = [];
     for (var item in records) {
-      providers.add(item.first);
+      providers.add(item.identifier);
     }
     // 2. set GSP to the front
-    int pos = providers.indexOf(ProviderDBI.kGSP);
+    int pos = providers.indexOf(ProviderInfo.kGSP);
     if (pos < 0) {
       // gsp not exists, insert to the front
-      providers.insert(0, ProviderDBI.kGSP);
+      providers.insert(0, ProviderInfo.kGSP);
     } else if (pos > 0) {
       // move to the front
       providers.removeAt(pos);
-      providers.insert(0, ProviderDBI.kGSP);
+      providers.insert(0, ProviderInfo.kGSP);
     }
     return providers;
   }
@@ -187,11 +187,11 @@ class _StationDataSource {
   Future<void> reload() async {
     GlobalVariable shared = GlobalVariable();
     SessionDBI database = shared.sdb;
-    var records = await database.getProviders();
+    var records = await database.allProviders();
     List<ID> providers = _sortProviders(records);
     for (ID pid in providers) {
-      var stations = await database.getStations(provider: pid);
-      _items[pid] = StationInfo.sortStations(await StationInfo.fromList(stations));
+      var stations = await database.allStations(provider: pid);
+      _items[pid] = NeighborInfo.sortStations(await NeighborInfo.fromList(stations));
     }
     _sections = providers;
   }
@@ -208,7 +208,7 @@ class _StationDataSource {
     return _items[pid]?.length ?? 0;
   }
 
-  StationInfo getItem(int sec, int idx) {
+  NeighborInfo getItem(int sec, int idx) {
     ID pid = _sections[sec];
     return _items[pid]![idx];
   }
@@ -218,7 +218,7 @@ class _StationDataSource {
 class _StationCell extends StatefulWidget {
   const _StationCell(this.info);
 
-  final StationInfo info;
+  final NeighborInfo info;
 
   @override
   State<StatefulWidget> createState() => _StationCellState();
@@ -310,7 +310,7 @@ class _StationCellState extends State<_StationCell> implements lnc.Observer {
     ),
   );
 
-  bool _isCurrentStation(StationInfo info) {
+  bool _isCurrentStation(NeighborInfo info) {
     GlobalVariable shared = GlobalVariable();
     Station? current = shared.terminal.session?.station;
     if (current == null) {
@@ -320,7 +320,7 @@ class _StationCellState extends State<_StationCell> implements lnc.Observer {
     }
   }
 
-  String _getName(StationInfo info) {
+  String _getName(NeighborInfo info) {
     String? name = info.name;
     name ??= info.identifier?.toString();
     if (name != null && name.isNotEmpty) {
@@ -329,7 +329,7 @@ class _StationCellState extends State<_StationCell> implements lnc.Observer {
       return '${info.host}:${info.port}';
     }
   }
-  Icon _getChosen(StationInfo info) {
+  Icon _getChosen(NeighborInfo info) {
     if (_isCurrentStation(info)) {
       return Icon(Styles.currentStationIcon, color: _getColor(info));
     } else if (info.chosen == 0) {
@@ -338,7 +338,7 @@ class _StationCellState extends State<_StationCell> implements lnc.Observer {
       return Icon(Styles.chosenStationIcon, color: _getColor(info));
     }
   }
-  String _getResult(StationInfo info) {
+  String _getResult(NeighborInfo info) {
     double? responseTime = info.responseTime;
     if (responseTime == null) {
       return 'unknown';
@@ -349,7 +349,7 @@ class _StationCellState extends State<_StationCell> implements lnc.Observer {
     }
     return '${responseTime.toStringAsFixed(3)}"';
   }
-  Color _getColor(StationInfo info) {
+  Color _getColor(NeighborInfo info) {
     double? responseTime = info.responseTime;
     if (responseTime == null) {
       return CupertinoColors.systemGrey;
