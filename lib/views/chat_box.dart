@@ -19,17 +19,15 @@ import 'profile.dart';
 class ChatBox extends StatefulWidget {
   const ChatBox(this.info, {super.key});
 
-  final ContactInfo info;
+  final Conversation info;
 
   static int maxCountOfMessages = 2048;
 
-  static void open(BuildContext context, ContactInfo info) => showCupertinoDialog(
+  static void open(BuildContext context, Conversation info) => showCupertinoDialog(
     context: context,
     builder: (context) => ChatBox(info),
   ).then((value) {
-    if (info is Conversation) {
-      info.unread = 0;
-    }
+    info.unread = 0;
     Amanuensis clerk = Amanuensis();
     clerk.clearUnread(info.identifier);
   });
@@ -176,10 +174,10 @@ class _ChatBoxState extends State<ChatBox> implements lnc.Observer {
 }
 
 class _HistoryAdapter with SectionAdapterMixin {
-  _HistoryAdapter(ContactInfo conversation, {required _HistoryDataSource dataSource})
+  _HistoryAdapter(Conversation conversation, {required _HistoryDataSource dataSource})
       : _conversation = conversation, _dataSource = dataSource;
 
-  final ContactInfo _conversation;
+  final Conversation _conversation;
   final _HistoryDataSource _dataSource;
 
   @override
@@ -427,7 +425,7 @@ class _HistoryDataSource {
 
 //--------
 
-void _openDetail(BuildContext ctx, ContactInfo info) {
+void _openDetail(BuildContext ctx, Conversation info) {
   ID identifier = info.identifier;
   if (identifier.isUser) {
     ChatDetailPage.open(ctx, identifier, fromChat: info.identifier);
@@ -436,7 +434,7 @@ void _openDetail(BuildContext ctx, ContactInfo info) {
   }
 }
 
-void _openProfile(BuildContext ctx, ID uid, ContactInfo info) {
+void _openProfile(BuildContext ctx, ID uid, Conversation info) {
   ProfilePage.open(ctx, uid, fromChat: info.identifier);
 }
 
@@ -457,14 +455,14 @@ void _forwardImage(BuildContext ctx, ImageContent content, ID sender) {
       }];
       PickChatPage.open(ctx,
         onPicked: (chat) => Alert.confirm(ctx,
-          'Confirm', 'Are you sure to share image "$filename" with ${chat.name}?',
+          'Confirm', 'Are you sure to share image "$filename" with ${chat.title}?',
           okAction: () => _sendImage(chat.identifier,
             path: path, filename: filename, thumbnail: thumbnail, traces: traces,
           ).then((value) {
             if (value) {
-              Alert.show(ctx, 'Shared', 'Image message forwarded to ${chat.name}');
+              Alert.show(ctx, 'Shared', 'Image message forwarded to ${chat.title}');
             } else {
-              Alert.show(ctx, 'Error', 'Failed to share image with ${chat.name}');
+              Alert.show(ctx, 'Error', 'Failed to share image with ${chat.title}');
             }
           }),
         ),
@@ -508,11 +506,11 @@ void _forwardWebPage(BuildContext ctx, PageContent content, ID sender) {
 void _shareWebPage(BuildContext ctx, Uri url, {required String title, String? desc, Uint8List? icon}) {
   PickChatPage.open(ctx,
     onPicked: (chat) => Alert.confirm(ctx,
-      'Confirm', 'Are you sure to share web page "$title" with ${chat.name}?',
+      'Confirm', 'Are you sure to share web page "$title" with ${chat.title}?',
       okAction: () => _sendWebPage(chat.identifier,
         url, title: title, desc: desc, icon: icon,
       ).then((value) {
-        Alert.show(ctx, 'Shared', 'Web page "$title" forwarded to ${chat.name}');
+        Alert.show(ctx, 'Shared', 'Web page "$title" forwarded to ${chat.title}');
       }),
     ),
   );
@@ -536,12 +534,12 @@ void _forwardNameCard(BuildContext ctx, NameCard content, ID sender) {
   }];
   PickChatPage.open(ctx,
     onPicked: (chat) => Alert.confirm(ctx,
-      'Confirm', 'Are you sure to share name card "${content.name}" with ${chat.name}?',
+      'Confirm', 'Are you sure to share name card "${content.name}" with ${chat.title}?',
       okAction: () => _sendContact(chat.identifier,
         identifier: content.identifier, name: content.name, avatar: content.avatar?.url.toString(),
         traces: traces,
       ).then((value) {
-        Alert.show(ctx, 'Shared', 'Name Card "${content.name}" forwarded to ${chat.name}');
+        Alert.show(ctx, 'Shared', 'Name Card "${content.name}" forwarded to ${chat.title}');
       }),
     ),
   );

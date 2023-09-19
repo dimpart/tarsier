@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:dim_flutter/dim_flutter.dart';
 import 'package:lnc/lnc.dart' as lnc;
 
+import 'chat_box.dart';
 import 'pick_contacts.dart';
 import 'profile.dart';
 
@@ -233,7 +234,7 @@ class _ChatDetailState extends State<ChatDetailPage> implements lnc.Observer {
         ),
         SizedBox(
           width: 64,
-          child: Text(info.name,
+          child: Text(info.title,
             textAlign: TextAlign.center,
             overflow: TextOverflow.ellipsis,
           ),
@@ -272,15 +273,41 @@ class _ChatDetailState extends State<ChatDetailPage> implements lnc.Observer {
 
 void _createGroupChat(BuildContext ctx, ID contact, Set<ID> members) {
   // Navigator.pop(ctx);
-  members.add(contact);
-  GroupManager man = GroupManager();
-  man.createGroup(members: members).then((group) {
+  _doCreateGroup(contact, members).then((group) {
     if (group == null) {
       Alert.show(ctx, 'Error', 'Failed to create group');
-    } else {
-      Alert.show(ctx, 'Success', 'New group: $group');
+      return;
     }
+    Navigator.pop(ctx);
+    Log.warning('new group: $group');
+    Conversation chat = Conversation.fromID(group);
+    ChatBox.open(ctx, chat);
   });
+}
+Future<ID?> _doCreateGroup(ID contact, Set<ID> members) async {
+  GroupManager man = GroupManager();
+  User? user = await man.currentUser;
+  if (user == null) {
+    assert(false, 'failed to get current user');
+    return null;
+  }
+  ID me = user.identifier;
+  // 1. build all members
+  List<ID> allMembers = [me];
+  if (contact == me) {
+    assert(false, 'should not happen');
+  } else {
+    allMembers.add(contact);
+  }
+  for (ID item in members) {
+    if (allMembers.contains(item)) {
+      assert(false, 'should not happen');
+    } else {
+      allMembers.add(item);
+    }
+  }
+  // 2. create group
+  return await man.createGroup(members: allMembers);
 }
 
 void _clearHistory(BuildContext ctx, ContactInfo info) {

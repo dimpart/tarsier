@@ -226,7 +226,7 @@ class _ChatTableCellState extends State<_ChatTableCell> implements lnc.Observer 
       Log.warning('long press: ${widget.info}');
       Alert.actionSheet(context,
         'Confirm', 'Are you sure to remove this conversation?',
-        'Remove ${widget.info.name}',
+        'Remove ${widget.info.title}',
             () => _removeConversation(context, widget.info.identifier),
       );
       },

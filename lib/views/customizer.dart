@@ -284,7 +284,7 @@ class _MyAccountState extends State<_MyAccountSection> implements lnc.Observer {
     padding: const EdgeInsets.all(16),
     leadingSize: 64,
     leading: _info?.getImage(width: 64, height: 64),
-    title: Text('${_info?.name}', style: TextStyle(
+    title: Text('${_info?.title}', style: TextStyle(
       color: widget.primaryTextColor,
     )),
     subtitle: Text('${_info?.identifier}', style: TextStyle(

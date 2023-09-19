@@ -179,7 +179,7 @@ class _ContactListAdapter with SectionAdapterMixin {
       Log.warning('long press: $info');
       Alert.actionSheet(context,
         'Confirm', 'Are you sure to remove this contact?',
-        'Remove ${info.name}',
+        'Remove ${info.title}',
             () => info.delete(context: context),
       );
     });

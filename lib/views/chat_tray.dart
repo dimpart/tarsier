@@ -8,7 +8,7 @@ import 'package:dim_flutter/dim_flutter.dart';
 class ChatInputTray extends StatefulWidget {
   const ChatInputTray(this.info, {super.key});
 
-  final ContactInfo info;
+  final Conversation info;
 
   @override
   State<StatefulWidget> createState() => _InputState();
@@ -89,7 +89,7 @@ class _InputState extends State<ChatInputTray> {
 
 //--------
 
-void _sendText(BuildContext context, TextEditingController controller, ContactInfo chat) {
+void _sendText(BuildContext context, TextEditingController controller, Conversation chat) {
   String text = controller.text.trim();
   if (text.isNotEmpty) {
     GlobalVariable shared = GlobalVariable();
@@ -98,7 +98,7 @@ void _sendText(BuildContext context, TextEditingController controller, ContactIn
   controller.text = '';
 }
 
-void _sendImage(BuildContext context, ContactInfo chat) =>
+void _sendImage(BuildContext context, Conversation chat) =>
     openImagePicker(context, onPicked: (path) {
       Log.info('picked image: $path');
     }, onRead: (path, jpeg) => adjustImage(jpeg, 2048, (Uint8List data) async {
@@ -108,5 +108,5 @@ void _sendImage(BuildContext context, ContactInfo chat) =>
       shared.emitter.sendImage(data, thumbnail, chat.identifier);
     }));
 
-void _sendVoice(Uint8List data, double duration, ContactInfo chat) =>
+void _sendVoice(Uint8List data, double duration, Conversation chat) =>
     GlobalVariable().emitter.sendVoice(data, duration, chat.identifier);

@@ -65,13 +65,23 @@ class _PickContactsState extends State<PickContactsPage> implements lnc.Observer
   }
 
   Future<Set<ID>> _reloadFixedContacts() async {
-    _fixedContacts.clear();
+    GlobalVariable shared = GlobalVariable();
     ID from = widget.fromWhere;
     if (from.isUser) {
-      _fixedContacts.add(from);
+      User? user = await shared.facebook.currentUser;
+      _fixedContacts.clear();
+      if (user == null) {
+        assert(false, 'failed to get current user');
+      } else {
+        _fixedContacts.add(user.identifier);
+      }
+      if (from != user?.identifier) {
+        _fixedContacts.add(from);
+      }
     } else {
-      GlobalVariable shared = GlobalVariable();
-      List<ID> members = await shared.facebook.getMembers(from);
+      Group? group = await shared.facebook.getGroup(from);
+      List<ID> members = await group?.members ?? [];
+      _fixedContacts.clear();
       _fixedContacts.addAll(members);
     }
     return _fixedContacts;

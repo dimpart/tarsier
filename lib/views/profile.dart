@@ -132,7 +132,7 @@ class _ProfileState extends State<ProfilePage> implements lnc.Observer {
             // This title is visible in both collapsed and expanded states.
             // When the "middle" parameter is omitted, the widget provided
             // in the "largeTitle" parameter is used instead in the collapsed state.
-            largeTitle: Text(widget.info.name,
+            largeTitle: Text(widget.info.title,
               style: styles.titleTextStyle,
             ),
           ),
@@ -393,11 +393,11 @@ void _shareContact(BuildContext ctx, ContactInfo info) {
       Alert.show(ctx, 'Share error', 'Cannot share to itself');
       return;
     }
-    Alert.confirm(ctx, 'Confirm', 'Share "${info.name}" with ${chat.name}?',
+    Alert.confirm(ctx, 'Confirm', 'Share "${info.title}" with ${chat.title}?',
       okAction: () => _sendContact(chat.identifier,
-        identifier: info.identifier, name: info.name, avatar: info.avatar,
+        identifier: info.identifier, name: info.title, avatar: info.avatar,
       ).then((value) {
-        Alert.show(ctx, 'Shared', 'Contact "${info.name}" sent to ${chat.name}');
+        Alert.show(ctx, 'Shared', 'Contact "${info.title}" sent to ${chat.title}');
       }),
     );
   });
