@@ -92,7 +92,7 @@ class _SendState extends State<ChatSendFlag> implements lnc.Observer {
   }
 
   /// refresh status of current message
-  _MsgStatus _refresh({required int sn, required ID mta}) {
+  Future<_MsgStatus> _refresh({required int sn, required ID mta}) async {
     if (sn == 0) {
       sn = widget.iMsg.content.sn;
     }
@@ -109,6 +109,13 @@ class _SendState extends State<ChatSendFlag> implements lnc.Observer {
       }
     } else if (mta.type == EntityType.kStation) {
       current = _MsgStatus.kSent;
+      _flags[sn] = current;
+      if (mounted) {
+        setState(() {
+        });
+      }
+    } else if (await _checkMember(mta)) {
+      current = _MsgStatus.kReceived;
       _flags[sn] = current;
       if (mounted) {
         setState(() {
@@ -134,6 +141,15 @@ class _SendState extends State<ChatSendFlag> implements lnc.Observer {
     return current ?? _MsgStatus.kDefault;
   }
 
+  Future<bool> _checkMember(ID mta) async {
+    ID? group = widget.iMsg.group;
+    if (group == null) {
+      return false;
+    }
+    // TODO: check members.contains(mta)
+    return true;
+  }
+
   /// load traces to refresh message status
   Future<_MsgStatus> _load() async {
     ID sender = widget.iMsg.sender;
@@ -149,7 +165,7 @@ class _SendState extends State<ChatSendFlag> implements lnc.Observer {
       if (mta == null) {
         Log.error('trace error: $json');
       } else {
-        status = _refresh(sn: sn, mta: mta);
+        status = await _refresh(sn: sn, mta: mta);
         if (status == _MsgStatus.kReceived) {
           break;
         }
