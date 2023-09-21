@@ -4,9 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:dim_flutter/dim_flutter.dart';
 import 'package:lnc/lnc.dart' as lnc;
 
-import 'chat_box.dart';
-import 'pick_contacts.dart';
-import 'profile.dart';
+import 'detail_participants.dart';
 
 
 class GroupChatDetailPage extends StatefulWidget {
@@ -26,9 +24,9 @@ class GroupChatDetailPage extends StatefulWidget {
       Alert.show(context, 'Error', '$error');
     });
     // query for update
-    GroupManager man = GroupManager();
-    // man.dataSource.getDocument(identifier);
-    man.dataSource.getMembers(identifier);
+    GlobalVariable shared = GlobalVariable();
+    shared.messenger?.queryDocument(identifier);
+    shared.messenger?.queryMembers(identifier);
   }
 
   @override
@@ -95,7 +93,7 @@ class _ChatDetailState extends State<GroupChatDetailPage> implements lnc.Observe
       backgroundColor: Facade.of(context).colors.scaffoldBackgroundColor,
       appBar: CupertinoNavigationBar(
         backgroundColor: Facade.of(context).colors.appBardBackgroundColor,
-        middle: const Text('Chat Details'),
+        middle: const Text('Group Chat Details'),
       ),
       body: SingleChildScrollView(
         child: _body(context,
@@ -124,7 +122,7 @@ class _ChatDetailState extends State<GroupChatDetailPage> implements lnc.Observe
       Container(
         color: backgroundColor,
         padding: const EdgeInsets.all(16),
-        child: _participantList(context),
+        child: ParticipantsWidget(widget.info),
       ),
       const SizedBox(height: 16,),
 
@@ -201,59 +199,6 @@ class _ChatDetailState extends State<GroupChatDetailPage> implements lnc.Observe
       const SizedBox(height: 64,),
 
     ],
-  );
-
-  Widget _participantList(BuildContext context) => GridView.builder(
-    shrinkWrap: true,
-    physics: const NeverScrollableScrollPhysics(),
-    gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-      maxCrossAxisExtent: 64,
-      mainAxisExtent: 85,
-      crossAxisSpacing: 16,
-      mainAxisSpacing: 0,
-    ),
-    itemCount: 50,
-    itemBuilder: (BuildContext ctx, int index) {
-      return _plushCard(ctx, widget.info.identifier);
-    },
-  );
-
-  Widget _plushCard(BuildContext context, ID fromWhere) => GestureDetector(
-    onTap: () => PickContactsPage.open(
-      context, fromWhere,
-      onPicked: (members) => _createGroupChat(context, fromWhere, members),
-    ),
-    child: Column(
-      children: [
-        Container(
-          decoration: BoxDecoration(
-            border: Border.all(color: Colors.grey, width: 1, style: BorderStyle.solid),
-            borderRadius: BorderRadius.circular(8),
-          ),
-          width: 64,
-          height: 64,
-          child: const Icon(color: Colors.grey, Styles.plushIcon,),
-        ),
-        const Text('aaa'),
-      ],
-    ),
-  );
-
-  Widget _contactCard(BuildContext context, ContactInfo info) => GestureDetector(
-    onTap: () => ProfilePage.open(context, info.identifier,),
-    child: Column(
-      children: [
-        info.getImage(width: 64, height: 64,
-        ),
-        SizedBox(
-          width: 64,
-          child: Text(info.title,
-            textAlign: TextAlign.center,
-            overflow: TextOverflow.ellipsis,
-          ),
-        ),
-      ],
-    ),
   );
 
   Widget _nameTextField(BuildContext context) => CupertinoTextField(
@@ -352,45 +297,6 @@ class _ChatDetailState extends State<GroupChatDetailPage> implements lnc.Observe
     ],
   );
 
-}
-
-void _createGroupChat(BuildContext ctx, ID contact, Set<ID> members) {
-  // Navigator.pop(ctx);
-  _doCreateGroup(contact, members).then((group) {
-    if (group == null) {
-      Alert.show(ctx, 'Error', 'Failed to create group');
-      return;
-    }
-    Navigator.pop(ctx);
-    Log.warning('new group: $group');
-    Conversation chat = Conversation.fromID(group);
-    ChatBox.open(ctx, chat);
-  });
-}
-Future<ID?> _doCreateGroup(ID contact, Set<ID> members) async {
-  GroupManager man = GroupManager();
-  User? user = await man.currentUser;
-  if (user == null) {
-    assert(false, 'failed to get current user');
-    return null;
-  }
-  ID me = user.identifier;
-  // 1. build all members
-  List<ID> allMembers = [me];
-  if (contact == me) {
-    assert(false, 'should not happen');
-  } else {
-    allMembers.add(contact);
-  }
-  for (ID item in members) {
-    if (allMembers.contains(item)) {
-      assert(false, 'should not happen');
-    } else {
-      allMembers.add(item);
-    }
-  }
-  // 2. create group
-  return await man.createGroup(members: allMembers);
 }
 
 void _clearHistory(BuildContext ctx, GroupInfo info) {

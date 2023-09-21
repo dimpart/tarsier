@@ -5,8 +5,7 @@ import 'package:dim_flutter/dim_flutter.dart';
 import 'package:lnc/lnc.dart' as lnc;
 
 import 'chat_box.dart';
-import 'pick_contacts.dart';
-import 'profile.dart';
+import 'detail_participants.dart';
 
 
 class ChatDetailPage extends StatefulWidget {
@@ -195,48 +194,12 @@ class _ChatDetailState extends State<ChatDetailPage> implements lnc.Observer {
 
   Widget _participantList(BuildContext context) => Row(
     children: [
-      _contactCard(context, widget.info),
+      ParticipantsWidget.contactCard(context, widget.info),
       const SizedBox(width: 16,),
-      _plushCard(context, widget.info.identifier),
+      ParticipantsWidget.plusCard(context, widget.info.identifier,
+        onPicked: (members) => _createGroupChat(context, widget.info.identifier, members),
+      )
     ],
-  );
-
-  Widget _plushCard(BuildContext context, ID fromWhere) => GestureDetector(
-    onTap: () => PickContactsPage.open(
-      context, fromWhere,
-      onPicked: (members) => _createGroupChat(context, fromWhere, members),
-    ),
-    child: Column(
-      children: [
-        Container(
-          decoration: BoxDecoration(
-            border: Border.all(color: Colors.grey, width: 1, style: BorderStyle.solid),
-            borderRadius: BorderRadius.circular(8),
-          ),
-          width: 64,
-          height: 64,
-          child: const Icon(color: Colors.grey, Styles.plushIcon,),
-        ),
-        const Text(''),
-      ],
-    ),
-  );
-
-  Widget _contactCard(BuildContext context, ContactInfo info) => GestureDetector(
-    onTap: () => ProfilePage.open(context, info.identifier,),
-    child: Column(
-      children: [
-        info.getImage(width: 64, height: 64,
-        ),
-        SizedBox(
-          width: 64,
-          child: Text(info.title,
-            textAlign: TextAlign.center,
-            overflow: TextOverflow.ellipsis,
-          ),
-        ),
-      ],
-    ),
   );
 
   Widget _clearButton(BuildContext context, {required Color textColor, required Color backgroundColor}) =>
