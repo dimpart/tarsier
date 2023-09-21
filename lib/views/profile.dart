@@ -259,9 +259,6 @@ class _ProfileState extends State<ProfilePage> implements lnc.Observer {
           /// share contact
           if (widget.info.isFriend)
             _shareButton(context, backgroundColor: backgroundColor, textColor: primaryTextColor),
-          /// clear history
-          if (widget.info.isFriend && widget.fromChat != null)
-            _clearButton(context, backgroundColor: backgroundColor, textColor: dangerousTextColor),
           /// delete contact
           if (widget.info.isFriend && widget.fromChat == null)
             _deleteButton(context, backgroundColor: backgroundColor, textColor: dangerousTextColor),
@@ -343,11 +340,6 @@ class _ProfileState extends State<ProfilePage> implements lnc.Observer {
         onPressed: () => _shareContact(context, widget.info),
       );
 
-  Widget _clearButton(BuildContext context, {required Color textColor, required Color backgroundColor}) =>
-      _button('  Clear History', Styles.clearChatIcon, textColor: textColor, backgroundColor: backgroundColor,
-        onPressed: () => _clearHistory(context, widget.info),
-      );
-
   Widget _deleteButton(BuildContext context, {required Color textColor, required Color backgroundColor}) =>
       _button('  Delete Contact', Styles.deleteIcon, textColor: textColor, backgroundColor: backgroundColor,
         onPressed: () => widget.info.delete(context: context),
@@ -408,25 +400,6 @@ Future<void> _sendContact(ID receiver,
   Log.debug('name card: $content');
   GlobalVariable shared = GlobalVariable();
   await shared.emitter.sendContent(content, receiver);
-}
-
-void _clearHistory(BuildContext ctx, ContactInfo info) {
-  String name = info.identifier.isUser ? 'this friend' : 'this group';
-  String msg = 'Are you sure want to clear chat history of $name?'
-      ' This action cannot be restored.';
-  Alert.confirm(ctx, 'Confirm', msg,
-    okAction: () => _doClear(ctx, info.identifier),
-  );
-}
-void _doClear(BuildContext ctx, ID chat) {
-  Amanuensis clerk = Amanuensis();
-  clerk.clearConversation(chat).then((ok) {
-    if (ok) {
-      Navigator.pop(ctx);
-    } else {
-      Alert.show(ctx, 'Error', 'Failed to clear chat history');
-    }
-  });
 }
 
 //

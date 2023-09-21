@@ -10,6 +10,7 @@ import 'package:lnc/lnc.dart' as lnc;
 import 'chat_flag.dart';
 import 'chat_tray.dart';
 import 'detail.dart';
+import 'detail_group.dart';
 import 'pick_chat.dart';
 import 'profile.dart';
 
@@ -427,10 +428,10 @@ class _HistoryDataSource {
 
 void _openDetail(BuildContext ctx, Conversation info) {
   ID identifier = info.identifier;
-  if (identifier.isUser) {
-    ChatDetailPage.open(ctx, identifier, fromChat: info.identifier);
+  if (identifier.isGroup) {
+    GroupChatDetailPage.open(ctx, identifier);
   } else {
-    Alert.show(ctx, 'Coming soon', 'show group detail: $info');
+    ChatDetailPage.open(ctx, identifier);
   }
 }
 
