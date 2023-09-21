@@ -309,14 +309,11 @@ class _ProfileState extends State<ProfilePage> implements lnc.Observer {
     _focusNode.unfocus();
     // get alias value
     String? text = _alias;
+    ContactRemark remark = widget.info.remark;
     if (text == null) {
       // nothing input
       return;
-    } else {
-      text = text.trim();
-    }
-    ContactRemark remark = widget.info.remark;
-    if (remark.alias == text) {
+    } else if (remark.alias == text) {
       Log.warning('alias not change: $remark');
       return;
     }

@@ -38,7 +38,7 @@ class ParticipantsWidget extends StatefulWidget {
         info.getImage(width: 64, height: 64,),
         SizedBox(
           width: 64,
-          child: Text(info.title,
+          child: NameLabel(info.identifier,
             textAlign: TextAlign.center,
             overflow: TextOverflow.ellipsis,
           ),
@@ -142,7 +142,7 @@ class _ParticipantsState extends State<ParticipantsWidget> implements lnc.Observ
     itemBuilder: (BuildContext ctx, int index) {
       if (index == widget.info.members.length) {
         return ParticipantsWidget.plusCard(context, widget.info.identifier,
-          onPicked: (members) => Log.warning('picked members: $members'),
+          onPicked: (members) => _addMembers(context, widget.info.identifier, members),
         );
       }
       List<ContactInfo> members = widget.info.members;
@@ -150,4 +150,37 @@ class _ParticipantsState extends State<ParticipantsWidget> implements lnc.Observ
     },
   );
 
+}
+
+void _addMembers(BuildContext ctx, ID group, Set<ID> members) {
+  if (members.isEmpty) {
+    return;
+  }
+  List<ID> newMembers = members.toList();
+  _getNames(newMembers).then((names) {
+    Alert.confirm(ctx, 'Confirm', 'Are you sure want to invite $names into this group?',
+      okAction: () => _doAddMembers(group, newMembers),
+    );
+  });
+}
+Future<String> _getNames(List<ID> members) async {
+  assert(members.isNotEmpty, 'members should not be empty here');
+  GlobalVariable shared = GlobalVariable();
+  String nickname = await shared.facebook.getName(members.first);
+  String text = nickname;
+  for (int i = 1; i < members.length; ++i) {
+    nickname = await shared.facebook.getName(members[i]);
+    text += ', $nickname';
+  }
+  return text;
+}
+Future<bool> _doAddMembers(ID group, List<ID> newMembers) async {
+  GroupManager man = GroupManager();
+  bool ok = await man.inviteGroupMembers(group, newMembers);
+  if (ok) {
+    Log.warning('added new members: $newMembers => $group');
+  } else {
+    Log.error('failed to add new members: $newMembers => $group');
+  }
+  return ok;
 }

@@ -40,13 +40,15 @@ class _ChatDetailState extends State<GroupChatDetailPage> implements lnc.Observe
     nc.addObserver(this, NotificationNames.kDocumentUpdated);
   }
 
-  final FocusNode _focusNode = FocusNode();
-  String? _title;  // group name
+  final FocusNode _nameFocusNode = FocusNode();
+  final FocusNode _remarkFocusNode = FocusNode();
+  String? _name;  // group name
   String? _alias;
 
   @override
   void dispose() {
-    _focusNode.dispose();
+    _nameFocusNode.dispose();
+    _remarkFocusNode.dispose();
     var nc = lnc.NotificationCenter();
     nc.removeObserver(this, NotificationNames.kDocumentUpdated);
     super.dispose();
@@ -203,34 +205,31 @@ class _ChatDetailState extends State<GroupChatDetailPage> implements lnc.Observe
 
   Widget _nameTextField(BuildContext context) => CupertinoTextField(
     textAlign: TextAlign.end,
-    controller: TextEditingController(text: widget.info.title),
+    controller: TextEditingController(text: widget.info.name),
     placeholder: 'Please input group name.',
     decoration: Facade.of(context).styles.textFieldDecoration,
     style: Facade.of(context).styles.textFieldStyle,
     readOnly: !widget.info.isOwner,
-    focusNode: _focusNode,
-    onChanged: (value) => _title = value,
+    focusNode: _nameFocusNode,
+    onChanged: (value) => _name = value,
     onTapOutside: (event) => _changeName(context),
     onSubmitted: (value) => _changeName(context),
   );
 
   void _changeName(BuildContext context) {
-    _focusNode.unfocus();
-    // get alias value
-    String? text = _title;
+    _nameFocusNode.unfocus();
+    // get group name
+    String? text = _name;
+    String name = widget.info.name;
     if (text == null) {
       // nothing input
       return;
-    } else {
-      text = text.trim();
-    }
-    String title = widget.info.title;
-    if (title == text) {
-      Log.warning('group name not change: $title');
+    } else if (text == name) {
+      Log.warning('group name not change: $name');
       return;
     }
     setState(() {
-      widget.info.setRemark(context: context, alias: text);
+      widget.info.setGroupName(context: context, name: text);
     });
   }
 
@@ -240,25 +239,22 @@ class _ChatDetailState extends State<GroupChatDetailPage> implements lnc.Observe
     placeholder: 'Please input alias.',
     decoration: Facade.of(context).styles.textFieldDecoration,
     style: Facade.of(context).styles.textFieldStyle,
-    focusNode: _focusNode,
+    focusNode: _remarkFocusNode,
     onChanged: (value) => _alias = value,
     onTapOutside: (event) => _changeAlias(context),
     onSubmitted: (value) => _changeAlias(context),
   );
 
   void _changeAlias(BuildContext context) {
-    _focusNode.unfocus();
+    _remarkFocusNode.unfocus();
     // get alias value
     String? text = _alias;
+    ContactRemark remark = widget.info.remark;
     if (text == null) {
       // nothing input
       return;
-    } else {
-      text = text.trim();
-    }
-    ContactRemark remark = widget.info.remark;
-    if (remark.alias == text) {
-      Log.warning('alias not change: $remark');
+    } else if (remark.alias == text) {
+      Log.warning('group alias not change: $remark');
       return;
     }
     setState(() {

@@ -213,6 +213,7 @@ class _ChatTableCellState extends State<_ChatTableCell> implements lnc.Observer 
 
   @override
   Widget build(BuildContext context) => CupertinoTableCell(
+    leadingSize: 72,
     leading: _leading(widget.info),
     title: Text(widget.info.title),
     subtitle: _lastMessage(widget.info.lastMessage),
@@ -243,9 +244,9 @@ class _ChatTableCellState extends State<_ChatTableCell> implements lnc.Observer 
 
   Widget _leading(Conversation info) {
     if (widget.info.isMuted) {
-      return IconView.fromSpot(info.getImage(), info.unread);
+      return IconView.fromSpot(info.getImage(width: 48, height: 48), info.unread);
     } else {
-      return IconView.fromNumber(info.getImage(), info.unread);
+      return IconView.fromNumber(info.getImage(width: 48, height: 48), info.unread);
     }
   }
 

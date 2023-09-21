@@ -304,7 +304,7 @@ class _AccountState extends State<AccountPage> {
     }
     visa.setProperty('app_id', 'chat.dim.tarsier');
     // 3. set name & avatar url in visa document and sign it
-    visa.name = _nickname;
+    visa.name = _nickname?.trim();
     visa.avatar = PortableNetworkFile.parse(_avatarUrl?.toString());
     var sig = visa.sign(sKey);
     assert(sig != null, 'failed to sign visa: $user, $visa');
