@@ -25,11 +25,53 @@ class ParticipantsWidget extends StatefulWidget {
           ),
           width: 64,
           height: 64,
-          child: const Icon(color: CupertinoColors.systemGrey, Styles.plushIcon,),
+          child: const Icon(color: CupertinoColors.systemGrey, Styles.plusIcon,),
         ),
       ],
     ),
   );
+
+  static Widget minusCard(BuildContext context, ID fromWhere, {required PickContactsCallback onPicked}) => GestureDetector(
+    onTap: () => _getMembers(fromWhere).then((members) {
+      if (members == null) {
+        Alert.show(context, 'Error', 'Group not ready');
+      } else {
+        Log.info('candidates: $members');
+        MemberPicker.open(context, members, onPicked: onPicked);
+      }
+    }),
+    child: Column(
+      children: [
+        Container(
+          decoration: BoxDecoration(
+            border: Border.all(color: CupertinoColors.systemGrey, width: 1, style: BorderStyle.solid),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          width: 64,
+          height: 64,
+          child: const Icon(color: CupertinoColors.systemGrey, Styles.minusIcon,),
+        ),
+      ],
+    ),
+  );
+  static Future<Set<ID>?> _getMembers(ID group) async {
+    GroupManager man = GroupManager();
+    ID? owner = await man.dataSource.getOwner(group);
+    if (owner == null) {
+      return null;
+    }
+    List<ID> members = await man.dataSource.getMembers(group);
+    if (members.isEmpty) {
+      return null;
+    }
+    Set<ID> candidates = members.toSet();
+    candidates.remove(owner);
+    List<ID> admins = await man.dataSource.getAdministrators(group);
+    for (ID item in admins) {
+      candidates.remove(item);
+    }
+    return candidates;
+  }
 
   static Widget contactCard(BuildContext context, ContactInfo info) => GestureDetector(
     onTap: () => ProfilePage.open(context, info.identifier,),
@@ -128,6 +170,15 @@ class _ParticipantsState extends State<ParticipantsWidget> implements lnc.Observ
   //   _reload();
   // }
 
+  bool get canExpel => widget.info.isOwner || widget.info.isAdmin;
+
+  int get itemCount => canExpel
+      ? widget.info.members.length + 2
+      : widget.info.members.length + 1;
+
+  int get plusIndex => widget.info.members.length;
+  int get minusIndex => canExpel ? plusIndex + 1 : -1;
+
   @override
   Widget build(BuildContext context) => GridView.builder(
     shrinkWrap: true,
@@ -138,11 +189,15 @@ class _ParticipantsState extends State<ParticipantsWidget> implements lnc.Observ
       crossAxisSpacing: 16,
       mainAxisSpacing: 8,
     ),
-    itemCount: widget.info.members.length + 1,
+    itemCount: itemCount,
     itemBuilder: (BuildContext ctx, int index) {
-      if (index == widget.info.members.length) {
+      if (index == plusIndex) {
         return ParticipantsWidget.plusCard(context, widget.info.identifier,
           onPicked: (members) => _addMembers(context, widget.info.identifier, members),
+        );
+      } else if (index == minusIndex) {
+        return ParticipantsWidget.minusCard(context, widget.info.identifier,
+          onPicked: (members) => _removeMembers(context, widget.info.identifier, members),
         );
       }
       List<ContactInfo> members = widget.info.members;
@@ -150,6 +205,18 @@ class _ParticipantsState extends State<ParticipantsWidget> implements lnc.Observ
     },
   );
 
+}
+
+Future<String> _getNames(List<ID> members) async {
+  assert(members.isNotEmpty, 'members should not be empty here');
+  GlobalVariable shared = GlobalVariable();
+  String nickname = await shared.facebook.getName(members.first);
+  String text = nickname;
+  for (int i = 1; i < members.length; ++i) {
+    nickname = await shared.facebook.getName(members[i]);
+    text += ', $nickname';
+  }
+  return text;
 }
 
 void _addMembers(BuildContext ctx, ID group, Set<ID> members) {
@@ -163,17 +230,6 @@ void _addMembers(BuildContext ctx, ID group, Set<ID> members) {
     );
   });
 }
-Future<String> _getNames(List<ID> members) async {
-  assert(members.isNotEmpty, 'members should not be empty here');
-  GlobalVariable shared = GlobalVariable();
-  String nickname = await shared.facebook.getName(members.first);
-  String text = nickname;
-  for (int i = 1; i < members.length; ++i) {
-    nickname = await shared.facebook.getName(members[i]);
-    text += ', $nickname';
-  }
-  return text;
-}
 Future<bool> _doAddMembers(ID group, List<ID> newMembers) async {
   GroupManager man = GroupManager();
   bool ok = await man.inviteGroupMembers(group, newMembers);
@@ -181,6 +237,28 @@ Future<bool> _doAddMembers(ID group, List<ID> newMembers) async {
     Log.warning('added new members: $newMembers => $group');
   } else {
     Log.error('failed to add new members: $newMembers => $group');
+  }
+  return ok;
+}
+
+void _removeMembers(BuildContext ctx, ID group, Set<ID> members) {
+  if (members.isEmpty) {
+    return;
+  }
+  List<ID> expelMembers = members.toList();
+  _getNames(expelMembers).then((names) {
+    Alert.confirm(ctx, 'Confirm', 'Are you sure want to expel $names from this group?',
+      okAction: () => _doRemoveMembers(group, expelMembers),
+    );
+  });
+}
+Future<bool> _doRemoveMembers(ID group, List<ID> expelMembers) async {
+  GroupManager man = GroupManager();
+  bool ok = await man.expelGroupMembers(group, expelMembers);
+  if (ok) {
+    Log.warning('removed members: $expelMembers => $group');
+  } else {
+    Log.error('failed to remove members: $expelMembers => $group');
   }
   return ok;
 }
