@@ -231,6 +231,8 @@ class _HistoryAdapter with SectionAdapterMixin {
         mainFlex = 2;
       } else if (content is FileContent) {
         mainFlex = 1;
+      } else if (content is TextContent) {
+        mainFlex = 6;
       }
       bool isMine = sender == ContentViewUtils.currentUser?.identifier;
       const radius = Radius.circular(12);

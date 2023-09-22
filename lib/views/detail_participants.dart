@@ -80,7 +80,7 @@ class ParticipantsWidget extends StatefulWidget {
         info.getImage(width: 64, height: 64,),
         SizedBox(
           width: 64,
-          child: NameLabel(info.identifier,
+          child: info.getNameLabel(
             textAlign: TextAlign.center,
             overflow: TextOverflow.ellipsis,
           ),
@@ -170,13 +170,14 @@ class _ParticipantsState extends State<ParticipantsWidget> implements lnc.Observ
   //   _reload();
   // }
 
+  bool get canInvite => widget.info.isMember;
   bool get canExpel => widget.info.isOwner || widget.info.isAdmin;
 
-  int get itemCount => canExpel
-      ? widget.info.members.length + 2
-      : widget.info.members.length + 1;
+  int get itemCount => widget.info.members.length + (
+      canExpel ? 2 : (canInvite ? 1 : 0)
+  );
 
-  int get plusIndex => widget.info.members.length;
+  int get plusIndex => canInvite ? widget.info.members.length : -1;
   int get minusIndex => canExpel ? plusIndex + 1 : -1;
 
   @override
@@ -226,13 +227,19 @@ void _addMembers(BuildContext ctx, ID group, Set<ID> members) {
   List<ID> newMembers = members.toList();
   _getNames(newMembers).then((names) {
     Alert.confirm(ctx, 'Confirm', 'Are you sure want to invite $names into this group?',
-      okAction: () => _doAddMembers(group, newMembers),
+      okAction: () => _doAddMembers(group, newMembers).catchError((error, stackTrace) {
+        Log.error('failed to add members: $group, $error');
+        Alert.show(ctx, 'Error', error.toString());
+        return false;
+      }),
     );
   });
 }
 Future<bool> _doAddMembers(ID group, List<ID> newMembers) async {
   GroupManager man = GroupManager();
-  bool ok = await man.inviteGroupMembers(group, newMembers);
+  bool ok = await man.inviteGroupMembers(group, newMembers).catchError((error, stackTrace) {
+    throw error;
+  });
   if (ok) {
     Log.warning('added new members: $newMembers => $group');
   } else {
@@ -248,13 +255,19 @@ void _removeMembers(BuildContext ctx, ID group, Set<ID> members) {
   List<ID> expelMembers = members.toList();
   _getNames(expelMembers).then((names) {
     Alert.confirm(ctx, 'Confirm', 'Are you sure want to expel $names from this group?',
-      okAction: () => _doRemoveMembers(group, expelMembers),
+      okAction: () => _doRemoveMembers(group, expelMembers).catchError((error, stackTrace) {
+        Log.error('failed to remove members: $group, $error');
+        Alert.show(ctx, 'Error', error.toString());
+        return false;
+      }),
     );
   });
 }
 Future<bool> _doRemoveMembers(ID group, List<ID> expelMembers) async {
   GroupManager man = GroupManager();
-  bool ok = await man.expelGroupMembers(group, expelMembers);
+  bool ok = await man.expelGroupMembers(group, expelMembers).catchError((error, stackTrace) {
+    throw error;
+  });
   if (ok) {
     Log.warning('removed members: $expelMembers => $group');
   } else {
