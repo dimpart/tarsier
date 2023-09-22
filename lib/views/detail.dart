@@ -193,6 +193,7 @@ class _ChatDetailState extends State<ChatDetailPage> implements lnc.Observer {
   );
 
   Widget _participantList(BuildContext context) => Row(
+    crossAxisAlignment: CrossAxisAlignment.start,
     children: [
       ParticipantsWidget.contactCard(context, widget.info),
       const SizedBox(width: 16,),

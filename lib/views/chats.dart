@@ -215,7 +215,7 @@ class _ChatTableCellState extends State<_ChatTableCell> implements lnc.Observer 
   Widget build(BuildContext context) => CupertinoTableCell(
     leadingSize: 72,
     leading: _leading(widget.info),
-    title: Text(widget.info.title),
+    title: widget.info.getNameLabel(),
     subtitle: _lastMessage(widget.info.lastMessage),
     additionalInfo: _timeLabel(widget.info.lastTime),
     // trailing: const CupertinoListTileChevron(),

@@ -1,9 +1,10 @@
+import 'dart:collection';
+
 import 'package:flutter/cupertino.dart';
 
 import 'package:dim_flutter/dim_flutter.dart';
 import 'package:lnc/lnc.dart' as lnc;
 
-import 'pick_contacts.dart';
 import 'profile.dart';
 
 class ParticipantsWidget extends StatefulWidget {
@@ -11,11 +12,15 @@ class ParticipantsWidget extends StatefulWidget {
 
   final GroupInfo info;
 
-  static Widget plusCard(BuildContext context, ID fromWhere, {required PickContactsCallback onPicked}) => GestureDetector(
-    onTap: () => PickContactsPage.open(
-      context, fromWhere,
-      onPicked: onPicked,
-    ),
+  static Widget plusCard(BuildContext context, ID fromWhere, {required MemberPickerCallback onPicked}) => GestureDetector(
+    onTap: () => _getContacts(fromWhere).then((members) {
+      if (members == null) {
+        Alert.show(context, 'Error', 'Failed to add members');
+      } else {
+        Log.info('candidates: $members');
+        MemberPicker.open(context, members, onPicked: onPicked);
+      }
+    }),
     child: Column(
       children: [
         Container(
@@ -31,7 +36,7 @@ class ParticipantsWidget extends StatefulWidget {
     ),
   );
 
-  static Widget minusCard(BuildContext context, ID fromWhere, {required PickContactsCallback onPicked}) => GestureDetector(
+  static Widget minusCard(BuildContext context, ID fromWhere, {required MemberPickerCallback onPicked}) => GestureDetector(
     onTap: () => _getMembers(fromWhere).then((members) {
       if (members == null) {
         Alert.show(context, 'Error', 'Group not ready');
@@ -54,24 +59,6 @@ class ParticipantsWidget extends StatefulWidget {
       ],
     ),
   );
-  static Future<Set<ID>?> _getMembers(ID group) async {
-    GroupManager man = GroupManager();
-    ID? owner = await man.dataSource.getOwner(group);
-    if (owner == null) {
-      return null;
-    }
-    List<ID> members = await man.dataSource.getMembers(group);
-    if (members.isEmpty) {
-      return null;
-    }
-    Set<ID> candidates = members.toSet();
-    candidates.remove(owner);
-    List<ID> admins = await man.dataSource.getAdministrators(group);
-    for (ID item in admins) {
-      candidates.remove(item);
-    }
-    return candidates;
-  }
 
   static Widget contactCard(BuildContext context, ContactInfo info) => GestureDetector(
     onTap: () => ProfilePage.open(context, info.identifier,),
@@ -92,6 +79,55 @@ class ParticipantsWidget extends StatefulWidget {
   @override
   State<StatefulWidget> createState() => _ParticipantsState();
 
+}
+
+Future<Set<ID>?> _getContacts(ID fromWhere) async {
+  GlobalVariable shared = GlobalVariable();
+  User? user = await shared.facebook.currentUser;
+  if (user == null) {
+    assert(false, 'failed to get current user');
+    return null;
+  }
+  List<ID> contacts = await shared.facebook.getContacts(user.identifier);
+  if (contacts.isEmpty) {
+    assert(false, 'failed to get contacts for user: $user');
+    return HashSet();
+  }
+  // get old members
+  GroupManager man = GroupManager();
+  List<ID> fixed;
+  if (fromWhere.isGroup) {
+    fixed = await man.dataSource.getMembers(fromWhere);
+    if (fixed.isEmpty) {
+      assert(false, 'failed to get members: $fromWhere');
+      return null;
+    }
+  } else {
+    fixed = [user.identifier, fromWhere];
+  }
+  Set<ID> candidates = contacts.toSet();
+  for (ID item in fixed) {
+    candidates.remove(item);
+  }
+  return candidates;
+}
+Future<Set<ID>?> _getMembers(ID group) async {
+  GroupManager man = GroupManager();
+  ID? owner = await man.dataSource.getOwner(group);
+  if (owner == null) {
+    return null;
+  }
+  List<ID> members = await man.dataSource.getMembers(group);
+  if (members.isEmpty) {
+    return null;
+  }
+  Set<ID> candidates = members.toSet();
+  candidates.remove(owner);
+  List<ID> admins = await man.dataSource.getAdministrators(group);
+  for (ID item in admins) {
+    candidates.remove(item);
+  }
+  return candidates;
 }
 
 class _ParticipantsState extends State<ParticipantsWidget> implements lnc.Observer {
