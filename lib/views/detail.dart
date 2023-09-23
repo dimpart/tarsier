@@ -4,9 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:dim_flutter/dim_flutter.dart';
 import 'package:lnc/lnc.dart' as lnc;
 
-import 'chat_box.dart';
-import 'detail_participants.dart';
-
+import 'chat_associates.dart';
 
 class ChatDetailPage extends StatefulWidget {
   const ChatDetailPage(this.info, {super.key});
@@ -195,11 +193,9 @@ class _ChatDetailState extends State<ChatDetailPage> implements lnc.Observer {
   Widget _participantList(BuildContext context) => Row(
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
-      ParticipantsWidget.contactCard(context, widget.info),
+      contactCard(context, widget.info),
       const SizedBox(width: 16,),
-      ParticipantsWidget.plusCard(context, widget.info.identifier,
-        onPicked: (members) => _createGroupChat(context, widget.info.identifier, members),
-      )
+      plusCard(context, widget.info),
     ],
   );
 
@@ -229,45 +225,6 @@ class _ChatDetailState extends State<ChatDetailPage> implements lnc.Observer {
     ],
   );
 
-}
-
-void _createGroupChat(BuildContext ctx, ID contact, Set<ID> members) {
-  // Navigator.pop(ctx);
-  _doCreateGroup(contact, members).then((group) {
-    if (group == null) {
-      Alert.show(ctx, 'Error', 'Failed to create group');
-      return;
-    }
-    Navigator.pop(ctx);
-    Log.warning('new group: $group');
-    Conversation? chat = Conversation.fromID(group);
-    chat?.reloadData().then((nothing) => ChatBox.open(ctx, chat));
-  });
-}
-Future<ID?> _doCreateGroup(ID contact, Set<ID> members) async {
-  GroupManager man = GroupManager();
-  User? user = await man.currentUser;
-  if (user == null) {
-    assert(false, 'failed to get current user');
-    return null;
-  }
-  ID me = user.identifier;
-  // 1. build all members
-  List<ID> allMembers = [me];
-  if (contact == me) {
-    assert(false, 'should not happen');
-  } else {
-    allMembers.add(contact);
-  }
-  for (ID item in members) {
-    if (allMembers.contains(item)) {
-      assert(false, 'should not happen');
-    } else {
-      allMembers.add(item);
-    }
-  }
-  // 2. create group
-  return await man.createGroup(members: allMembers);
 }
 
 void _clearHistory(BuildContext ctx, ContactInfo info) {

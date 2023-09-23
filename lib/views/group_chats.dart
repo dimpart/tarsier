@@ -9,19 +9,19 @@ import 'chat_associates.dart';
 import 'chat_box.dart';
 
 
-class ChatHistoryPage extends StatefulWidget {
-  const ChatHistoryPage({super.key});
+class GroupChatsPage extends StatefulWidget {
+  const GroupChatsPage({super.key});
 
-  static BottomNavigationBarItem barItem() => const BottomNavigationBarItem(
-    icon: Icon(Styles.chatsTabIcon),
-    label: 'Chats',
+  static void open(BuildContext context) => showCupertinoDialog(
+    context: context,
+    builder: (context) => const GroupChatsPage(),
   );
 
   @override
   State<StatefulWidget> createState() => _ChatListState();
 }
 
-class _ChatListState extends State<ChatHistoryPage> implements lnc.Observer {
+class _ChatListState extends State<GroupChatsPage> implements lnc.Observer {
   _ChatListState() : _clerk = Amanuensis() {
     _adapter = _ChatListAdapter(dataSource: _clerk);
 
@@ -84,7 +84,7 @@ class _ChatListState extends State<ChatHistoryPage> implements lnc.Observer {
     backgroundColor: Facade.of(context).colors.scaffoldBackgroundColor,
     appBar: CupertinoNavigationBar(
       backgroundColor: Facade.of(context).colors.appBardBackgroundColor,
-      middle: StatedTitleView.from(context, () => 'Secure Chat'),
+      middle: StatedTitleView.from(context, () => 'Group Chats'),
       trailing: plusButton(context),
     ),
     body: SectionListView.builder(
@@ -103,8 +103,7 @@ class _ChatListAdapter with SectionAdapterMixin {
 
   @override
   Widget getSectionFooter(BuildContext context, int section) {
-    String prompt = '* Here shows chat histories of your friends only;\n'
-        '* Strangers will be placed in "Contacts -> New Friends".';
+    String prompt = '* Here shows chat histories of all your groups.';
     return Container(
       color: Facade.of(context).colors.appBardBackgroundColor,
       padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
@@ -120,16 +119,16 @@ class _ChatListAdapter with SectionAdapterMixin {
   }
 
   @override
-  int numberOfItems(int section) => _dataSource.conversations.length;
+  int numberOfItems(int section) => _dataSource.groupChats.length;
 
   @override
   Widget getItem(BuildContext context, IndexPath indexPath) {
-    List<Conversation> conversations = _dataSource.conversations;
-    if (indexPath.item >= conversations.length) {
-      Log.error('out of range: ${conversations.length}, $indexPath');
+    List<Conversation> groupChats = _dataSource.groupChats;
+    if (indexPath.item >= groupChats.length) {
+      Log.error('out of range: ${groupChats.length}, $indexPath');
       return const Text('null');
     }
-    Conversation info = conversations[indexPath.item];
+    Conversation info = groupChats[indexPath.item];
     Log.warning('show item: $info');
     return _ChatTableCell(info);
   }
@@ -222,7 +221,7 @@ class _ChatTableCellState extends State<_ChatTableCell> implements lnc.Observer 
     onTap: () {
       Log.warning('tap: ${widget.info}');
       ChatBox.open(context, widget.info);
-      },
+    },
     onLongPress: () {
       Log.warning('long press: ${widget.info}');
       Alert.actionSheet(context,
@@ -230,7 +229,7 @@ class _ChatTableCellState extends State<_ChatTableCell> implements lnc.Observer 
         'Remove ${widget.info.title}',
             () => _removeConversation(context, widget.info.identifier),
       );
-      },
+    },
   );
 
   void _removeConversation(BuildContext context, ID chat) {

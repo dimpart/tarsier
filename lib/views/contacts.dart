@@ -5,6 +5,7 @@ import 'package:flutter_section_list/flutter_section_list.dart';
 import 'package:dim_flutter/dim_flutter.dart';
 import 'package:lnc/lnc.dart' as lnc;
 
+import 'group_chats.dart';
 import 'profile.dart';
 import 'search.dart';
 import 'strangers.dart';
@@ -152,7 +153,7 @@ class _ContactListAdapter with SectionAdapterMixin {
   int numberOfItems(int section) {
     if (section == 0) {
       // fixed section
-      return 3;
+      return 4;
     }
     return _dataSource.getItemCount(section - 1);
   }
@@ -166,9 +167,11 @@ class _ContactListAdapter with SectionAdapterMixin {
       if (index == 0) {
         return _newFriendsItem(context);
       } else if (index == 1) {
-        return _blockListIcon(context);
+        return _groupChatsItem(context);
       } else if (index == 2) {
-        return _muteListIcon(context);
+        return _blockListItem(context);
+      } else if (index == 3) {
+        return _muteListItem(context);
       } else {
         // error
         return const Text('error');
@@ -199,7 +202,20 @@ class _ContactListAdapter with SectionAdapterMixin {
       onTap: () => StrangerListPage.open(context),
   );
 
-  Widget _blockListIcon(BuildContext context) => CupertinoTableCell(
+  Widget _groupChatsItem(BuildContext context) => CupertinoTableCell(
+    leading: Container(
+      color: CupertinoColors.systemGreen,
+      padding: const EdgeInsets.all(2),
+      child: const Icon(Styles.groupChatsIcon,
+        color: CupertinoColors.white,
+      ),
+    ),
+    title: const Text('Group Chats'),
+    trailing: const CupertinoListTileChevron(),
+    onTap: () => GroupChatsPage.open(context),
+  );
+
+  Widget _blockListItem(BuildContext context) => CupertinoTableCell(
       leading: Container(
         color: CupertinoColors.systemGrey,
         padding: const EdgeInsets.all(2),
@@ -212,7 +228,7 @@ class _ContactListAdapter with SectionAdapterMixin {
       onTap: () => BlockListPage.open(context),
   );
 
-  Widget _muteListIcon(BuildContext context) => CupertinoTableCell(
+  Widget _muteListItem(BuildContext context) => CupertinoTableCell(
     leading: Container(
       color: CupertinoColors.systemGrey,
       padding: const EdgeInsets.all(2),

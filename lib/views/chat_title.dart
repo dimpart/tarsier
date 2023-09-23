@@ -126,7 +126,7 @@ String _titleWithState(Conversation info) {
       _reconnect(true);
       break;
   }
-  String name = info.name;
+  String name = _trimName(info.name);
   if (sub == null) {
     if (info is GroupInfo) {
       int count = info.members.length;
@@ -134,10 +134,22 @@ String _titleWithState(Conversation info) {
     }
     return info.title;
   }
-  if (name.length > 15) {
-    name = '${name.substring(0, 12)}...';
-  }
   return '$name ($sub)';
+}
+String _trimName(String name) {
+  name = name.trim();
+  String text = '';
+  int i = 0, j = 0;
+  for (; i < name.length; ++i, ++j) {
+    text += name[i];
+    if (name.codeUnitAt(i) > 127) {
+      ++j;
+    }
+    if (j > 15) {
+      break;
+    }
+  }
+  return i < name.length ? '$text...' : name;
 }
 
 void _reconnect(bool test) async {

@@ -1,133 +1,18 @@
-import 'dart:collection';
-
 import 'package:flutter/cupertino.dart';
 
 import 'package:dim_flutter/dim_flutter.dart';
 import 'package:lnc/lnc.dart' as lnc;
 
-import 'profile.dart';
+import 'chat_associates.dart';
 
 class ParticipantsWidget extends StatefulWidget {
   const ParticipantsWidget(this.info, {super.key});
 
   final GroupInfo info;
 
-  static Widget plusCard(BuildContext context, ID fromWhere, {required MemberPickerCallback onPicked}) => GestureDetector(
-    onTap: () => _getContacts(fromWhere).then((members) {
-      if (members == null) {
-        Alert.show(context, 'Error', 'Failed to add members');
-      } else {
-        Log.info('candidates: $members');
-        MemberPicker.open(context, members, onPicked: onPicked);
-      }
-    }),
-    child: Column(
-      children: [
-        Container(
-          decoration: BoxDecoration(
-            border: Border.all(color: CupertinoColors.systemGrey, width: 1, style: BorderStyle.solid),
-            borderRadius: BorderRadius.circular(8),
-          ),
-          width: 64,
-          height: 64,
-          child: const Icon(color: CupertinoColors.systemGrey, Styles.plusIcon,),
-        ),
-      ],
-    ),
-  );
-
-  static Widget minusCard(BuildContext context, ID fromWhere, {required MemberPickerCallback onPicked}) => GestureDetector(
-    onTap: () => _getMembers(fromWhere).then((members) {
-      if (members == null) {
-        Alert.show(context, 'Error', 'Group not ready');
-      } else {
-        Log.info('candidates: $members');
-        MemberPicker.open(context, members, onPicked: onPicked);
-      }
-    }),
-    child: Column(
-      children: [
-        Container(
-          decoration: BoxDecoration(
-            border: Border.all(color: CupertinoColors.systemGrey, width: 1, style: BorderStyle.solid),
-            borderRadius: BorderRadius.circular(8),
-          ),
-          width: 64,
-          height: 64,
-          child: const Icon(color: CupertinoColors.systemGrey, Styles.minusIcon,),
-        ),
-      ],
-    ),
-  );
-
-  static Widget contactCard(BuildContext context, ContactInfo info) => GestureDetector(
-    onTap: () => ProfilePage.open(context, info.identifier,),
-    child: Column(
-      children: [
-        info.getImage(width: 64, height: 64,),
-        SizedBox(
-          width: 64,
-          child: info.getNameLabel(
-            textAlign: TextAlign.center,
-            overflow: TextOverflow.ellipsis,
-          ),
-        ),
-      ],
-    ),
-  );
-
   @override
   State<StatefulWidget> createState() => _ParticipantsState();
 
-}
-
-Future<Set<ID>?> _getContacts(ID fromWhere) async {
-  GlobalVariable shared = GlobalVariable();
-  User? user = await shared.facebook.currentUser;
-  if (user == null) {
-    assert(false, 'failed to get current user');
-    return null;
-  }
-  List<ID> contacts = await shared.facebook.getContacts(user.identifier);
-  if (contacts.isEmpty) {
-    assert(false, 'failed to get contacts for user: $user');
-    return HashSet();
-  }
-  // get old members
-  GroupManager man = GroupManager();
-  List<ID> fixed;
-  if (fromWhere.isGroup) {
-    fixed = await man.dataSource.getMembers(fromWhere);
-    if (fixed.isEmpty) {
-      assert(false, 'failed to get members: $fromWhere');
-      return null;
-    }
-  } else {
-    fixed = [user.identifier, fromWhere];
-  }
-  Set<ID> candidates = contacts.toSet();
-  for (ID item in fixed) {
-    candidates.remove(item);
-  }
-  return candidates;
-}
-Future<Set<ID>?> _getMembers(ID group) async {
-  GroupManager man = GroupManager();
-  ID? owner = await man.dataSource.getOwner(group);
-  if (owner == null) {
-    return null;
-  }
-  List<ID> members = await man.dataSource.getMembers(group);
-  if (members.isEmpty) {
-    return null;
-  }
-  Set<ID> candidates = members.toSet();
-  candidates.remove(owner);
-  List<ID> admins = await man.dataSource.getAdministrators(group);
-  for (ID item in admins) {
-    candidates.remove(item);
-  }
-  return candidates;
 }
 
 class _ParticipantsState extends State<ParticipantsWidget> implements lnc.Observer {
@@ -229,16 +114,16 @@ class _ParticipantsState extends State<ParticipantsWidget> implements lnc.Observ
     itemCount: itemCount,
     itemBuilder: (BuildContext ctx, int index) {
       if (index == plusIndex) {
-        return ParticipantsWidget.plusCard(context, widget.info.identifier,
+        return plusCard(context, widget.info,
           onPicked: (members) => _addMembers(context, widget.info.identifier, members),
         );
       } else if (index == minusIndex) {
-        return ParticipantsWidget.minusCard(context, widget.info.identifier,
+        return minusCard(context, widget.info,
           onPicked: (members) => _removeMembers(context, widget.info.identifier, members),
         );
       }
       List<ContactInfo> members = widget.info.members;
-      return ParticipantsWidget.contactCard(ctx, members[index]);
+      return contactCard(ctx, members[index]);
     },
   );
 
