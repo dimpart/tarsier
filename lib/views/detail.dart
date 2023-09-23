@@ -15,8 +15,8 @@ class ChatDetailPage extends StatefulWidget {
 
   static void open(BuildContext context, ID identifier) {
     assert(identifier.isUser, 'ID error: $identifier');
-    ContactInfo info = ContactInfo.fromID(identifier);
-    info.reloadData().then((value) {
+    ContactInfo? info = ContactInfo.fromID(identifier);
+    info?.reloadData().then((value) {
       showCupertinoDialog(
         context: context,
         builder: (context) => ChatDetailPage(info),
@@ -240,8 +240,8 @@ void _createGroupChat(BuildContext ctx, ID contact, Set<ID> members) {
     }
     Navigator.pop(ctx);
     Log.warning('new group: $group');
-    Conversation chat = Conversation.fromID(group);
-    ChatBox.open(ctx, chat);
+    Conversation? chat = Conversation.fromID(group);
+    chat?.reloadData().then((nothing) => ChatBox.open(ctx, chat));
   });
 }
 Future<ID?> _doCreateGroup(ID contact, Set<ID> members) async {

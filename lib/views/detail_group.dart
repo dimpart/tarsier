@@ -14,8 +14,8 @@ class GroupChatDetailPage extends StatefulWidget {
 
   static void open(BuildContext context, ID identifier) {
     assert(identifier.isGroup, 'ID error: $identifier');
-    GroupInfo info = GroupInfo.fromID(identifier);
-    info.reloadData().then((value) {
+    GroupInfo? info = GroupInfo.fromID(identifier);
+    info?.reloadData().then((value) {
       showCupertinoDialog(
         context: context,
         builder: (context) => GroupChatDetailPage(info),

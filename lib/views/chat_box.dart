@@ -8,6 +8,7 @@ import 'package:dim_flutter/dim_flutter.dart';
 import 'package:lnc/lnc.dart' as lnc;
 
 import 'chat_flag.dart';
+import 'chat_title.dart';
 import 'chat_tray.dart';
 import 'detail.dart';
 import 'detail_group.dart';
@@ -126,7 +127,7 @@ class _ChatBoxState extends State<ChatBox> implements lnc.Observer {
     backgroundColor: Facade.of(context).colors.scaffoldBackgroundColor,
     appBar: CupertinoNavigationBar(
       backgroundColor: Facade.of(context).colors.appBardBackgroundColor,
-      middle: StatedTitleView.from(context, () => widget.info.title),
+      middle: ChatTitleView.from(context, widget.info),
       trailing: IconButton(
         iconSize: Styles.navigationBarIconSize,
         icon: const Icon(Styles.chatDetailIcon),
