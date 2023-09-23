@@ -64,7 +64,10 @@ class _StrangerListState extends State<StrangerListPage> implements lnc.Observer
   }
 
   Future<void> _reload() async {
-    await _clerk.loadConversations();
+    List<Conversation> chats = await _clerk.loadConversations();
+    for (Conversation item in chats) {
+      await item.reloadData();
+    }
     if (mounted) {
       setState(() {
         _adapter.notifyDataChange();
@@ -213,9 +216,9 @@ class _ChatTableCellState extends State<_ChatTableCell> implements lnc.Observer 
   @override
   Widget build(BuildContext context) => CupertinoTableCell(
     leading: _leading(widget.info),
-    title: Text(widget.info.title),
+    title: widget.info.getNameLabel(),
     subtitle: _lastMessage(widget.info.lastMessage),
-    additionalInfo: _timeLabel(widget.info.lastTime),
+    additionalInfo: _additional(context, widget.info, widget.info.lastTime),
     // trailing: const CupertinoListTileChevron(),
     onTap: () {
       Log.warning('tap: ${widget.info}');
@@ -255,10 +258,23 @@ class _ChatTableCellState extends State<_ChatTableCell> implements lnc.Observer 
     return Text(last);
   }
 
-  Widget? _timeLabel(DateTime? time) {
-    if (time == null) {
-      return null;
-    }
-    return Text(TimeUtils.getTimeString(time));
-  }
+  Widget _additional(BuildContext context, Conversation info, DateTime? time) => Row(
+    children: [
+      if (time != null)
+      Text(TimeUtils.getTimeString(time)),
+      if (info is ContactInfo)
+      Container(
+        // height: 24,
+        margin: const EdgeInsets.only(left: 8),
+        child: OutlinedButton(
+          // style: ButtonStyle(
+          //   backgroundColor: MaterialStateProperty.all<Color>(
+          //       Facade.of(context).colors.importantButtonColor),
+          // ),
+          onPressed: () => info.add(context: context),
+          child: const Text('Accept'),
+        ),
+      ),
+    ],
+  );
 }

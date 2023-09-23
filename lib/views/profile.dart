@@ -132,7 +132,7 @@ class _ProfileState extends State<ProfilePage> implements lnc.Observer {
             // This title is visible in both collapsed and expanded states.
             // When the "middle" parameter is omitted, the widget provided
             // in the "largeTitle" parameter is used instead in the collapsed state.
-            largeTitle: Text(widget.info.title,
+            largeTitle: Text(widget.info.name,
               style: styles.titleTextStyle,
             ),
           ),
@@ -469,7 +469,7 @@ class _ProfileTableState extends State<_ProfileTableCell> implements lnc.Observe
   @override
   Widget build(BuildContext context) => CupertinoTableCell(
     leading: widget.info.getImage(),
-    title: Text(widget.info.title),
+    title: widget.info.getNameLabel(),
     subtitle: Text(widget.info.identifier.toString()),
     onTap: () => ProfilePage.open(context, widget.info.identifier),
     onLongPress: widget.onLongPress,

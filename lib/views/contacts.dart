@@ -307,6 +307,11 @@ abstract class _GreetingState<T extends StatefulWidget> extends State<T> impleme
     int count = 0;
     for (Conversation item in strangers) {
       await item.reloadData();
+      if (item is ContactInfo && item.isNewFriend) {
+          // ok
+      } else {
+        continue;
+      }
       if (item.isMuted) {
         Log.warning('muted stranger: $item');
         continue;
