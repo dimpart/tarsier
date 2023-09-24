@@ -47,11 +47,13 @@ class _ChatBoxState extends State<ChatBox> implements lnc.Observer {
     nc.addObserver(this, NotificationNames.kDocumentUpdated);
     nc.addObserver(this, NotificationNames.kRemarkUpdated);
     nc.addObserver(this, NotificationNames.kBlockListUpdated);
+    nc.addObserver(this, NotificationNames.kMembersUpdated);
   }
 
   @override
   void dispose() {
     var nc = lnc.NotificationCenter();
+    nc.removeObserver(this, NotificationNames.kMembersUpdated);
     nc.removeObserver(this, NotificationNames.kBlockListUpdated);
     nc.removeObserver(this, NotificationNames.kRemarkUpdated);
     nc.removeObserver(this, NotificationNames.kDocumentUpdated);
@@ -96,6 +98,12 @@ class _ChatBoxState extends State<ChatBox> implements lnc.Observer {
         // block-list updated
         await _reload();
       }
+    } else if (name == NotificationNames.kMembersUpdated) {
+      ID? gid = userInfo?['ID'];
+      assert(gid != null, 'notification error: $notification');
+      if (gid == widget.info.identifier) {
+        await _reload();
+      }
     } else {
       assert(false, 'notification error: $notification');
     }
@@ -128,14 +136,21 @@ class _ChatBoxState extends State<ChatBox> implements lnc.Observer {
     appBar: CupertinoNavigationBar(
       backgroundColor: Facade.of(context).colors.appBardBackgroundColor,
       middle: ChatTitleView.from(context, widget.info),
-      trailing: IconButton(
-        iconSize: Styles.navigationBarIconSize,
-        icon: const Icon(Styles.chatDetailIcon),
-        onPressed: () => _openDetail(context, widget.info),
-      ),
+      trailing: _detailButton(context, widget.info),
     ),
     body: _body(context),
   );
+
+  Widget? _detailButton(BuildContext context, Conversation info) {
+    if (info is GroupInfo && info.isNotMember) {
+      return null;
+    }
+    return IconButton(
+      iconSize: Styles.navigationBarIconSize,
+      icon: const Icon(Styles.chatDetailIcon),
+      onPressed: () => _openDetail(context, widget.info),
+    );
+  }
 
   Widget _body(BuildContext context) => Column(
     mainAxisAlignment: MainAxisAlignment.end,
@@ -158,7 +173,8 @@ class _ChatBoxState extends State<ChatBox> implements lnc.Observer {
   );
 
   Widget _inputTray(BuildContext context) {
-    if (widget.info.isBlocked) {
+    Conversation info = widget.info;
+    if (info.isBlocked) {
       return Center(
         child: Container(
           padding: const EdgeInsets.all(16),
@@ -169,8 +185,20 @@ class _ChatBoxState extends State<ChatBox> implements lnc.Observer {
           ),
         ),
       );
+    } else if (info is GroupInfo && info.isNotMember) {
+      return Center(
+        child: Container(
+          padding: const EdgeInsets.all(16),
+          child: Text('Non-Member',
+            style: TextStyle(
+              color: Facade.of(context).colors.primaryTextColor,
+            ),
+          ),
+        ),
+      );
     }
-    return ChatInputTray(widget.info);
+    // normally
+    return ChatInputTray(info);
   }
 
 }
