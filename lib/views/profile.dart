@@ -251,7 +251,7 @@ class _ProfileState extends State<ProfilePage> implements lnc.Observer {
         additionalDividerMargin: 0,
         children: [
           /// add friend
-          if (!widget.info.isFriend)
+          if (widget.info.isNotFriend)
             _addButton(context, backgroundColor: backgroundColor, textColor: primaryTextColor),
           /// send message
           if (widget.info.isFriend/* && !widget.info.isBlocked*/)

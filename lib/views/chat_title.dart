@@ -29,8 +29,8 @@ class _TitleState extends State<ChatTitleView> implements lnc.Observer {
   void dispose() {
     var nc = lnc.NotificationCenter();
     nc.removeObserver(this, NotificationNames.kMembersUpdated);
-    nc.removeObserver(this, NotificationNames.kServerStateChanged);
     nc.removeObserver(this, NotificationNames.kDocumentUpdated);
+    nc.removeObserver(this, NotificationNames.kServerStateChanged);
     super.dispose();
   }
 
