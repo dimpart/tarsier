@@ -114,7 +114,14 @@ class _ChatBoxState extends State<ChatBox> implements lnc.Observer {
   Future<void> _reload() async {
     GlobalVariable shared = GlobalVariable();
     ContentViewUtils.currentUser = await shared.facebook.currentUser;
-    var pair = await shared.database.getInstantMessages(widget.info.identifier,
+    Conversation info = widget.info;
+    if (info is GroupInfo) {
+      List<ContactInfo> members = info.members;
+      if (members.length < 2) {
+        await shared.messenger?.queryMembers(info.identifier);
+      }
+    }
+    var pair = await shared.database.getInstantMessages(info.identifier,
         limit: ChatBox.maxCountOfMessages);
     Log.warning('message updated: ${pair.first.length}');
     if (mounted) {

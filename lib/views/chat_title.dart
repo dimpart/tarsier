@@ -101,7 +101,7 @@ class _TitleState extends State<ChatTitleView> implements lnc.Observer {
 int _stateIndex(SessionState? state) =>
     state?.index ?? SessionStateOrder.kDefault;
 
-int _sessionState = SessionStateOrder.kDefault;
+int _sessionState = SessionStateOrder.kRunning;
 
 String _titleWithState(Conversation info) {
   String? sub;
