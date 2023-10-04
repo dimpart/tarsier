@@ -5,6 +5,7 @@ import 'package:dim_flutter/dim_flutter.dart';
 import 'package:lnc/lnc.dart' as lnc;
 
 import 'detail_participants.dart';
+import 'group_invitations.dart';
 
 
 class GroupChatDetailPage extends StatefulWidget {
@@ -38,6 +39,7 @@ class _ChatDetailState extends State<GroupChatDetailPage> implements lnc.Observe
   _ChatDetailState() {
     var nc = lnc.NotificationCenter();
     nc.addObserver(this, NotificationNames.kDocumentUpdated);
+    nc.addObserver(this, NotificationNames.kGroupHistoryUpdated);
   }
 
   final FocusNode _nameFocusNode = FocusNode();
@@ -50,6 +52,7 @@ class _ChatDetailState extends State<GroupChatDetailPage> implements lnc.Observe
     _nameFocusNode.dispose();
     _remarkFocusNode.dispose();
     var nc = lnc.NotificationCenter();
+    nc.removeObserver(this, NotificationNames.kGroupHistoryUpdated);
     nc.removeObserver(this, NotificationNames.kDocumentUpdated);
     super.dispose();
   }
@@ -68,6 +71,13 @@ class _ChatDetailState extends State<GroupChatDetailPage> implements lnc.Observe
             // update name in title
           });
         }
+      }
+    } else if (name == NotificationNames.kGroupHistoryUpdated) {
+      ID? identifier = userInfo?['ID'];
+      assert(identifier != null, 'notification error: $notification');
+      if (identifier == widget.info.identifier) {
+        Log.info('group history updated: $identifier');
+        await _reload();
       }
     } else {
       Log.error('notification error: $notification');
@@ -141,7 +151,13 @@ class _ChatDetailState extends State<GroupChatDetailPage> implements lnc.Observe
             title: Text('Group Name', style: TextStyle(color: primaryTextColor)),
             additionalInfo: SizedBox(
               width: 240,
-              child: _nameTextField(context),
+              child: widget.info.isOwner ? _nameTextField(context) : Container(
+                margin: const EdgeInsets.only(right: 8),
+                child: Text(widget.info.name,
+                  overflow: TextOverflow.ellipsis,
+                  textAlign: TextAlign.right,
+                ),
+              ),
             ),
           ),
           /// Remark
@@ -158,7 +174,36 @@ class _ChatDetailState extends State<GroupChatDetailPage> implements lnc.Observe
         ],
       ),
 
-      if (widget.info.identifier.type != EntityType.kStation)
+      CupertinoListSection(
+        backgroundColor: dividerColor,
+        topMargin: 0,
+        additionalDividerMargin: 32,
+        children: [
+          /// Administrators
+          // CupertinoListTile(
+          //   backgroundColor: backgroundColor,
+          //   backgroundColorActivated: backgroundColorActivated,
+          //   padding: Styles.settingsSectionItemPadding,
+          //   leading: Icon(Styles.adminIcon, color: primaryTextColor),
+          //   title: Text('Administrators', style: TextStyle(color: primaryTextColor)),
+          //   additionalInfo: null,
+          //   trailing: const CupertinoListTileChevron(),
+          // ),
+          /// Invitations
+          CupertinoListTile(
+            backgroundColor: backgroundColor,
+            backgroundColorActivated: backgroundColorActivated,
+            padding: Styles.settingsSectionItemPadding,
+            leading: Icon(Styles.invitationIcon, color: primaryTextColor),
+            title: Text('Invitations', style: TextStyle(color: primaryTextColor)),
+            additionalInfo: NumberBubble.fromInt(widget.info.invitations.length),
+            trailing: const CupertinoListTileChevron(),
+            onTap: () => InvitationsPage.open(context, widget.info),
+          ),
+        ],
+      ),
+
+      // if (widget.info.identifier.type != EntityType.kStation)
         CupertinoListSection(
           backgroundColor: dividerColor,
           topMargin: 0,

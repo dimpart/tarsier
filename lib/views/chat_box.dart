@@ -48,11 +48,13 @@ class _ChatBoxState extends State<ChatBox> implements lnc.Observer {
     nc.addObserver(this, NotificationNames.kRemarkUpdated);
     nc.addObserver(this, NotificationNames.kBlockListUpdated);
     nc.addObserver(this, NotificationNames.kMembersUpdated);
+    nc.addObserver(this, NotificationNames.kGroupHistoryUpdated);
   }
 
   @override
   void dispose() {
     var nc = lnc.NotificationCenter();
+    nc.removeObserver(this, NotificationNames.kGroupHistoryUpdated);
     nc.removeObserver(this, NotificationNames.kMembersUpdated);
     nc.removeObserver(this, NotificationNames.kBlockListUpdated);
     nc.removeObserver(this, NotificationNames.kRemarkUpdated);
@@ -104,6 +106,13 @@ class _ChatBoxState extends State<ChatBox> implements lnc.Observer {
       if (gid == widget.info.identifier) {
         await _reload();
       }
+    } else if (name == NotificationNames.kGroupHistoryUpdated) {
+      ID? chat = userInfo?['ID'];
+      if (chat == widget.info.identifier) {
+        Log.info('group history updated: $chat');
+        await widget.info.reloadData();
+        await _reload();
+      }
     } else {
       assert(false, 'notification error: $notification');
     }
@@ -152,11 +161,21 @@ class _ChatBoxState extends State<ChatBox> implements lnc.Observer {
     if (info is GroupInfo && info.isNotMember) {
       return null;
     }
-    return IconButton(
+    Widget icon = IconButton(
       iconSize: Styles.navigationBarIconSize,
       icon: const Icon(Styles.chatDetailIcon),
       onPressed: () => _openDetail(context, widget.info),
     );
+    if (info is GroupInfo) {
+      int count = info.invitations.length;
+      if (count > 0) {
+        Log.warning('invitations count: $count');
+        return IconView.fromSpot(icon, count,
+          alignment: const AlignmentDirectional(0.8, -0.8),
+        );
+      }
+    }
+    return icon;
   }
 
   Widget _body(BuildContext context) => Column(

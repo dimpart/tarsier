@@ -8,13 +8,13 @@ import 'package:flutter/material.dart';
 import 'chat_box.dart';
 import 'profile.dart';
 
-Widget contactCard(BuildContext context, ContactInfo info) => GestureDetector(
+Widget contactCard(BuildContext context, ContactInfo info, {double width = 64, double height = 64}) => GestureDetector(
   onTap: () => ProfilePage.open(context, info.identifier,),
   child: Column(
     children: [
-      info.getImage(width: 64, height: 64,),
+      info.getImage(width: width, height: height,),
       SizedBox(
-        width: 64,
+        width: width,
         child: info.getNameLabel(
           textAlign: TextAlign.center,
           overflow: TextOverflow.ellipsis,
