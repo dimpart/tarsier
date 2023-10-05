@@ -113,13 +113,19 @@ class _ParticipantsState extends State<ParticipantsWidget> implements lnc.Observ
     ),
     itemCount: itemCount,
     itemBuilder: (BuildContext ctx, int index) {
+      onTap() => Alert.show(context, 'Notice', 'Please review invitations first.');
+      GroupInfo info = widget.info;
       if (index == plusIndex) {
+        bool canReview = info.isOwner || info.isAdmin;
         return plusCard(context, widget.info,
-          onPicked: (members) => _addMembers(context, widget.info.identifier, members),
+          onTap: canReview && info.invitations.isNotEmpty ? onTap : null,
+          onPicked: (members) => _addMembers(context, widget.info, members),
         );
       } else if (index == minusIndex) {
+        bool canReview = info.isOwner || info.isAdmin;
         return minusCard(context, widget.info,
-          onPicked: (members) => _removeMembers(context, widget.info.identifier, members),
+          onTap: canReview && info.invitations.isNotEmpty ? onTap : null,
+          onPicked: (members) => _removeMembers(context, widget.info, members),
         );
       }
       List<ContactInfo> members = ContactInfo.fromList(widget.info.members);
@@ -141,58 +147,56 @@ Future<String> _getNames(List<ID> members) async {
   return text;
 }
 
-void _addMembers(BuildContext ctx, ID group, Set<ID> members) {
+void _addMembers(BuildContext ctx, GroupInfo groupInfo, Set<ID> members) {
   if (members.isEmpty) {
     return;
   }
   List<ID> newMembers = members.toList();
   _getNames(newMembers).then((names) {
     Alert.confirm(ctx, 'Confirm', 'Are you sure want to invite $names into this group?',
-      okAction: () => _doAddMembers(group, newMembers).catchError((error, stackTrace) {
-        Log.error('failed to add members: $group, $error');
-        Alert.show(ctx, 'Error', error.toString());
-        return false;
-      }),
+      okAction: () => _doAddMembers(ctx, groupInfo, newMembers),
     );
   });
 }
-Future<bool> _doAddMembers(ID group, List<ID> newMembers) async {
+void _doAddMembers(BuildContext ctx, GroupInfo groupInfo, List<ID> newMembers) {
+  ID group = groupInfo.identifier;
   GroupManager man = GroupManager();
-  bool ok = await man.inviteGroupMembers(group, newMembers).catchError((error, stackTrace) {
-    throw error;
+  man.inviteGroupMembers(group, newMembers).then((ok) {
+    if (!ok) {
+      Log.error('failed to add new members: $newMembers => $group');
+    } else if (groupInfo.isOwner || groupInfo.isAdmin) {
+      Log.warning('added new members: $newMembers => $group');
+    } else {
+      Alert.show(ctx, 'Success', 'A new invitation is sent to all administrators, now is waiting for review.');
+    }
+  }).catchError((error, stackTrace) {
+    Log.error('failed to invite members: $groupInfo, $error');
+    Alert.show(ctx, 'Error', error.toString());
   });
-  if (ok) {
-    Log.warning('added new members: $newMembers => $group');
-  } else {
-    Log.error('failed to add new members: $newMembers => $group');
-  }
-  return ok;
 }
 
-void _removeMembers(BuildContext ctx, ID group, Set<ID> members) {
+void _removeMembers(BuildContext ctx, GroupInfo groupInfo, Set<ID> members) {
   if (members.isEmpty) {
     return;
   }
   List<ID> expelMembers = members.toList();
   _getNames(expelMembers).then((names) {
     Alert.confirm(ctx, 'Confirm', 'Are you sure want to expel $names from this group?',
-      okAction: () => _doRemoveMembers(group, expelMembers).catchError((error, stackTrace) {
-        Log.error('failed to remove members: $group, $error');
-        Alert.show(ctx, 'Error', error.toString());
-        return false;
-      }),
+      okAction: () => _doRemoveMembers(ctx, groupInfo, expelMembers),
     );
   });
 }
-Future<bool> _doRemoveMembers(ID group, List<ID> expelMembers) async {
+void _doRemoveMembers(BuildContext ctx, GroupInfo groupInfo, List<ID> expelMembers) {
+  ID group = groupInfo.identifier;
   GroupManager man = GroupManager();
-  bool ok = await man.expelGroupMembers(group, expelMembers).catchError((error, stackTrace) {
-    throw error;
+  man.expelGroupMembers(group, expelMembers).then((ok) {
+    if (ok) {
+      Log.warning('removed members: $expelMembers => $group');
+    } else {
+      Log.error('failed to remove members: $expelMembers => $group');
+    }
+  }).catchError((error, stackTrace) {
+    Log.error('failed to remove members: $groupInfo, $error');
+    Alert.show(ctx, 'Error', error.toString());
   });
-  if (ok) {
-    Log.warning('removed members: $expelMembers => $group');
-  } else {
-    Log.error('failed to remove members: $expelMembers => $group');
-  }
-  return ok;
 }

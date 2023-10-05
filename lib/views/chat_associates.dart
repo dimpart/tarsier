@@ -39,8 +39,8 @@ Widget plusButton(BuildContext context) => IconButton(
   icon: const Icon(Styles.plusIcon),
 );
 
-Widget plusCard(BuildContext context, Conversation fromWhere, {MemberPickerCallback? onPicked}) => GestureDetector(
-  onTap: () => _getContacts(fromWhere).then((members) {
+Widget plusCard(BuildContext context, Conversation fromWhere, {GestureTapCallback? onTap, MemberPickerCallback? onPicked}) => GestureDetector(
+  onTap: onTap ?? () => _getContacts(fromWhere).then((members) {
     if (members == null) {
       Alert.show(context, 'Error', 'Failed to add members');
     } else if (fromWhere.isUser) {
@@ -74,8 +74,8 @@ Widget plusCard(BuildContext context, Conversation fromWhere, {MemberPickerCallb
   ),
 );
 
-Widget minusCard(BuildContext context, GroupInfo fromWhere, {required MemberPickerCallback onPicked}) => GestureDetector(
-  onTap: () => _getMembers(fromWhere).then((members) {
+Widget minusCard(BuildContext context, GroupInfo fromWhere, {GestureTapCallback? onTap, required MemberPickerCallback onPicked}) => GestureDetector(
+  onTap: onTap ?? () => _getMembers(fromWhere).then((members) {
     if (members == null) {
       Alert.show(context, 'Error', 'Group not ready');
     } else {

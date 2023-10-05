@@ -27,11 +27,13 @@ class _InvitationsState extends State<InvitationsPage> implements lnc.Observer {
   _InvitationsState() {
     var nc = lnc.NotificationCenter();
     nc.addObserver(this, NotificationNames.kGroupHistoryUpdated);
+    nc.addObserver(this, NotificationNames.kAdministratorsUpdated);
   }
 
   @override
   void dispose() {
     var nc = lnc.NotificationCenter();
+    nc.removeObserver(this, NotificationNames.kAdministratorsUpdated);
     nc.removeObserver(this, NotificationNames.kGroupHistoryUpdated);
     super.dispose();
   }
@@ -48,6 +50,14 @@ class _InvitationsState extends State<InvitationsPage> implements lnc.Observer {
         Log.info('group history updated: $chat');
         await _reload();
       }
+    } else if (name == NotificationNames.kAdministratorsUpdated) {
+      ID? chat = userInfo?['ID'];
+      if (chat == widget.info.identifier) {
+        Log.info('administrators updated: $chat');
+        await _reload();
+      }
+    } else {
+      assert(false, 'notification error: $name');
     }
   }
 

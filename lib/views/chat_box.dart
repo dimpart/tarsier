@@ -167,8 +167,9 @@ class _ChatBoxState extends State<ChatBox> implements lnc.Observer {
       onPressed: () => _openDetail(context, widget.info),
     );
     if (info is GroupInfo) {
+      bool canReview = info.isOwner || info.isAdmin;
       int count = info.invitations.length;
-      if (count > 0) {
+      if (canReview && count > 0) {
         Log.warning('invitations count: $count');
         return IconView.fromSpot(icon, count,
           alignment: const AlignmentDirectional(0.8, -0.8),
