@@ -32,8 +32,8 @@ class ProfilePage extends StatefulWidget {
     }
   }
 
-  static Widget cell(ContactInfo info, {GestureLongPressCallback? onLongPress}) =>
-      _ProfileTableCell(info, onLongPress: onLongPress);
+  static Widget cell(ContactInfo info, {Widget? trailing, GestureLongPressCallback? onLongPress}) =>
+      _ProfileTableCell(info, trailing: trailing, onLongPress: onLongPress);
 
   @override
   State<StatefulWidget> createState() => _ProfileState();
@@ -404,10 +404,12 @@ Future<void> _sendContact(ID receiver,
 //
 
 class _ProfileTableCell extends StatefulWidget {
-  const _ProfileTableCell(this.info, {this.onLongPress});
+  const _ProfileTableCell(this.info, {this.onLongPress, this.trailing});
 
   final ContactInfo info;
   final GestureLongPressCallback? onLongPress;
+
+  final Widget? trailing;
 
   @override
   State<StatefulWidget> createState() => _ProfileTableState();
@@ -471,6 +473,7 @@ class _ProfileTableState extends State<_ProfileTableCell> implements lnc.Observe
     leading: widget.info.getImage(),
     title: widget.info.getNameLabel(),
     subtitle: Text(widget.info.identifier.toString()),
+    trailing: widget.trailing,
     onTap: () => ProfilePage.open(context, widget.info.identifier),
     onLongPress: widget.onLongPress,
   );

@@ -5,6 +5,7 @@ import 'package:dim_flutter/dim_flutter.dart';
 import 'package:lnc/lnc.dart' as lnc;
 
 import 'detail_participants.dart';
+import 'group_admins.dart';
 import 'group_invitations.dart';
 
 
@@ -180,15 +181,16 @@ class _ChatDetailState extends State<GroupChatDetailPage> implements lnc.Observe
         additionalDividerMargin: 32,
         children: [
           /// Administrators
-          // CupertinoListTile(
-          //   backgroundColor: backgroundColor,
-          //   backgroundColorActivated: backgroundColorActivated,
-          //   padding: Styles.settingsSectionItemPadding,
-          //   leading: Icon(Styles.adminIcon, color: primaryTextColor),
-          //   title: Text('Administrators', style: TextStyle(color: primaryTextColor)),
-          //   additionalInfo: null,
-          //   trailing: const CupertinoListTileChevron(),
-          // ),
+          CupertinoListTile(
+            backgroundColor: backgroundColor,
+            backgroundColorActivated: backgroundColorActivated,
+            padding: Styles.settingsSectionItemPadding,
+            leading: Icon(Styles.adminIcon, color: primaryTextColor),
+            title: Text('Administrators', style: TextStyle(color: primaryTextColor)),
+            additionalInfo: null,
+            trailing: const CupertinoListTileChevron(),
+            onTap: () => AdministratorsPage.open(context, widget.info),
+          ),
           /// Invitations
           CupertinoListTile(
             backgroundColor: backgroundColor,

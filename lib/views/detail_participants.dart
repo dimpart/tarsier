@@ -21,11 +21,13 @@ class _ParticipantsState extends State<ParticipantsWidget> implements lnc.Observ
     nc.addObserver(this, NotificationNames.kDocumentUpdated);
     nc.addObserver(this, NotificationNames.kParticipantsUpdated);
     nc.addObserver(this, NotificationNames.kMembersUpdated);
+    nc.addObserver(this, NotificationNames.kAdministratorsUpdated);
   }
 
   @override
   void dispose() {
     var nc = lnc.NotificationCenter();
+    nc.removeObserver(this, NotificationNames.kAdministratorsUpdated);
     nc.removeObserver(this, NotificationNames.kMembersUpdated);
     nc.removeObserver(this, NotificationNames.kParticipantsUpdated);
     nc.removeObserver(this, NotificationNames.kDocumentUpdated);
@@ -41,11 +43,7 @@ class _ParticipantsState extends State<ParticipantsWidget> implements lnc.Observ
       assert(identifier != null, 'notification error: $notification');
       if (identifier == widget.info.identifier) {
         Log.info('document updated: $identifier');
-        if (mounted) {
-          setState(() {
-            // update name in title
-          });
-        }
+        await _reload();
       }
     } else if (name == NotificationNames.kParticipantsUpdated) {
       ID? identifier = userInfo?['ID'];
@@ -65,12 +63,14 @@ class _ParticipantsState extends State<ParticipantsWidget> implements lnc.Observ
       assert(identifier != null, 'notification error: $notification');
       if (identifier == widget.info.identifier) {
         Log.info('members updated: $identifier, $members');
-        if (mounted) {
-          setState(() {
-            // update name in title
-          });
-        }
-        _reload();
+        await _reload();
+      }
+    } else if (name == NotificationNames.kAdministratorsUpdated) {
+      ID? identifier = userInfo?['ID'];
+      assert(identifier != null, 'notification error: $notification');
+      if (identifier == widget.info.identifier) {
+        Log.info('group history updated: $identifier');
+        await _reload();
       }
     } else {
       Log.error('notification error: $notification');
@@ -122,7 +122,7 @@ class _ParticipantsState extends State<ParticipantsWidget> implements lnc.Observ
           onPicked: (members) => _removeMembers(context, widget.info.identifier, members),
         );
       }
-      List<ContactInfo> members = widget.info.members;
+      List<ContactInfo> members = ContactInfo.fromList(widget.info.members);
       return contactCard(ctx, members[index]);
     },
   );

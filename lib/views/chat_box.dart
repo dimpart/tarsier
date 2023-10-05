@@ -125,7 +125,7 @@ class _ChatBoxState extends State<ChatBox> implements lnc.Observer {
     ContentViewUtils.currentUser = await shared.facebook.currentUser;
     Conversation info = widget.info;
     if (info is GroupInfo) {
-      List<ContactInfo> members = info.members;
+      List<ContactInfo> members = ContactInfo.fromList(info.members);
       if (members.length < 2) {
         await shared.messenger?.queryMembers(info.identifier);
       }

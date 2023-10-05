@@ -117,7 +117,7 @@ Future<Set<ID>?> _getContacts([Conversation? fromWhere]) async {
   } else if (fromWhere.isUser) {
     fixed = [user.identifier, fromWhere.identifier];
   } else if (fromWhere is GroupInfo) {
-    List<ContactInfo> members = fromWhere.members;
+    List<ContactInfo> members = ContactInfo.fromList(fromWhere.members);
     if (members.isEmpty) {
       assert(false, 'failed to get members: $fromWhere');
       return null;
@@ -138,7 +138,7 @@ Future<Set<ID>?> _getContacts([Conversation? fromWhere]) async {
 }
 Future<Set<ID>?> _getMembers(GroupInfo info) async {
   // get members
-  List<ContactInfo> contacts = info.members;
+  List<ContactInfo> contacts = ContactInfo.fromList(info.members);
   if (contacts.isEmpty) {
     assert(false, 'group info error: $info');
     return null;

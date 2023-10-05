@@ -27,7 +27,6 @@ class _InvitationsState extends State<InvitationsPage> implements lnc.Observer {
   _InvitationsState() {
     var nc = lnc.NotificationCenter();
     nc.addObserver(this, NotificationNames.kGroupHistoryUpdated);
-    nc.addObserver(this, _kInvitationStatusRefresh);
   }
 
   @override
@@ -164,9 +163,10 @@ class _InvitationsAdapter with SectionAdapterMixin {
 
   @override
   Widget getSectionFooter(BuildContext context, int section) {
-    String prompt = '* Here shows users who want to join this group;\n'
-        '* Any member can invite other user into this group;\n'
-        '* The group owner or administrators can review these invitations.';
+    String prompt = 'Rules:\n'
+        '  1. Owner or administrators can add member directly;\n'
+        '  2. Other members can create invitations and waiting reviewed by administrators;\n'
+        '  3. Any administrator can confirm the invitations and refresh the member list.';
     return Container(
       color: Facade.of(context).colors.appBardBackgroundColor,
       padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
@@ -224,6 +224,13 @@ class _InvitationCellState extends State<_InvitationCell> implements lnc.Observe
   _InvitationCellState() {
     var nc = lnc.NotificationCenter();
     nc.addObserver(this, _kInvitationStatusRefresh);
+  }
+
+  @override
+  void dispose() {
+    var nc = lnc.NotificationCenter();
+    nc.removeObserver(this, _kInvitationStatusRefresh);
+    super.dispose();
   }
 
   @override
