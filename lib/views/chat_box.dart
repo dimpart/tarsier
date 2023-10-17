@@ -542,7 +542,8 @@ Future<bool> _sendImage(ID receiver,
   String ext = Paths.extension(filename) ?? 'jpeg';
   filename = Hex.encode(MD5.digest(jpeg));
   // create image content
-  ImageContent content = FileContent.image(filename: '$filename.$ext', data: jpeg);
+  TransportableData ted = TransportableData.create(jpeg);
+  ImageContent content = FileContent.image(filename: '$filename.$ext', data: ted);
   // add image data length & thumbnail into message content
   content['length'] = jpeg.length;
   content.thumbnail = thumbnail;
@@ -577,8 +578,9 @@ void _shareWebPage(BuildContext ctx, Uri url, {required String title, String? de
 Future<void> _sendWebPage(ID receiver, Uri url,
     {required String title, String? desc, Uint8List? icon}) async {
   // create web page content
+  TransportableData? ted = icon == null ? null : TransportableData.create(icon);
   PageContent content = PageContent.create(url: url,
-      title: title, desc: desc, icon: icon);
+      title: title, desc: desc, icon: ted);
   Log.debug('share web page to $receiver: "$title", $url');
   // send web page content
   GlobalVariable shared = GlobalVariable();

@@ -137,8 +137,8 @@ List<ID> _getNewMembers(List<Invitation> invitations, Set<ID> denied) {
 Future<bool> _refreshMembers(List<ID> newMembers, GroupInfo groupInfo) async {
   ID group = groupInfo.identifier;
   assert(group.isGroup, 'group ID error: $group');
-  GroupManager man = GroupManager();
-  List<ID> members = await man.dataSource.getMembers(group);
+  SharedGroupManager man = SharedGroupManager();
+  List<ID> members = await man.getMembers(group);
   if (members.isEmpty) {
     throw Exception('failed to get members for group: $group');
   }

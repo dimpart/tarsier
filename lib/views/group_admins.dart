@@ -192,7 +192,7 @@ void _updateAdmin(GroupInfo groupInfo) async {
   GlobalVariable shared = GlobalVariable();
   ID group = groupInfo.identifier;
   List<ID> admins = await shared.facebook.getAdministrators(group);
-  GroupManager man = GroupManager();
+  SharedGroupManager man = SharedGroupManager();
   bool ok = await man.updateAdministrators(group, admins);
   if (!ok) {
     // not owner?

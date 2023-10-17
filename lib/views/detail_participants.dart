@@ -160,7 +160,7 @@ void _addMembers(BuildContext ctx, GroupInfo groupInfo, Set<ID> members) {
 }
 void _doAddMembers(BuildContext ctx, GroupInfo groupInfo, List<ID> newMembers) {
   ID group = groupInfo.identifier;
-  GroupManager man = GroupManager();
+  SharedGroupManager man = SharedGroupManager();
   man.inviteGroupMembers(group, newMembers).then((ok) {
     if (!ok) {
       Log.error('failed to add new members: $newMembers => $group');
@@ -188,7 +188,7 @@ void _removeMembers(BuildContext ctx, GroupInfo groupInfo, Set<ID> members) {
 }
 void _doRemoveMembers(BuildContext ctx, GroupInfo groupInfo, List<ID> expelMembers) {
   ID group = groupInfo.identifier;
-  GroupManager man = GroupManager();
+  SharedGroupManager man = SharedGroupManager();
   man.expelGroupMembers(group, expelMembers).then((ok) {
     if (ok) {
       Log.warning('removed members: $expelMembers => $group');

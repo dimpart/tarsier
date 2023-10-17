@@ -148,9 +148,9 @@ Future<Set<ID>?> _getMembers(GroupInfo info) async {
     candidates.add(item.identifier);
   }
   // get owner, admin
-  GroupManager man = GroupManager();
-  ID? owner = await man.dataSource.getOwner(info.identifier);
-  List<ID> admins = await man.dataSource.getAdministrators(info.identifier);
+  SharedGroupManager man = SharedGroupManager();
+  ID? owner = await man.getOwner(info.identifier);
+  List<ID> admins = await man.getAdministrators(info.identifier);
   if (owner == null) {
     assert(false, 'failed to get group owner: $info');
     return null;
@@ -174,8 +174,8 @@ void _newChat(BuildContext context, List<ID> members) {
       ChatBox.open(context, info);
     }
   } else {
-    GroupManager man = GroupManager();
-    man.createGroup(members: members).then((group) {
+    SharedGroupManager man = SharedGroupManager();
+    man.createGroup(members).then((group) {
       if (group == null) {
         Alert.show(context, 'Error', 'Failed to create group');
         return;
