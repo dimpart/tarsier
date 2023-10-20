@@ -41,6 +41,7 @@ class _ChatDetailState extends State<GroupChatDetailPage> implements lnc.Observe
     var nc = lnc.NotificationCenter();
     nc.addObserver(this, NotificationNames.kDocumentUpdated);
     nc.addObserver(this, NotificationNames.kGroupHistoryUpdated);
+    nc.addObserver(this, NotificationNames.kAdministratorsUpdated);
   }
 
   final FocusNode _nameFocusNode = FocusNode();
@@ -53,6 +54,7 @@ class _ChatDetailState extends State<GroupChatDetailPage> implements lnc.Observe
     _nameFocusNode.dispose();
     _remarkFocusNode.dispose();
     var nc = lnc.NotificationCenter();
+    nc.removeObserver(this, NotificationNames.kAdministratorsUpdated);
     nc.removeObserver(this, NotificationNames.kGroupHistoryUpdated);
     nc.removeObserver(this, NotificationNames.kDocumentUpdated);
     super.dispose();
@@ -74,6 +76,13 @@ class _ChatDetailState extends State<GroupChatDetailPage> implements lnc.Observe
         }
       }
     } else if (name == NotificationNames.kGroupHistoryUpdated) {
+      ID? identifier = userInfo?['ID'];
+      assert(identifier != null, 'notification error: $notification');
+      if (identifier == widget.info.identifier) {
+        Log.info('group history updated: $identifier');
+        await _reload();
+      }
+    } else if (name == NotificationNames.kAdministratorsUpdated) {
       ID? identifier = userInfo?['ID'];
       assert(identifier != null, 'notification error: $notification');
       if (identifier == widget.info.identifier) {
