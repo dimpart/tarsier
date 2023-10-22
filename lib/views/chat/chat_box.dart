@@ -7,13 +7,15 @@ import 'package:flutter_section_list/flutter_section_list.dart';
 import 'package:dim_flutter/dim_flutter.dart';
 import 'package:lnc/lnc.dart' as lnc;
 
+import '../contact/profile.dart';
+
 import 'chat_flag.dart';
 import 'chat_title.dart';
 import 'chat_tray.dart';
 import 'detail.dart';
 import 'detail_group.dart';
 import 'pick_chat.dart';
-import 'profile.dart';
+
 
 ///
 ///  Chat Box

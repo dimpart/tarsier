@@ -5,9 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:dim_flutter/dim_flutter.dart';
 import 'package:lnc/lnc.dart' as lnc;
 
-import 'account.dart';
-import 'account_export.dart';
-import 'network.dart';
+import 'setting/account.dart';
+import 'setting/account_export.dart';
+import 'setting/network.dart';
 
 
 class SettingsPage extends StatelessWidget {

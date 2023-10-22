@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:dim_flutter/dim_flutter.dart';
 import 'package:lnc/lnc.dart' as lnc;
 
-import 'chat_box.dart';
-import 'pick_chat.dart';
+import '../chat/chat_box.dart';
+import '../chat/pick_chat.dart';
 
 
 class ProfilePage extends StatefulWidget {

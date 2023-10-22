@@ -5,8 +5,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:dim_flutter/dim_flutter.dart';
 import 'package:flutter/material.dart';
 
+import '../contact/profile.dart';
+
 import 'chat_box.dart';
-import 'profile.dart';
+
 
 Widget contactCard(BuildContext context, ContactInfo info, {double width = 64, double height = 64}) => GestureDetector(
   onTap: () => ProfilePage.open(context, info.identifier,),

@@ -5,7 +5,7 @@ import 'package:flutter_section_list/flutter_section_list.dart';
 import 'package:dim_flutter/dim_flutter.dart';
 import 'package:lnc/lnc.dart' as lnc;
 
-import 'chat_associates.dart';
+import 'associates.dart';
 import 'chat_box.dart';
 
 

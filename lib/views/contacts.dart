@@ -5,12 +5,13 @@ import 'package:flutter_section_list/flutter_section_list.dart';
 import 'package:dim_flutter/dim_flutter.dart';
 import 'package:lnc/lnc.dart' as lnc;
 
-import 'group_chats.dart';
-import 'profile.dart';
-import 'search.dart';
-import 'strangers.dart';
-import 'block_list.dart';
-import 'mute_list.dart';
+import 'chat/group_chats.dart';
+
+import 'contact/profile.dart';
+import 'contact/search.dart';
+import 'contact/strangers.dart';
+import 'contact/block_list.dart';
+import 'contact/mute_list.dart';
 
 
 class ContactListPage extends StatefulWidget {

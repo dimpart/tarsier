@@ -4,6 +4,7 @@ import 'package:flutter_section_list/flutter_section_list.dart';
 
 import 'package:dim_flutter/dim_flutter.dart';
 
+
 typedef PickChatCallback = void Function(Conversation chat);
 
 class PickChatPage extends StatefulWidget {

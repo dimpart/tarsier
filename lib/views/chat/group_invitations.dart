@@ -7,7 +7,8 @@ import 'package:flutter_section_list/flutter_section_list.dart';
 import 'package:dim_flutter/dim_flutter.dart';
 import 'package:lnc/lnc.dart' as lnc;
 
-import 'profile.dart';
+import '../contact/profile.dart';
+
 
 class InvitationsPage extends StatefulWidget {
   const InvitationsPage(this.info, {super.key});

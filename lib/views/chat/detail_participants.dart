@@ -3,7 +3,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:dim_flutter/dim_flutter.dart';
 import 'package:lnc/lnc.dart' as lnc;
 
-import 'chat_associates.dart';
+import 'associates.dart';
+
 
 class ParticipantsWidget extends StatefulWidget {
   const ParticipantsWidget(this.info, {super.key});

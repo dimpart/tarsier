@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:dim_flutter/dim_flutter.dart';
 import 'package:lnc/lnc.dart' as lnc;
 
+
 class ChatTitleView extends StatefulWidget {
   const ChatTitleView(this.info, {required this.style, super.key});
 
