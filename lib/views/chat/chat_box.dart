@@ -310,7 +310,7 @@ class _HistoryAdapter with SectionAdapterMixin {
       );
       // create content frame
       contentView = _getContentFrame(context, sender, mainFlex, isMine,
-        image: ImageViewFactory().fromID(sender),
+        image: AvatarFactory().getAvatarView(sender),
         name: nameLabel,
         body: contentView,
         flag: isMine ? ChatSendFlag(iMsg) : null,
