@@ -156,23 +156,9 @@ String _trimName(String name) {
 void _reconnect(bool test) async {
   GlobalVariable shared = GlobalVariable();
   if (test) {
-    SessionDBI database = shared.sdb;
-    List<ProviderInfo> records = await database.allProviders();
-    ID pid;
-    for (ProviderInfo provider in records) {
-      pid = provider.identifier;
-      var items = await database.allStations(provider: pid);
-      List<NeighborInfo> stations = await NeighborInfo.fromList(items);
-      // check all stations of this provider
-      List<Future<VelocityMeter>> futures = [];
-      for (NeighborInfo info in stations) {
-        futures.add(VelocityMeter.ping(info));
-      }
-      // report speeds after all stations tested
-      Future.wait(futures).then((meters) {
-        shared.messenger?.reportSpeeds(meters, pid);
-      });
-    }
+    StationSpeeder speeder = StationSpeeder();
+    await speeder.reload();
+    await speeder.testAll();
     await Future.delayed(const Duration(seconds: 3));
   } else {
     await Future.delayed(const Duration(seconds: 1));

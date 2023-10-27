@@ -72,11 +72,19 @@ class _ChatListState extends State<ChatHistoryPage> implements lnc.Observer {
       });
     }
   }
+  Future<void> _testSpeeds() async {
+    // wait a while to test all stations
+    await Future.delayed(const Duration(seconds: 5));
+    StationSpeeder speeder = StationSpeeder();
+    await speeder.reload();
+    await speeder.testAll();
+  }
 
   @override
   void initState() {
     super.initState();
     _reload();
+    _testSpeeds();
   }
 
   @override

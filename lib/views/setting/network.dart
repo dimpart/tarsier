@@ -15,17 +15,13 @@ class NetworkSettingPage extends StatefulWidget {
 }
 
 class _NetworkState extends State<NetworkSettingPage> {
-  _NetworkState() {
-    _dataSource = _StationDataSource();
-    _adapter = _StationListAdapter(dataSource: _dataSource);
-  }
+  _NetworkState();
 
-  late final _StationDataSource _dataSource;
-  late final _StationListAdapter _adapter;
+  late final _StationListAdapter _adapter = _StationListAdapter();
   bool _refreshing = false;
 
   Future<void> _reload() async {
-    await _dataSource.reload();
+    await _adapter.reload();
     if (mounted) {
       setState(() {
       });
@@ -75,7 +71,7 @@ class _NetworkState extends State<NetworkSettingPage> {
     // // shared.database.removeStation('203.195.224.155', 9394, provider: gsp);
     // shared.database.removeStations(provider: gsp);
   }
-  Future<void> _refreshStations() async {
+  void _refreshStations() {
     // disable the refresh button to avoid refresh frequently
     if (mounted) {
       setState(() {
@@ -90,36 +86,18 @@ class _NetworkState extends State<NetworkSettingPage> {
         });
       }
     });
-    // clear expired records
-    GlobalVariable shared = GlobalVariable();
-    await shared.database.removeExpiredSpeed(null);
     // test all stations
-    int sections = _dataSource.getSectionCount();
-    int items;
-    ID pid;
-    NeighborInfo info;
-    for (int sec = 0; sec < sections; ++sec) {
-      pid = _dataSource.getSection(sec);
-      items = _dataSource.getItemCount(sec);
-      // check all stations of this provider
-      List<Future<VelocityMeter>> futures = [];
-      for (int idx = 0; idx < items; ++idx) {
-        info = _dataSource.getItem(sec, idx);
-        futures.add(VelocityMeter.ping(info));
-      }
-      // report speeds after all stations tested
-      Future.wait(futures).then((meters) {
-        shared.messenger?.reportSpeeds(meters, pid);
-      });
-    }
+    StationSpeeder speeder = StationSpeeder();
+    speeder.testAll();
   }
 }
 
 class _StationListAdapter with SectionAdapterMixin {
-  _StationListAdapter({required _StationDataSource dataSource})
-      : _dataSource = dataSource;
+  _StationListAdapter();
 
-  final _StationDataSource _dataSource;
+  late final StationSpeeder _dataSource = StationSpeeder();
+
+  Future<void> reload() async => await _dataSource.reload();
 
   @override
   int numberOfSections() =>
@@ -147,71 +125,6 @@ class _StationListAdapter with SectionAdapterMixin {
   Widget getItem(BuildContext context, IndexPath indexPath) =>
       _StationCell(_dataSource.getItem(indexPath.section, indexPath.item));
 
-}
-
-class _StationDataSource {
-
-  List<ID> _sections = [];
-  final Map<ID, List<NeighborInfo>> _items = {};
-
-  static List<ID> _sortProviders(List<ProviderInfo> records) {
-    // 1. sort records
-    records.sort((a, b) {
-      if (a.identifier.isBroadcast) {
-        if (b.identifier.isBroadcast) {} else {
-          return -1;
-        }
-      } else if (b.identifier.isBroadcast) {
-        return 1;
-      }
-      // sort with chosen order
-      return b.chosen - a.chosen;
-    });
-    List<ID> providers = [];
-    for (var item in records) {
-      providers.add(item.identifier);
-    }
-    // 2. set GSP to the front
-    int pos = providers.indexOf(ProviderInfo.kGSP);
-    if (pos < 0) {
-      // gsp not exists, insert to the front
-      providers.insert(0, ProviderInfo.kGSP);
-    } else if (pos > 0) {
-      // move to the front
-      providers.removeAt(pos);
-      providers.insert(0, ProviderInfo.kGSP);
-    }
-    return providers;
-  }
-
-  Future<void> reload() async {
-    GlobalVariable shared = GlobalVariable();
-    SessionDBI database = shared.sdb;
-    var records = await database.allProviders();
-    List<ID> providers = _sortProviders(records);
-    for (ID pid in providers) {
-      var stations = await database.allStations(provider: pid);
-      _items[pid] = NeighborInfo.sortStations(await NeighborInfo.fromList(stations));
-    }
-    _sections = providers;
-  }
-
-  int getSectionCount() => _sections.length;
-
-  /// provider ID
-  ID getSection(int sec) {
-    return _sections[sec];
-  }
-
-  int getItemCount(int sec) {
-    ID pid = _sections[sec];
-    return _items[pid]?.length ?? 0;
-  }
-
-  NeighborInfo getItem(int sec, int idx) {
-    ID pid = _sections[sec];
-    return _items[pid]![idx];
-  }
 }
 
 /// TableCell for Station
