@@ -18,6 +18,7 @@ enum _MsgStatus {
   kDefault,
   kWaiting,   // sending out, or waiting file data upload
   kSent,      // MTA respond
+  kBlocked,   // blocked by receiver
   kReceived,  // receiver respond
   kExpired;   // failed
 }
@@ -59,6 +60,10 @@ class _SendState extends State<ChatSendFlag> implements lnc.Observer {
       } else if (_match(sender: sender, sn: sn, signature: signature)) {
         // if match this message, refresh its status
         Log.debug('refreshing status: $signature');
+        String? text = userInfo['text'];
+        if (text != null && text.startsWith('Message is blocked')) {
+          _flags[sn] = _MsgStatus.kBlocked;
+        }
         _refresh(sn: sn, mta: mta);
       }
     }
@@ -98,7 +103,13 @@ class _SendState extends State<ChatSendFlag> implements lnc.Observer {
     }
     assert(sn > 0, 'sn error: $sn');
     _MsgStatus? current = _flags[sn];
-    if (current == _MsgStatus.kReceived) {
+    if (current == _MsgStatus.kBlocked) {
+      Log.warning('message is blocked');
+      if (mounted) {
+        setState(() {
+        });
+      }
+    } else if (current == _MsgStatus.kReceived) {
       Log.warning('message already received, ignore: $sn, $mta');
     } else if (mta == widget.iMsg.receiver) {
       current = _MsgStatus.kReceived;
@@ -217,6 +228,9 @@ class _SendState extends State<ChatSendFlag> implements lnc.Observer {
       case _MsgStatus.kSent: {
         return Styles.msgSentIcon;
       }
+      case _MsgStatus.kBlocked: {
+        return Styles.msgBlockedIcon;
+      }
       case _MsgStatus.kReceived: {
         return Styles.msgReceivedIcon;
       }
@@ -236,6 +250,9 @@ class _SendState extends State<ChatSendFlag> implements lnc.Observer {
       case _MsgStatus.kSent: {
         return CupertinoColors.systemGreen;
       }
+      case _MsgStatus.kBlocked: {
+        return CupertinoColors.systemRed;
+      }
       case _MsgStatus.kReceived: {
         return CupertinoColors.systemBlue;
       }
@@ -254,6 +271,9 @@ class _SendState extends State<ChatSendFlag> implements lnc.Observer {
       }
       case _MsgStatus.kSent: {
         return 'Sent to relay station';
+      }
+      case _MsgStatus.kBlocked: {
+        return 'Message is rejected';
       }
       case _MsgStatus.kReceived: {
         return 'Your friend received';
