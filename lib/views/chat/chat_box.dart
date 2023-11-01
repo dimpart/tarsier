@@ -30,11 +30,7 @@ class ChatBox extends StatefulWidget {
   static void open(BuildContext context, Conversation info) => showCupertinoDialog(
     context: context,
     builder: (context) => ChatBox(info),
-  ).then((value) {
-    info.unread = 0;
-    Amanuensis clerk = Amanuensis();
-    clerk.clearUnread(info.identifier);
-  });
+  );
 
   @override
   State<ChatBox> createState() => _ChatBoxState();
@@ -54,7 +50,19 @@ class _ChatBoxState extends State<ChatBox> implements lnc.Observer {
   }
 
   @override
+  void initState() {
+    super.initState();
+    _reload();
+    // set opened widget for disable updating unread count
+    widget.info.widget = widget;
+    Amanuensis clerk = Amanuensis();
+    clerk.clearUnread(widget.info);
+  }
+
+  @override
   void dispose() {
+    // remove opened widget for enable updating unread count
+    widget.info.widget = null;
     var nc = lnc.NotificationCenter();
     nc.removeObserver(this, NotificationNames.kGroupHistoryUpdated);
     nc.removeObserver(this, NotificationNames.kMembersUpdated);
@@ -140,12 +148,6 @@ class _ChatBoxState extends State<ChatBox> implements lnc.Observer {
         _dataSource.refresh(pair.first);
       });
     }
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    _reload();
   }
 
   @override
