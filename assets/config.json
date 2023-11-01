@@ -17,7 +17,10 @@
   ],
 
   "uploads": [
-    "http://106.52.25.169:8081/{ID}/upload?md5={MD5}&salt={SALT}"
+    {
+      "url": "http://106.52.25.169:8081/{ID}/upload?md5={MD5}&salt={SALT}",
+      "enigma": "123456"
+    }
   ],
 
   "terms": "https://wallet.dim.chat/dimchat/sechat/privacy.html",
