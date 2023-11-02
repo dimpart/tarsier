@@ -253,7 +253,7 @@ class _AccountState extends State<AccountPage> {
     if (ext == null || ext.toLowerCase() != 'png') {
       ext = 'jpeg';
     }
-    String filename = FileTransfer.filenameFromData(data, 'avatar.$ext');
+    String filename = PNFHelper.filenameFromData(data, 'avatar.$ext');
     FileTransfer ftp = FileTransfer();
     ftp.uploadAvatar(data, filename, widget.user.identifier).then((url) {
       if (url == null) {
