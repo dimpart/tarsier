@@ -42,8 +42,6 @@ class _ChatBoxState extends State<ChatBox> implements lnc.Observer {
 
     var nc = lnc.NotificationCenter();
     nc.addObserver(this, NotificationNames.kMessageUpdated);
-    nc.addObserver(this, NotificationNames.kDocumentUpdated);
-    nc.addObserver(this, NotificationNames.kRemarkUpdated);
     nc.addObserver(this, NotificationNames.kBlockListUpdated);
     nc.addObserver(this, NotificationNames.kMembersUpdated);
     nc.addObserver(this, NotificationNames.kGroupHistoryUpdated);
@@ -52,11 +50,15 @@ class _ChatBoxState extends State<ChatBox> implements lnc.Observer {
   @override
   void initState() {
     super.initState();
-    _reload();
+    _init();
+  }
+
+  void _init() async {
+    await _reload();
     // set opened widget for disable updating unread count
     widget.info.widget = widget;
     Amanuensis clerk = Amanuensis();
-    clerk.clearUnread(widget.info);
+    await clerk.clearUnread(widget.info);
   }
 
   @override
@@ -67,8 +69,6 @@ class _ChatBoxState extends State<ChatBox> implements lnc.Observer {
     nc.removeObserver(this, NotificationNames.kGroupHistoryUpdated);
     nc.removeObserver(this, NotificationNames.kMembersUpdated);
     nc.removeObserver(this, NotificationNames.kBlockListUpdated);
-    nc.removeObserver(this, NotificationNames.kRemarkUpdated);
-    nc.removeObserver(this, NotificationNames.kDocumentUpdated);
     nc.removeObserver(this, NotificationNames.kMessageUpdated);
     super.dispose();
   }
@@ -83,31 +83,14 @@ class _ChatBoxState extends State<ChatBox> implements lnc.Observer {
       if (cid == widget.info.identifier) {
         await _reload();
       }
-    } else if (name == NotificationNames.kDocumentUpdated) {
-      ID? did = userInfo?['ID'];
-      assert(did != null, 'notification error: $notification');
-      if (did == widget.info.identifier) {
-        await _reload();
-      } else {
-        // TODO: check members for group chat?
-      }
-    } else if (name == NotificationNames.kRemarkUpdated) {
-      ID? cid = userInfo?['contact'];
-      assert(cid != null, 'notification error: $notification');
-      if (cid == widget.info.identifier) {
-        Log.info('remark updated: $cid');
-        await _reload();
-      }
     } else if (name == NotificationNames.kBlockListUpdated) {
       ID? contact = userInfo?['blocked'];
       contact ??= userInfo?['unblocked'];
       Log.info('blocked contact updated: $contact');
-      if (contact != null) {
-        if (contact == widget.info.identifier) {
-          await _reload();
-        }
-      } else {
+      if (contact == null) {
         // block-list updated
+        await _reload();
+      } else if (contact == widget.info.identifier) {
         await _reload();
       }
     } else if (name == NotificationNames.kMembersUpdated) {

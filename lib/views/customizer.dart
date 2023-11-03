@@ -262,8 +262,8 @@ class _MyAccountState extends State<_MyAccountSection> implements lnc.Observer {
       return;
     }
     ContactInfo? info = _info;
-    info ??= ContactInfo(user.identifier);
-    await info.reloadData();
+    info ??= ContactInfo.fromID(user.identifier);
+    await info?.reloadData();
     if (mounted) {
       setState(() {
         _info = info;

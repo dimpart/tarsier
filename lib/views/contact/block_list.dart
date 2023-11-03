@@ -27,13 +27,11 @@ class _BlockListState extends State<BlockListPage> implements lnc.Observer {
 
     var nc = lnc.NotificationCenter();
     nc.addObserver(this, NotificationNames.kBlockListUpdated);
-    nc.addObserver(this, NotificationNames.kDocumentUpdated);
   }
 
   @override
   void dispose() {
     var nc = lnc.NotificationCenter();
-    nc.removeObserver(this, NotificationNames.kDocumentUpdated);
     nc.removeObserver(this, NotificationNames.kBlockListUpdated);
     super.dispose();
   }
@@ -49,10 +47,6 @@ class _BlockListState extends State<BlockListPage> implements lnc.Observer {
       ID? contact = userInfo?['blocked'];
       contact ??= userInfo?['unblocked'];
       Log.info('blocked contact updated: $contact');
-      await _reload();
-    } else if (name == NotificationNames.kDocumentUpdated) {
-      ID? did = userInfo?['ID'];
-      Log.info('document updated: $did');
       await _reload();
     }
   }

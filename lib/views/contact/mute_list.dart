@@ -27,13 +27,11 @@ class _MuteListState extends State<MuteListPage> implements lnc.Observer {
 
     var nc = lnc.NotificationCenter();
     nc.addObserver(this, NotificationNames.kMuteListUpdated);
-    nc.addObserver(this, NotificationNames.kDocumentUpdated);
   }
 
   @override
   void dispose() {
     var nc = lnc.NotificationCenter();
-    nc.removeObserver(this, NotificationNames.kDocumentUpdated);
     nc.removeObserver(this, NotificationNames.kMuteListUpdated);
     super.dispose();
   }
@@ -49,10 +47,6 @@ class _MuteListState extends State<MuteListPage> implements lnc.Observer {
       ID? contact = userInfo?['muted'];
       contact ??= userInfo?['unmuted'];
       Log.info('muted contact updated: $contact');
-      await _reload();
-    } else if (name == NotificationNames.kDocumentUpdated) {
-      ID? did = userInfo?['ID'];
-      Log.info('document updated: $did');
       await _reload();
     }
   }

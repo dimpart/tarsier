@@ -155,54 +155,8 @@ class _ChatTableCell extends StatefulWidget {
 
 }
 
-class _ChatTableCellState extends State<_ChatTableCell> implements lnc.Observer {
-  _ChatTableCellState() {
-
-    var nc = lnc.NotificationCenter();
-    nc.addObserver(this, NotificationNames.kDocumentUpdated);
-    nc.addObserver(this, NotificationNames.kRemarkUpdated);
-    nc.addObserver(this, NotificationNames.kMuteListUpdated);
-  }
-
-  @override
-  void dispose() {
-    var nc = lnc.NotificationCenter();
-    nc.removeObserver(this, NotificationNames.kMuteListUpdated);
-    nc.removeObserver(this, NotificationNames.kRemarkUpdated);
-    nc.removeObserver(this, NotificationNames.kDocumentUpdated);
-    super.dispose();
-  }
-
-  @override
-  Future<void> onReceiveNotification(lnc.Notification notification) async {
-    String name = notification.name;
-    Map? userInfo = notification.userInfo;
-    if (name == NotificationNames.kDocumentUpdated) {
-      ID? did = userInfo?['ID'];
-      assert(did != null, 'notification error: $notification');
-      if (did == widget.info.identifier) {
-        await _reload();
-      } else {
-        // TODO: check members for group chat?
-      }
-    } else if (name == NotificationNames.kRemarkUpdated) {
-      ID? cid = userInfo?['contact'];
-      assert(cid != null, 'notification error: $notification');
-      if (cid == widget.info.identifier) {
-        Log.info('remark updated: $cid');
-        await _reload();
-      }
-    } else if (name == NotificationNames.kMuteListUpdated) {
-      ID? contact = userInfo?['muted'];
-      contact ??= userInfo?['unmuted'];
-      Log.info('muted contact updated: $contact');
-      if (contact == widget.info.identifier) {
-        await _reload();
-      }
-    } else {
-      assert(false, 'notification error: $notification');
-    }
-  }
+class _ChatTableCellState extends State<_ChatTableCell> {
+  _ChatTableCellState();
 
   Future<void> _reload() async {
     await widget.info.reloadData();

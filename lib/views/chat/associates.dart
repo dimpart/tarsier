@@ -20,6 +20,7 @@ Widget contactCard(BuildContext context, ContactInfo info, {double width = 64, d
         child: info.getNameLabel(
           textAlign: TextAlign.center,
           overflow: TextOverflow.ellipsis,
+          style: Facade.of(context).styles.titleTextStyle,
         ),
       ),
     ],
