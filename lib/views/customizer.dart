@@ -7,6 +7,8 @@ import 'package:lnc/lnc.dart' as lnc;
 
 import 'setting/account.dart';
 import 'setting/account_export.dart';
+import 'setting/brightness.dart';
+import 'setting/language.dart';
 import 'setting/network.dart';
 
 
@@ -55,11 +57,13 @@ class SettingsPage extends StatelessWidget {
     );
   }
 
-  Widget _table(BuildContext context,
-      {required Color backgroundColor, required Color backgroundColorActivated, required Color dividerColor,
-        required Color primaryTextColor, required Color secondaryTextColor}) => Column(
+  Widget _table(BuildContext context, {required Color backgroundColor, required Color backgroundColorActivated, required Color dividerColor,
+    required Color primaryTextColor, required Color secondaryTextColor}) => Column(
     // mainAxisSize: MainAxisSize.min,
     children: [
+      //
+      //  Account
+      //
       CupertinoListSection(
         backgroundColor: dividerColor,
         topMargin: 0,
@@ -87,6 +91,45 @@ class SettingsPage extends StatelessWidget {
           ),
         ],
       ),
+      //
+      //  Application
+      //
+      CupertinoListSection(
+        backgroundColor: dividerColor,
+        topMargin: 0,
+        additionalDividerMargin: 32,
+        children: [
+          /// Language
+          _listTile(
+            leading: Styles.languageIcon, title: 'Language',
+            additional: LanguageDataSource().getCurrentName(),
+            backgroundColor: backgroundColor,
+            backgroundColorActivated: backgroundColorActivated,
+            primaryTextColor: primaryTextColor,
+            secondaryTextColor: secondaryTextColor,
+            onTap: () => showCupertinoDialog(
+              context: context,
+              builder: (context) => const LanguageSettingPage(),
+            ),
+          ),
+          /// Brightness
+          _listTile(
+            leading: Styles.brightnessIcon, title: 'Brightness',
+            additional: BrightnessDataSource().getCurrentName(),
+            backgroundColor: backgroundColor,
+            backgroundColorActivated: backgroundColorActivated,
+            primaryTextColor: primaryTextColor,
+            secondaryTextColor: secondaryTextColor,
+            onTap: () => showCupertinoDialog(
+              context: context,
+              builder: (context) => const BrightnessSettingPage(),
+            ),
+          ),
+        ],
+      ),
+      //
+      //  Station
+      //
       CupertinoListSection(
         backgroundColor: dividerColor,
         topMargin: 0,
@@ -107,6 +150,9 @@ class SettingsPage extends StatelessWidget {
           ),
         ],
       ),
+      //
+      //  DIMP
+      //
       CupertinoListSection(
         backgroundColor: dividerColor,
         topMargin: 0,

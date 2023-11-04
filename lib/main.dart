@@ -13,7 +13,7 @@ import 'views/contacts.dart';
 import 'views/register.dart';
 
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   // Set log level
@@ -37,30 +37,27 @@ void main() {
     );
   }
 
-  // Check permission to launch the app: Storage
-  checkStoragePermissions().then((value) {
-    if (!value) {
-      // not granted for photos/storage, first run?
-      Log.warning('not granted for photos/storage, first run?');
+  // Check Brightness & Language
+  await initFacade();
+  // Check permission: Storage
+  bool permitted = await checkStoragePermissions();
+  // Launch the app
+  if (!permitted) {
+    // not granted for photos/storage, first run?
+    Log.warning('not granted for photos/storage, first run?');
+    runApp(_Application(RegisterPage()));
+  } else {
+    // check current user
+    Log.debug('check current user');
+    GlobalVariable shared = GlobalVariable();
+    User? user = await shared.facebook.currentUser;
+    Log.info('current user: $user');
+    if (user == null) {
       runApp(_Application(RegisterPage()));
     } else {
-      // check current user
-      Log.debug('check current user');
-      GlobalVariable shared = GlobalVariable();
-      shared.facebook.currentUser.then((user) {
-        Log.info('current user: $user');
-        if (user == null) {
-          runApp(_Application(RegisterPage()));
-        } else {
-          runApp(const _Application(_MainPage()));
-        }
-      }).onError((error, stackTrace) {
-        Log.error('current user error: $error');
-      });
+      runApp(const _Application(_MainPage()));
     }
-  }).onError((error, stackTrace) {
-    Log.error('check permission error: $error');
-  });
+  }
 }
 
 void changeToMainPage(BuildContext context) {
