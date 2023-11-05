@@ -216,7 +216,7 @@ class _ChatTableCellState extends State<_ChatTableCell> implements lnc.Observer 
     leading: _leading(widget.info),
     title: widget.info.getNameLabel(),
     subtitle: _lastMessage(widget.info.lastMessage),
-    additionalInfo: _additional(context, widget.info, widget.info.lastTime),
+    additionalInfo: _additional(context, widget.info, widget.info.lastMessageTime),
     // trailing: const CupertinoListTileChevron(),
     onTap: () {
       Log.warning('tap: ${widget.info}');

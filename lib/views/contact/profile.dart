@@ -438,9 +438,17 @@ class _ProfileTableState extends State<_ProfileTableCell> {
     leading: widget.info.getImage(),
     title: widget.info.getNameLabel(),
     subtitle: Text(widget.info.identifier.toString()),
+    additionalInfo: _timeLabel(widget.info.lastActiveTime),
     trailing: widget.trailing,
     onTap: () => ProfilePage.open(context, widget.info.identifier),
     onLongPress: widget.onLongPress,
   );
+
+  Widget? _timeLabel(DateTime? time) {
+    if (time == null) {
+      return null;
+    }
+    return Text(TimeUtils.getTimeString(time));
+  }
 
 }
