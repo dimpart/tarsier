@@ -223,22 +223,22 @@ class _SendState extends State<ChatSendFlag> implements lnc.Observer {
   IconData? get flag {
     switch (status) {
       case _MsgStatus.kWaiting: {
-        return Styles.msgWaitingIcon;
+        return AppIcons.msgWaitingIcon;
       }
       case _MsgStatus.kSent: {
-        return Styles.msgSentIcon;
+        return AppIcons.msgSentIcon;
       }
       case _MsgStatus.kBlocked: {
-        return Styles.msgBlockedIcon;
+        return AppIcons.msgBlockedIcon;
       }
       case _MsgStatus.kReceived: {
-        return Styles.msgReceivedIcon;
+        return AppIcons.msgReceivedIcon;
       }
       case _MsgStatus.kExpired: {
-        return Styles.msgExpiredIcon;
+        return AppIcons.msgExpiredIcon;
       }
       default: {
-        return Styles.msgDefaultIcon;
+        return AppIcons.msgDefaultIcon;
       }
     }
   }

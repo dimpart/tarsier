@@ -18,7 +18,7 @@ class ContactListPage extends StatefulWidget {
   const ContactListPage({super.key});
 
   static BottomNavigationBarItem barItem() => const BottomNavigationBarItem(
-    icon: _ContactsIconView(icon: Icon(Styles.contactsTabIcon)),
+    icon: _ContactsIconView(icon: Icon(AppIcons.contactsTabIcon)),
     label: 'Contacts',
   );
 
@@ -106,9 +106,9 @@ class _ContactListState extends State<ContactListPage> implements lnc.Observer {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-    backgroundColor: Facade.of(context).colors.scaffoldBackgroundColor,
+    backgroundColor: Styles.colors.scaffoldBackgroundColor,
     appBar: CupertinoNavigationBar(
-      backgroundColor: Facade.of(context).colors.appBardBackgroundColor,
+      backgroundColor: Styles.colors.appBardBackgroundColor,
       middle: StatedTitleView.from(context, () => 'Contacts'),
       trailing: SearchPage.searchButton(context),
     ),
@@ -142,10 +142,10 @@ class _ContactListAdapter with SectionAdapterMixin {
     }
     String title = _dataSource.getSection(section - 1);
     return Container(
-      color: Facade.of(context).colors.sectionHeaderBackgroundColor,
+      color: Styles.colors.sectionHeaderBackgroundColor,
       padding: Styles.sectionHeaderPadding,
       child: Text(title,
-        style: Facade.of(context).styles.sectionHeaderTextStyle,
+        style: Styles.sectionHeaderTextStyle,
       ),
     );
   }
@@ -193,7 +193,7 @@ class _ContactListAdapter with SectionAdapterMixin {
       leading: Container(
         color: CupertinoColors.systemOrange,
         padding: const EdgeInsets.all(2),
-        child: const Icon(Styles.newFriendsIcon,
+        child: const Icon(AppIcons.newFriendsIcon,
           color: CupertinoColors.white,
         ),
       ),
@@ -207,7 +207,7 @@ class _ContactListAdapter with SectionAdapterMixin {
     leading: Container(
       color: CupertinoColors.systemGreen,
       padding: const EdgeInsets.all(2),
-      child: const Icon(Styles.groupChatsIcon,
+      child: const Icon(AppIcons.groupChatsIcon,
         color: CupertinoColors.white,
       ),
     ),
@@ -220,7 +220,7 @@ class _ContactListAdapter with SectionAdapterMixin {
       leading: Container(
         color: CupertinoColors.systemGrey,
         padding: const EdgeInsets.all(2),
-        child: const Icon(Styles.blockListIcon,
+        child: const Icon(AppIcons.blockListIcon,
           color: CupertinoColors.white,
         ),
       ),
@@ -233,7 +233,7 @@ class _ContactListAdapter with SectionAdapterMixin {
     leading: Container(
       color: CupertinoColors.systemGrey,
       padding: const EdgeInsets.all(2),
-      child: const Icon(Styles.muteListIcon,
+      child: const Icon(AppIcons.muteListIcon,
         color: CupertinoColors.white,
       ),
     ),

@@ -35,14 +35,14 @@ class _InputState extends State<ChatInputTray> {
     children: [
       if (!_isVoice)
         CupertinoButton(
-          child: const Icon(Styles.chatMicIcon),
+          child: const Icon(AppIcons.chatMicIcon),
           onPressed: () => setState(() {
             _isVoice = true;
           }),
         ),
       if (_isVoice)
         CupertinoButton(
-          child: const Icon(Styles.chatKeyboardIcon),
+          child: const Icon(AppIcons.chatKeyboardIcon),
           onPressed: () => setState(() {
             _isVoice = false;
           }),
@@ -55,8 +55,8 @@ class _InputState extends State<ChatInputTray> {
             maxLines: 8,
             controller: _controller,
             placeholder: 'Input text message',
-            decoration: Facade.of(context).styles.textFieldDecoration,
-            style: Facade.of(context).styles.textFieldStyle,
+            decoration: Styles.textFieldDecoration,
+            style: Styles.textFieldStyle,
             keyboardType: TextInputType.multiline,
             textInputAction: TextInputAction.newline,
             focusNode: _focusNode,
@@ -74,12 +74,12 @@ class _InputState extends State<ChatInputTray> {
         ),
       if (_controller.text.isEmpty || _isVoice)
         CupertinoButton(
-          child: const Icon(Styles.chatFunctionIcon),
+          child: const Icon(AppIcons.chatFunctionIcon),
           onPressed: () => _sendImage(context, widget.info),
         ),
       if (_controller.text.isNotEmpty && !_isVoice)
         CupertinoButton(
-          child: const Icon(Styles.chatSendIcon),
+          child: const Icon(AppIcons.chatSendIcon),
           onPressed: () => _sendText(context, _controller, widget.info),
         ),
     ],

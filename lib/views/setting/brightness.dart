@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_section_list/flutter_section_list.dart';
 
+
 class BrightnessSettingPage extends StatefulWidget {
   const BrightnessSettingPage({super.key});
 
@@ -17,10 +18,10 @@ class _BrightnessState extends State<BrightnessSettingPage> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-    backgroundColor: Facade.of(context).colors.scaffoldBackgroundColor,
+    backgroundColor: Styles.colors.scaffoldBackgroundColor,
     appBar: CupertinoNavigationBar(
-      backgroundColor: Facade.of(context).colors.appBardBackgroundColor,
-      middle: Text('Brightness', style: Facade.of(context).styles.titleTextStyle),
+      backgroundColor: Styles.colors.appBardBackgroundColor,
+      middle: Text('Brightness', style: Styles.titleTextStyle),
     ),
     body: SectionListView.builder(
       adapter: _adapter,
@@ -73,32 +74,22 @@ class _BrightnessCellState extends State<_BrightnessCell> {
     onTap: selectBrightness,
   );
 
-  Icon get brightnessIcon {
-    if (widget.order == 1) {
-      return Icon(Styles.sunriseIcon,
-        color: Facade.of(context).colors.secondaryTextColor,
-      );
-    } else if (widget.order == 2) {
-      return Icon(Styles.sunsetIcon,
-        color: Facade.of(context).colors.secondaryTextColor,
-      );
-    } else {
-      return Icon(Styles.brightnessIcon,
-        color: Facade.of(context).colors.secondaryTextColor,
-      );
-    }
-  }
+  Icon get brightnessIcon => Icon(widget.order == BrightnessDataSource.kLight
+      ? AppIcons.sunriseIcon : widget.order == BrightnessDataSource.kDark
+      ? AppIcons.sunsetIcon
+      : AppIcons.brightnessIcon,
+    color: Styles.colors.secondaryTextColor,
+  );
 
   Widget get brightnessName => Text(widget.name);
 
-  Widget? get selectedFlag => !isSelected ? null : Icon(Styles.selectedIcon,
-    color: Facade.of(context).colors.primaryTextColor,
+  Widget? get selectedFlag => !isSelected ? null : Icon(AppIcons.selectedIcon,
+    color: Styles.colors.primaryTextColor,
   );
 
   void selectBrightness() {
     _dataSource.setBrightness(widget.order);
-    setState(() {
-    });
+    closePage();
   }
 
 }

@@ -84,9 +84,9 @@ class _BlockListState extends State<BlockListPage> implements lnc.Observer {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-    backgroundColor: Facade.of(context).colors.scaffoldBackgroundColor,
+    backgroundColor: Styles.colors.scaffoldBackgroundColor,
     appBar: CupertinoNavigationBar(
-      backgroundColor: Facade.of(context).colors.appBardBackgroundColor,
+      backgroundColor: Styles.colors.appBardBackgroundColor,
       middle: StatedTitleView.from(context, () => 'Blocked List'),
     ),
     body: SectionListView.builder(
@@ -115,10 +115,10 @@ class _BlockListAdapter with SectionAdapterMixin {
 
   @override
   Widget getSectionHeader(BuildContext context, int section) => Container(
-    color: Facade.of(context).colors.sectionHeaderBackgroundColor,
+    color: Styles.colors.sectionHeaderBackgroundColor,
     padding: Styles.sectionHeaderPadding,
     child: Text(_dataSource.getSection(section),
-      style: Facade.of(context).styles.sectionHeaderTextStyle,
+      style: Styles.sectionHeaderTextStyle,
     ),
   );
 
@@ -146,14 +146,14 @@ class _BlockListAdapter with SectionAdapterMixin {
     String prompt = '* Here shows spammers who you blocked;\n'
         '* You will never receive message from this list.';
     return Container(
-      color: Facade.of(context).colors.appBardBackgroundColor,
+      color: Styles.colors.appBardBackgroundColor,
       padding: const EdgeInsets.all(16),
       alignment: Alignment.center,
       child: Row(
         // crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Expanded(child: Text(prompt,
-            style: Facade.of(context).styles.sectionFooterTextStyle,
+            style: Styles.sectionFooterTextStyle,
           )),
         ],
       ),

@@ -37,17 +37,17 @@ class _ExportState extends State<ExportPage> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-    backgroundColor: Facade.of(context).colors.scaffoldBackgroundColor,
+    backgroundColor: Styles.colors.scaffoldBackgroundColor,
     // A ScrollView that creates custom scroll effects using slivers.
     body: CustomScrollView(
       // A list of sliver widgets.
       slivers: <Widget>[
         CupertinoSliverNavigationBar(
-          backgroundColor: Facade.of(context).colors.appBardBackgroundColor,
+          backgroundColor: Styles.colors.appBardBackgroundColor,
           // This title is visible in both collapsed and expanded states.
           // When the "middle" parameter is omitted, the widget provided
           // in the "largeTitle" parameter is used instead in the collapsed state.
-          largeTitle: Text('Mnemonic', style: Facade.of(context).styles.titleTextStyle),
+          largeTitle: Text('Mnemonic', style: Styles.titleTextStyle),
         ),
         // This widget fills the remaining space in the viewport.
         // Drag the scrollable area to collapse the CupertinoSliverNavigationBar.
@@ -110,15 +110,15 @@ class _ExportState extends State<ExportPage> {
         alignment: AlignmentDirectional.topEnd,
         children: [
           Container(
-            color: Facade.of(context).colors.tileBackgroundColor,
+            color: Styles.colors.tileBackgroundColor,
             margin: const EdgeInsets.all(1),
             padding: const EdgeInsets.fromLTRB(8, 16, 8, 16),
             alignment: Alignment.center,
             child: Text(visible ? word : '***',
               style: TextStyle(
                 fontSize: 14,
-                color: visible ? Facade.of(context).colors.tileColor
-                    : Facade.of(context).colors.tileInvisibleColor,
+                color: visible ? Styles.colors.tileColor
+                    : Styles.colors.tileInvisibleColor,
               ),
             ),
           ),
@@ -128,11 +128,11 @@ class _ExportState extends State<ExportPage> {
               child: Container(
                 alignment: Alignment.center,
                 width: 12, height: 12,
-                color: Facade.of(context).colors.tileBadgeColor,
+                color: Styles.colors.tileBadgeColor,
                 child: Text('${index + 1}',
                   style: TextStyle(
                     fontSize: 8,
-                    color: Facade.of(context).colors.tileOrderColor,
+                    color: Styles.colors.tileOrderColor,
                   ),
                 ),
               ),
@@ -148,8 +148,8 @@ class _ExportState extends State<ExportPage> {
     alignment: Alignment.topLeft,
     child: Text(text,
       style: TextStyle(fontSize: 12,
-        color: visible ? Facade.of(context).colors.tertiaryTextColor
-            : Facade.of(context).colors.secondaryTextColor,
+        color: visible ? Styles.colors.tertiaryTextColor
+            : Styles.colors.secondaryTextColor,
       ),
     ),
   );
@@ -157,9 +157,9 @@ class _ExportState extends State<ExportPage> {
   Widget _toggleButton(BuildContext context) => SizedBox(
     width: 256,
     child: CupertinoButton(
-      color: visible ? Facade.of(context).colors.normalButtonColor
-          : Facade.of(context).colors.importantButtonColor,
-      child: Text(visible ? 'Hide' : 'Show', style: Facade.of(context).styles.buttonStyle),
+      color: visible ? Styles.colors.normalButtonColor
+          : Styles.colors.importantButtonColor,
+      child: Text(visible ? 'Hide' : 'Show', style: Styles.buttonTextStyle),
       onPressed: () => setState(() {
         visible = !visible;
       }),

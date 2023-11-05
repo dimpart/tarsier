@@ -119,8 +119,7 @@ class _ProfileState extends State<ProfilePage> implements lnc.Observer {
 
   @override
   Widget build(BuildContext context) {
-    var colors = Facade.of(context).colors;
-    var styles = Facade.of(context).styles;
+    var colors = Styles.colors;
     return Scaffold(
       backgroundColor: colors.scaffoldBackgroundColor,
       // A ScrollView that creates custom scroll effects using slivers.
@@ -133,7 +132,7 @@ class _ProfileState extends State<ProfilePage> implements lnc.Observer {
             // When the "middle" parameter is omitted, the widget provided
             // in the "largeTitle" parameter is used instead in the collapsed state.
             largeTitle: Text(widget.info.name,
-              style: styles.titleTextStyle,
+              style: Styles.titleTextStyle,
             ),
           ),
           // This widget fills the remaining space in the viewport.
@@ -211,7 +210,7 @@ class _ProfileState extends State<ProfilePage> implements lnc.Observer {
             backgroundColor: backgroundColor,
             backgroundColorActivated: backgroundColorActivated,
             padding: Styles.settingsSectionItemPadding,
-            leading: Icon(Styles.blockListIcon, color: primaryTextColor),
+            leading: Icon(AppIcons.blockListIcon, color: primaryTextColor),
             title: Text('Block Messages', style: TextStyle(color: primaryTextColor)),
             additionalInfo: CupertinoSwitch(
               value: widget.info.isBlocked,
@@ -229,7 +228,7 @@ class _ProfileState extends State<ProfilePage> implements lnc.Observer {
             backgroundColor: backgroundColor,
             backgroundColorActivated: backgroundColorActivated,
             padding: Styles.settingsSectionItemPadding,
-            leading: Icon(Styles.muteListIcon, color: primaryTextColor),
+            leading: Icon(AppIcons.muteListIcon, color: primaryTextColor),
             title: Text('Mute Notifications', style: TextStyle(color: primaryTextColor)),
             additionalInfo: CupertinoSwitch(
               value: widget.info.isMuted,
@@ -289,7 +288,7 @@ class _ProfileState extends State<ProfilePage> implements lnc.Observer {
       textAlign: TextAlign.right,
       minLines: 1,
       maxLines: 2,
-      style: Facade.of(context).styles.identifierTextStyle,
+      style: Styles.identifierTextStyle,
     ),
   );
 
@@ -297,8 +296,8 @@ class _ProfileState extends State<ProfilePage> implements lnc.Observer {
     textAlign: TextAlign.end,
     controller: TextEditingController(text: widget.info.remark.alias),
     placeholder: 'Please input alias.',
-    decoration: Facade.of(context).styles.textFieldDecoration,
-    style: Facade.of(context).styles.textFieldStyle,
+    decoration: Styles.textFieldDecoration,
+    style: Styles.textFieldStyle,
     focusNode: _focusNode,
     onChanged: (value) => _alias = value,
     onTapOutside: (event) => _changeAlias(context),
@@ -323,22 +322,22 @@ class _ProfileState extends State<ProfilePage> implements lnc.Observer {
   }
 
   Widget _addButton(BuildContext context, {required Color textColor, required Color backgroundColor}) =>
-      _button('  Add Contact', Styles.addFriendIcon, textColor: textColor, backgroundColor: backgroundColor,
+      _button('  Add Contact', AppIcons.addFriendIcon, textColor: textColor, backgroundColor: backgroundColor,
         onPressed: () => widget.info.add(context: context),
       );
 
   Widget _sendButton(BuildContext context, {required Color textColor, required Color backgroundColor}) =>
-      _button('  Send Message', Styles.sendMsgIcon, textColor: textColor, backgroundColor: backgroundColor,
+      _button('  Send Message', AppIcons.sendMsgIcon, textColor: textColor, backgroundColor: backgroundColor,
         onPressed: () => _sendMessage(context, widget.info, widget.fromChat),
       );
 
   Widget _shareButton(BuildContext context, {required Color textColor, required Color backgroundColor}) =>
-      _button('  Share Contact', Styles.shareIcon, textColor: textColor, backgroundColor: backgroundColor,
+      _button('  Share Contact', AppIcons.shareIcon, textColor: textColor, backgroundColor: backgroundColor,
         onPressed: () => _shareContact(context, widget.info),
       );
 
   Widget _deleteButton(BuildContext context, {required Color textColor, required Color backgroundColor}) =>
-      _button('  Delete Contact', Styles.deleteIcon, textColor: textColor, backgroundColor: backgroundColor,
+      _button('  Delete Contact', AppIcons.deleteIcon, textColor: textColor, backgroundColor: backgroundColor,
         onPressed: () => widget.info.delete(context: context),
       );
 

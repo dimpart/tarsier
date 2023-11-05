@@ -80,9 +80,9 @@ class _AdministratorsState extends State<AdministratorsPage> implements lnc.Obse
 
   @override
   Widget build(BuildContext context) => Scaffold(
-    backgroundColor: Facade.of(context).colors.scaffoldBackgroundColor,
+    backgroundColor: Styles.colors.scaffoldBackgroundColor,
     appBar: CupertinoNavigationBar(
-      backgroundColor: Facade.of(context).colors.appBardBackgroundColor,
+      backgroundColor: Styles.colors.appBardBackgroundColor,
       middle: StatedTitleView.from(context, () => 'Administrators'),
       trailing: widget.info.isOwner ? _plusButton(context) : null,
     ),
@@ -115,7 +115,7 @@ class _AdministratorsState extends State<AdministratorsPage> implements lnc.Obse
         );
       }
     },
-    icon: const Icon(Styles.plusIcon),
+    icon: const Icon(AppIcons.plusIcon),
   );
 
 }
@@ -252,10 +252,10 @@ class _ContactListAdapter with SectionAdapterMixin {
       title = _dataSource.getSection(section - 1);
     }
     return Container(
-      color: Facade.of(context).colors.sectionHeaderBackgroundColor,
+      color: Styles.colors.sectionHeaderBackgroundColor,
       padding: Styles.sectionHeaderPadding,
       child: Text(title,
-        style: Facade.of(context).styles.sectionHeaderTextStyle,
+        style: Styles.sectionHeaderTextStyle,
       ),
     );
   }
@@ -285,7 +285,7 @@ class _ContactListAdapter with SectionAdapterMixin {
     ContactInfo info = _dataSource.getItem(section - 1, index);
     Widget? trailing;
     if (_canRemove(info, _info)) {
-      trailing = IconButton(icon: const Icon(Styles.removeIcon, color: CupertinoColors.systemRed,),
+      trailing = IconButton(icon: const Icon(AppIcons.removeIcon, color: CupertinoColors.systemRed,),
         onPressed: () => _removeAdmin(context, info.identifier, _info),
       );
     }
@@ -334,14 +334,14 @@ class _ContactListAdapter with SectionAdapterMixin {
         '  5. Owner cannot leave the group;\n'
         '  6. Administrator cannot leave the group before retired.';
     return Container(
-      color: Facade.of(context).colors.appBardBackgroundColor,
+      color: Styles.colors.appBardBackgroundColor,
       padding: const EdgeInsets.all(16),
       alignment: Alignment.center,
       child: Row(
         // crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Expanded(child: Text(prompt,
-            style: Facade.of(context).styles.sectionFooterTextStyle,
+            style: Styles.sectionFooterTextStyle,
           )),
         ],
       ),

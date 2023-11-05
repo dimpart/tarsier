@@ -83,9 +83,9 @@ class _StrangerListState extends State<StrangerListPage> implements lnc.Observer
 
   @override
   Widget build(BuildContext context) => Scaffold(
-    backgroundColor: Facade.of(context).colors.scaffoldBackgroundColor,
+    backgroundColor: Styles.colors.scaffoldBackgroundColor,
     appBar: CupertinoNavigationBar(
-      backgroundColor: Facade.of(context).colors.appBardBackgroundColor,
+      backgroundColor: Styles.colors.appBardBackgroundColor,
       middle: StatedTitleView.from(context, () => 'New Friends'),
     ),
     body: SectionListView.builder(
@@ -108,13 +108,13 @@ class _StrangerListAdapter with SectionAdapterMixin {
         '* You can add them to your contacts, or just ignore them;\n'
         '* Click "Block" will add to "Blocked List" and never receive message from them.';
     return Container(
-      color: Facade.of(context).colors.appBardBackgroundColor,
+      color: Styles.colors.appBardBackgroundColor,
       padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
       child: Row(
         // crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Expanded(child: Text(prompt,
-            style: Facade.of(context).styles.sectionFooterTextStyle,
+            style: Styles.sectionFooterTextStyle,
           )),
         ],
       ),
@@ -269,7 +269,7 @@ class _ChatTableCellState extends State<_ChatTableCell> implements lnc.Observer 
         child: OutlinedButton(
           // style: ButtonStyle(
           //   backgroundColor: MaterialStateProperty.all<Color>(
-          //       Facade.of(context).colors.importantButtonColor),
+          //       Styles.colors.importantButtonColor),
           // ),
           onPressed: () => info.add(context: context),
           child: const Text('Accept'),

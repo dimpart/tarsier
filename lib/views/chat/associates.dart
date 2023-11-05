@@ -20,7 +20,7 @@ Widget contactCard(BuildContext context, ContactInfo info, {double width = 64, d
         child: info.getNameLabel(
           textAlign: TextAlign.center,
           overflow: TextOverflow.ellipsis,
-          style: Facade.of(context).styles.titleTextStyle,
+          style: Styles.titleTextStyle,
         ),
       ),
     ],
@@ -39,7 +39,7 @@ Widget plusButton(BuildContext context) => IconButton(
       );
     }
   }),
-  icon: const Icon(Styles.plusIcon),
+  icon: const Icon(AppIcons.plusIcon),
 );
 
 Widget plusCard(BuildContext context, Conversation fromWhere, {GestureTapCallback? onTap, MemberPickerCallback? onPicked}) => GestureDetector(
@@ -71,7 +71,7 @@ Widget plusCard(BuildContext context, Conversation fromWhere, {GestureTapCallbac
         ),
         width: 64,
         height: 64,
-        child: const Icon(color: CupertinoColors.systemGrey, Styles.plusIcon,),
+        child: const Icon(color: CupertinoColors.systemGrey, AppIcons.plusIcon,),
       ),
     ],
   ),
@@ -95,7 +95,7 @@ Widget minusCard(BuildContext context, GroupInfo fromWhere, {GestureTapCallback?
         ),
         width: 64,
         height: 64,
-        child: const Icon(color: CupertinoColors.systemGrey, Styles.minusIcon,),
+        child: const Icon(color: CupertinoColors.systemGrey, AppIcons.minusIcon,),
       ),
     ],
   ),

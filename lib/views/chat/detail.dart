@@ -111,11 +111,11 @@ class _ChatDetailState extends State<ChatDetailPage> implements lnc.Observer {
 
   @override
   Widget build(BuildContext context) {
-    var colors = Facade.of(context).colors;
+    var colors = Styles.colors;
     return Scaffold(
-      backgroundColor: Facade.of(context).colors.scaffoldBackgroundColor,
+      backgroundColor: Styles.colors.scaffoldBackgroundColor,
       appBar: CupertinoNavigationBar(
-        backgroundColor: Facade.of(context).colors.appBardBackgroundColor,
+        backgroundColor: Styles.colors.appBardBackgroundColor,
         middle: const Text('Chat Details'),
       ),
       body: SingleChildScrollView(
@@ -160,7 +160,7 @@ class _ChatDetailState extends State<ChatDetailPage> implements lnc.Observer {
               backgroundColor: backgroundColor,
               backgroundColorActivated: backgroundColorActivated,
               padding: Styles.settingsSectionItemPadding,
-              leading: Icon(Styles.muteListIcon, color: primaryTextColor),
+              leading: Icon(AppIcons.muteListIcon, color: primaryTextColor),
               title: Text('Mute Notifications', style: TextStyle(color: primaryTextColor)),
               additionalInfo: CupertinoSwitch(
                 value: widget.info.isMuted,
@@ -201,7 +201,7 @@ class _ChatDetailState extends State<ChatDetailPage> implements lnc.Observer {
   );
 
   Widget _clearButton(BuildContext context, {required Color textColor, required Color backgroundColor}) =>
-      _button('  Clear History', Styles.clearChatIcon, textColor: textColor, backgroundColor: backgroundColor,
+      _button('  Clear History', AppIcons.clearChatIcon, textColor: textColor, backgroundColor: backgroundColor,
         onPressed: () => _clearHistory(context, widget.info),
       );
 

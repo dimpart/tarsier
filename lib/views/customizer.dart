@@ -16,14 +16,13 @@ class SettingsPage extends StatelessWidget {
   const SettingsPage({super.key});
 
   static BottomNavigationBarItem barItem() => const BottomNavigationBarItem(
-    icon: Icon(Styles.settingsTabIcon),
+    icon: Icon(AppIcons.settingsTabIcon),
     label: 'Settings',
   );
 
   @override
   Widget build(BuildContext context) {
-    var colors = Facade.of(context).colors;
-    var styles = Facade.of(context).styles;
+    var colors = Styles.colors;
     return Scaffold(
       backgroundColor: colors.scaffoldBackgroundColor,
       // A ScrollView that creates custom scroll effects using slivers.
@@ -36,7 +35,7 @@ class SettingsPage extends StatelessWidget {
             // When the "middle" parameter is omitted, the widget provided
             // in the "largeTitle" parameter is used instead in the collapsed state.
             largeTitle: Text('Settings',
-              style: styles.titleTextStyle,
+              style: Styles.titleTextStyle,
             ),
           ),
           // This widget fills the remaining space in the viewport.
@@ -78,15 +77,13 @@ class SettingsPage extends StatelessWidget {
           ),
           /// Export Private Key
           _listTile(
-            leading: Styles.exportAccountIcon, title: 'Export',
+            leading: AppIcons.exportAccountIcon, title: 'Export',
             additional: 'Mnemonic',
             backgroundColor: backgroundColor,
             backgroundColorActivated: backgroundColorActivated,
             primaryTextColor: primaryTextColor,
             secondaryTextColor: secondaryTextColor,
-            onTap: () => showCupertinoDialog(
-              context: context,
-              builder: (context) => const ExportPage(),
+            onTap: () => openPage(const ExportPage(),
             ),
           ),
         ],
@@ -101,7 +98,7 @@ class SettingsPage extends StatelessWidget {
         children: [
           /// Language
           _listTile(
-            leading: Styles.languageIcon, title: 'Language',
+            leading: AppIcons.languageIcon, title: 'Language',
             additional: LanguageDataSource().getCurrentName(),
             backgroundColor: backgroundColor,
             backgroundColorActivated: backgroundColorActivated,
@@ -114,7 +111,7 @@ class SettingsPage extends StatelessWidget {
           ),
           /// Brightness
           _listTile(
-            leading: Styles.brightnessIcon, title: 'Brightness',
+            leading: AppIcons.brightnessIcon, title: 'Brightness',
             additional: BrightnessDataSource().getCurrentName(),
             backgroundColor: backgroundColor,
             backgroundColorActivated: backgroundColorActivated,
@@ -137,7 +134,7 @@ class SettingsPage extends StatelessWidget {
         children: [
           /// Relay Stations
           _listTile(
-            leading: Styles.setNetworkIcon, title: 'Network',
+            leading: AppIcons.setNetworkIcon, title: 'Network',
             additional: 'Relay Stations',
             backgroundColor: backgroundColor,
             backgroundColorActivated: backgroundColorActivated,
@@ -160,7 +157,7 @@ class SettingsPage extends StatelessWidget {
         children: [
           /// Source Codes
           _listTile(
-            leading: Styles.setOpenSourceIcon, title: 'Source',
+            leading: AppIcons.setOpenSourceIcon, title: 'Source',
             additional: 'github.com/dimchat',
             backgroundColor: backgroundColor,
             backgroundColorActivated: backgroundColorActivated,
@@ -172,7 +169,7 @@ class SettingsPage extends StatelessWidget {
           ),
           /// Privacy Policy
           _listTile(
-            leading: Styles.setTermsIcon, title: 'Terms',
+            leading: AppIcons.setTermsIcon, title: 'Terms',
             additional: 'Privacy Policy',
             backgroundColor: backgroundColor,
             backgroundColorActivated: backgroundColorActivated,
@@ -196,7 +193,7 @@ class SettingsPage extends StatelessWidget {
     GlobalVariable shared = GlobalVariable();
     Client client = shared.terminal;
     return _listTile(
-        leading: Styles.setAboutIcon, title: 'About',
+        leading: AppIcons.setAboutIcon, title: 'About',
         additional: 'Tarsier (v${client.versionName})',
         trailing: false,
         backgroundColor: backgroundColor,

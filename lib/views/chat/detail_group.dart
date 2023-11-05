@@ -110,11 +110,11 @@ class _ChatDetailState extends State<GroupChatDetailPage> implements lnc.Observe
 
   @override
   Widget build(BuildContext context) {
-    var colors = Facade.of(context).colors;
+    var colors = Styles.colors;
     return Scaffold(
-      backgroundColor: Facade.of(context).colors.scaffoldBackgroundColor,
+      backgroundColor: Styles.colors.scaffoldBackgroundColor,
       appBar: CupertinoNavigationBar(
-        backgroundColor: Facade.of(context).colors.appBardBackgroundColor,
+        backgroundColor: Styles.colors.appBardBackgroundColor,
         middle: const Text('Group Chat Details'),
       ),
       body: SingleChildScrollView(
@@ -194,7 +194,7 @@ class _ChatDetailState extends State<GroupChatDetailPage> implements lnc.Observe
             backgroundColor: backgroundColor,
             backgroundColorActivated: backgroundColorActivated,
             padding: Styles.settingsSectionItemPadding,
-            leading: Icon(Styles.adminIcon, color: primaryTextColor),
+            leading: Icon(AppIcons.adminIcon, color: primaryTextColor),
             title: Text('Administrators', style: TextStyle(color: primaryTextColor)),
             additionalInfo: null,
             trailing: const CupertinoListTileChevron(),
@@ -205,7 +205,7 @@ class _ChatDetailState extends State<GroupChatDetailPage> implements lnc.Observe
             backgroundColor: backgroundColor,
             backgroundColorActivated: backgroundColorActivated,
             padding: Styles.settingsSectionItemPadding,
-            leading: Icon(Styles.invitationIcon, color: primaryTextColor),
+            leading: Icon(AppIcons.invitationIcon, color: primaryTextColor),
             title: Text('Invitations', style: TextStyle(color: primaryTextColor)),
             additionalInfo: NumberBubble.fromInt(widget.info.invitations.length),
             trailing: const CupertinoListTileChevron(),
@@ -225,7 +225,7 @@ class _ChatDetailState extends State<GroupChatDetailPage> implements lnc.Observe
               backgroundColor: backgroundColor,
               backgroundColorActivated: backgroundColorActivated,
               padding: Styles.settingsSectionItemPadding,
-              leading: Icon(Styles.muteListIcon, color: primaryTextColor),
+              leading: Icon(AppIcons.muteListIcon, color: primaryTextColor),
               title: Text('Mute Notifications', style: TextStyle(color: primaryTextColor)),
               additionalInfo: CupertinoSwitch(
                 value: widget.info.isMuted,
@@ -263,8 +263,8 @@ class _ChatDetailState extends State<GroupChatDetailPage> implements lnc.Observe
     textAlign: TextAlign.end,
     controller: TextEditingController(text: widget.info.name),
     placeholder: 'Please input group name.',
-    decoration: Facade.of(context).styles.textFieldDecoration,
-    style: Facade.of(context).styles.textFieldStyle,
+    decoration: Styles.textFieldDecoration,
+    style: Styles.textFieldStyle,
     readOnly: !widget.info.isOwner,
     focusNode: _nameFocusNode,
     onChanged: (value) => _name = value,
@@ -293,8 +293,8 @@ class _ChatDetailState extends State<GroupChatDetailPage> implements lnc.Observe
     textAlign: TextAlign.end,
     controller: TextEditingController(text: widget.info.remark.alias),
     placeholder: 'Please input alias.',
-    decoration: Facade.of(context).styles.textFieldDecoration,
-    style: Facade.of(context).styles.textFieldStyle,
+    decoration: Styles.textFieldDecoration,
+    style: Styles.textFieldStyle,
     focusNode: _remarkFocusNode,
     onChanged: (value) => _alias = value,
     onTapOutside: (event) => _changeAlias(context),
@@ -319,12 +319,12 @@ class _ChatDetailState extends State<GroupChatDetailPage> implements lnc.Observe
   }
 
   Widget _clearButton(BuildContext context, {required Color textColor, required Color backgroundColor}) =>
-      _button('  Clear History', Styles.clearChatIcon, textColor: textColor, backgroundColor: backgroundColor,
+      _button('  Clear History', AppIcons.clearChatIcon, textColor: textColor, backgroundColor: backgroundColor,
         onPressed: () => _clearHistory(context, widget.info),
       );
 
   Widget _quitButton(BuildContext context, {required Color textColor, required Color backgroundColor}) =>
-      _button('  Quit Group', Styles.quitIcon, textColor: textColor, backgroundColor: backgroundColor,
+      _button('  Quit Group', AppIcons.quitIcon, textColor: textColor, backgroundColor: backgroundColor,
         onPressed: () => widget.info.quit(context: context),
       );
 

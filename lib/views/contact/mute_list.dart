@@ -84,9 +84,9 @@ class _MuteListState extends State<MuteListPage> implements lnc.Observer {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-    backgroundColor: Facade.of(context).colors.scaffoldBackgroundColor,
+    backgroundColor: Styles.colors.scaffoldBackgroundColor,
     appBar: CupertinoNavigationBar(
-      backgroundColor: Facade.of(context).colors.appBardBackgroundColor,
+      backgroundColor: Styles.colors.appBardBackgroundColor,
       middle: StatedTitleView.from(context, () => 'Muted List'),
     ),
     body: SectionListView.builder(
@@ -115,10 +115,10 @@ class _MuteListAdapter with SectionAdapterMixin {
 
   @override
   Widget getSectionHeader(BuildContext context, int section) => Container(
-    color: Facade.of(context).colors.sectionHeaderBackgroundColor,
+    color: Styles.colors.sectionHeaderBackgroundColor,
     padding: Styles.sectionHeaderPadding,
     child: Text(_dataSource.getSection(section),
-      style: Facade.of(context).styles.sectionHeaderTextStyle,
+      style: Styles.sectionHeaderTextStyle,
     ),
   );
 
@@ -146,14 +146,14 @@ class _MuteListAdapter with SectionAdapterMixin {
     String prompt = '* Here shows noisy friends who you don\'t value very much;\n'
         '* You can still chat with them, but never receive notification from this list.';
     return Container(
-      color: Facade.of(context).colors.appBardBackgroundColor,
+      color: Styles.colors.appBardBackgroundColor,
       padding: const EdgeInsets.all(16),
       alignment: Alignment.center,
       child: Row(
         // crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Expanded(child: Text(prompt,
-            style: Facade.of(context).styles.sectionFooterTextStyle,
+            style: Styles.sectionFooterTextStyle,
           )),
         ],
       ),

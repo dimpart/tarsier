@@ -13,7 +13,7 @@ class SearchPage extends StatefulWidget {
 
   static Widget searchButton(BuildContext context) => IconButton(
     iconSize: Styles.navigationBarIconSize,
-    icon: const Icon(Styles.searchIcon),
+    icon: const Icon(AppIcons.searchIcon),
     onPressed: () => open(context),
   );
 
@@ -93,9 +93,9 @@ class _SearchState extends State<SearchPage> implements lnc.Observer {
 
   @override
   Widget build(BuildContext context) => CupertinoPageScaffold(
-    backgroundColor: Facade.of(context).colors.scaffoldBackgroundColor,
+    backgroundColor: Styles.colors.scaffoldBackgroundColor,
     navigationBar: CupertinoNavigationBar(
-      backgroundColor: Facade.of(context).colors.appBardBackgroundColor,
+      backgroundColor: Styles.colors.appBardBackgroundColor,
       // backgroundColor: Styles.themeBarBackgroundColor,
       middle: StatedTitleView.from(context, () => 'Search User'),
     ),
@@ -105,7 +105,7 @@ class _SearchState extends State<SearchPage> implements lnc.Observer {
   );
 
   Widget _searchWidget(BuildContext context) => CupertinoSearchTextField(
-    style: Facade.of(context).styles.textFieldStyle,
+    style: Styles.textFieldStyle,
     onSubmitted: (value) => _search(context, value),
   );
 

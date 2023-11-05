@@ -13,7 +13,7 @@ class ChatHistoryPage extends StatefulWidget {
   const ChatHistoryPage({super.key});
 
   static BottomNavigationBarItem barItem() => const BottomNavigationBarItem(
-    icon: Icon(Styles.chatsTabIcon),
+    icon: Icon(AppIcons.chatsTabIcon),
     label: 'Chats',
   );
 
@@ -89,9 +89,9 @@ class _ChatListState extends State<ChatHistoryPage> implements lnc.Observer {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-    backgroundColor: Facade.of(context).colors.scaffoldBackgroundColor,
+    backgroundColor: Styles.colors.scaffoldBackgroundColor,
     appBar: CupertinoNavigationBar(
-      backgroundColor: Facade.of(context).colors.appBardBackgroundColor,
+      backgroundColor: Styles.colors.appBardBackgroundColor,
       middle: StatedTitleView.from(context, () => 'Secure Chat'),
       trailing: plusButton(context),
     ),
@@ -114,13 +114,13 @@ class _ChatListAdapter with SectionAdapterMixin {
     String prompt = '* Here shows chat histories of your friends only;\n'
         '* Strangers will be placed in "Contacts -> New Friends".';
     return Container(
-      color: Facade.of(context).colors.appBardBackgroundColor,
+      color: Styles.colors.appBardBackgroundColor,
       padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
       child: Row(
         // crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Expanded(child: Text(prompt,
-            style: Facade.of(context).styles.sectionFooterTextStyle,
+            style: Styles.sectionFooterTextStyle,
           )),
         ],
       ),

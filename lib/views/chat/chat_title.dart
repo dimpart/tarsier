@@ -11,7 +11,7 @@ class ChatTitleView extends StatefulWidget {
   final TextStyle style;
 
   static ChatTitleView from(BuildContext context, Conversation info) =>
-      ChatTitleView(info, style: Facade.of(context).styles.titleTextStyle);
+      ChatTitleView(info, style: Styles.titleTextStyle);
 
   @override
   State<StatefulWidget> createState() => _TitleState();

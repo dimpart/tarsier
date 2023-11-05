@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_section_list/flutter_section_list.dart';
 
+
 class LanguageSettingPage extends StatefulWidget {
   const LanguageSettingPage({super.key});
 
@@ -17,10 +18,10 @@ class _LanguageState extends State<LanguageSettingPage> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-    backgroundColor: Facade.of(context).colors.scaffoldBackgroundColor,
+    backgroundColor: Styles.colors.scaffoldBackgroundColor,
     appBar: CupertinoNavigationBar(
-      backgroundColor: Facade.of(context).colors.appBardBackgroundColor,
-      middle: Text('Language', style: Facade.of(context).styles.titleTextStyle),
+      backgroundColor: Styles.colors.appBardBackgroundColor,
+      middle: Text('Language', style: Styles.titleTextStyle),
     ),
     body: SectionListView.builder(
       adapter: _adapter,
@@ -80,8 +81,8 @@ class _LanguageCellState extends State<_LanguageCell> {
 
   Widget get languageName => Text(widget.name);
 
-  Widget? get selectedFlag => !isSelected ? null : Icon(Styles.selectedIcon,
-    color: Facade.of(context).colors.primaryTextColor,
+  Widget? get selectedFlag => !isSelected ? null : Icon(AppIcons.selectedIcon,
+    color: Styles.colors.primaryTextColor,
   );
 
   void selectLanguage() {

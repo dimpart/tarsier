@@ -1,9 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
 
 import 'package:dim_flutter/dim_flutter.dart';
 
@@ -45,7 +43,7 @@ void main() async {
   if (!permitted) {
     // not granted for photos/storage, first run?
     Log.warning('not granted for photos/storage, first run?');
-    runApp(_Application(RegisterPage()));
+    launchApp(RegisterPage());
   } else {
     // check current user
     Log.debug('check current user');
@@ -53,35 +51,16 @@ void main() async {
     User? user = await shared.facebook.currentUser;
     Log.info('current user: $user');
     if (user == null) {
-      runApp(_Application(RegisterPage()));
+      launchApp(RegisterPage());
     } else {
-      runApp(const _Application(_MainPage()));
+      launchApp(const _MainPage());
     }
   }
 }
 
 void changeToMainPage(BuildContext context) {
-  Navigator.pop(context);
-  Navigator.push(context, CupertinoPageRoute(
-    builder: (context) => const _MainPage(),
-  ));
-}
-
-class _Application extends StatelessWidget {
-  const _Application(this.home);
-
-  final Widget home;
-
-  @override
-  Widget build(BuildContext context) => MaterialApp(
-    // debugShowCheckedModeBanner: false,
-    theme: ThemeData.light(useMaterial3: true),
-    darkTheme: ThemeData.dark(useMaterial3: true),
-    home: home,
-    localizationsDelegates: const [
-      GlobalMaterialLocalizations.delegate,
-    ],
-  );
+  closePage();
+  openPage(const _MainPage());
 }
 
 class _MainPage extends StatefulWidget {
@@ -113,10 +92,16 @@ class _MainPageState extends State<_MainPage> with WidgetsBindingObserver {
   }
 
   @override
+  void didChangePlatformBrightness() {
+    super.didChangePlatformBrightness();
+    forceAppUpdate();
+  }
+
+  @override
   Widget build(BuildContext context) => CupertinoTabScaffold(
-    backgroundColor: Facade.of(context).colors.scaffoldBackgroundColor,
+    backgroundColor: Styles.colors.scaffoldBackgroundColor,
     tabBar: CupertinoTabBar(
-      backgroundColor: Facade.of(context).colors.appBardBackgroundColor,
+      backgroundColor: Styles.colors.appBardBackgroundColor,
       items: [
         ChatHistoryPage.barItem(),
         ContactListPage.barItem(),

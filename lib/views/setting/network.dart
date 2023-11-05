@@ -43,12 +43,12 @@ class _NetworkState extends State<NetworkSettingPage> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-    backgroundColor: Facade.of(context).colors.scaffoldBackgroundColor,
+    backgroundColor: Styles.colors.scaffoldBackgroundColor,
     appBar: CupertinoNavigationBar(
-      backgroundColor: Facade.of(context).colors.appBardBackgroundColor,
-      middle: Text('Relay Stations', style: Facade.of(context).styles.titleTextStyle),
+      backgroundColor: Styles.colors.appBardBackgroundColor,
+      middle: Text('Relay Stations', style: Styles.titleTextStyle),
       trailing: IconButton(
-          icon: const Icon(Styles.refreshStationsIcon, size: 16),
+          icon: const Icon(AppIcons.refreshStationsIcon, size: 16),
           onPressed: _refreshing ? null : () => _confirmRefresh(context)),
     ),
     body: SectionListView.builder(
@@ -111,10 +111,10 @@ class _StationListAdapter with SectionAdapterMixin {
 
   @override
   Widget getSectionHeader(BuildContext context, int section) => Container(
-    color: Facade.of(context).colors.sectionHeaderBackgroundColor,
+    color: Styles.colors.sectionHeaderBackgroundColor,
     padding: Styles.sectionHeaderPadding,
     child: Text('Provider (${_dataSource.getSection(section)})',
-      style: Facade.of(context).styles.sectionHeaderTextStyle,
+      style: Styles.sectionHeaderTextStyle,
     ),
   );
 
@@ -244,11 +244,11 @@ class _StationCellState extends State<_StationCell> implements lnc.Observer {
   }
   Icon _getChosen(NeighborInfo info) {
     if (_isCurrentStation(info)) {
-      return Icon(Styles.currentStationIcon, color: _getColor(info));
+      return Icon(AppIcons.currentStationIcon, color: _getColor(info));
     } else if (info.chosen == 0) {
-      return Icon(Styles.stationIcon, color: _getColor(info));
+      return Icon(AppIcons.stationIcon, color: _getColor(info));
     } else {
-      return Icon(Styles.chosenStationIcon, color: _getColor(info));
+      return Icon(AppIcons.chosenStationIcon, color: _getColor(info));
     }
   }
   String _getResult(NeighborInfo info) {

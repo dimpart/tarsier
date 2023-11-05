@@ -135,9 +135,9 @@ class _ChatBoxState extends State<ChatBox> implements lnc.Observer {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-    backgroundColor: Facade.of(context).colors.scaffoldBackgroundColor,
+    backgroundColor: Styles.colors.scaffoldBackgroundColor,
     appBar: CupertinoNavigationBar(
-      backgroundColor: Facade.of(context).colors.appBardBackgroundColor,
+      backgroundColor: Styles.colors.appBardBackgroundColor,
       middle: ChatTitleView.from(context, widget.info),
       trailing: _detailButton(context, widget.info),
     ),
@@ -150,7 +150,7 @@ class _ChatBoxState extends State<ChatBox> implements lnc.Observer {
     }
     Widget icon = IconButton(
       iconSize: Styles.navigationBarIconSize,
-      icon: const Icon(Styles.chatDetailIcon),
+      icon: const Icon(AppIcons.chatDetailIcon),
       onPressed: () => _openDetail(context, widget.info),
     );
     if (info is GroupInfo) {
@@ -179,7 +179,7 @@ class _ChatBoxState extends State<ChatBox> implements lnc.Observer {
         ),
       ),
       Container(
-        color: Facade.of(context).colors.inputTrayBackgroundColor,
+        color: Styles.colors.inputTrayBackgroundColor,
         padding: const EdgeInsets.only(bottom: 16),
         child: _inputTray(context),
       ),
@@ -194,7 +194,7 @@ class _ChatBoxState extends State<ChatBox> implements lnc.Observer {
           padding: const EdgeInsets.all(16),
           child: Text('Blocked',
             style: TextStyle(
-              color: Facade.of(context).colors.primaryTextColor,
+              color: Styles.colors.primaryTextColor,
             ),
           ),
         ),
@@ -205,7 +205,7 @@ class _ChatBoxState extends State<ChatBox> implements lnc.Observer {
           padding: const EdgeInsets.all(16),
           child: Text('Non-Member',
             style: TextStyle(
-              color: Facade.of(context).colors.primaryTextColor,
+              color: Styles.colors.primaryTextColor,
             ),
           ),
         ),
@@ -234,7 +234,7 @@ class _HistoryAdapter with SectionAdapterMixin {
         ' Your messages will be encrypted before sending out,'
         ' no one can decrypt the contents except the $tag.';
     return Container(
-      color: Facade.of(context).colors.appBardBackgroundColor,
+      color: Styles.colors.appBardBackgroundColor,
       padding: const EdgeInsets.all(16),
       child: Row(
         // crossAxisAlignment: CrossAxisAlignment.start,
@@ -245,7 +245,7 @@ class _HistoryAdapter with SectionAdapterMixin {
           ),
           const SizedBox(width: 8,),
           Expanded(child: Text(prompt,
-            style: Facade.of(context).styles.sectionFooterTextStyle,
+            style: Styles.sectionFooterTextStyle,
           )),
         ],
       ),
@@ -341,7 +341,7 @@ class _HistoryAdapter with SectionAdapterMixin {
       }
     }
     return Text(TimeUtils.getTimeString(time),
-      style: Facade.of(context).styles.messageTimeTextStyle,
+      style: Styles.messageTimeTextStyle,
     );
   }
 

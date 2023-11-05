@@ -41,7 +41,7 @@ class _RegisterInfo {
 
 class _RegisterState extends State<RegisterPage> {
 
-  static Color topColor(BuildContext context) => Facade.of(context).colors.logoBackgroundColor;
+  static Color topColor(BuildContext context) => Styles.colors.logoBackgroundColor;
   static const Color bottomColor = CupertinoColors.white;
 
   static const Color titleColor = CupertinoColors.white;
@@ -53,7 +53,7 @@ class _RegisterState extends State<RegisterPage> {
 
   static const Color tileColor = CupertinoColors.systemBackground;
   // static const Color badgeColor = CupertinoColors.systemGrey3;
-  static const Color badgeColor = Styles.logoBackgroundColor;
+  static const Color badgeColor = tarsierLogoBackgroundColor;
   static const Color badgeFontColor = CupertinoColors.white;
   static const Color inputColor = CupertinoColors.black;
   static const Color buttonColor = CupertinoColors.link;
@@ -169,7 +169,7 @@ class _RegisterState extends State<RegisterPage> {
           padding: const EdgeInsets.only(top: 8, bottom: 8),
           alignment: AlignmentDirectional.center,
           child: SelectableText('${widget._info.identifier}',
-            style: Facade.of(context).styles.identifierTextStyle,
+            style: Styles.identifierTextStyle,
           ),
         ),
       if (!widget._info.importing)
@@ -396,7 +396,7 @@ class _RegisterState extends State<RegisterPage> {
             ),
             borderRadius: const BorderRadius.all(Radius.circular(5)),
           ),
-          child: Icon(Styles.agreeIcon,
+          child: Icon(AppIcons.agreeIcon,
             size: 16,
             color: widget._info.agreed
                 ? CupertinoColors.white

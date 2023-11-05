@@ -71,8 +71,7 @@ class _AccountState extends State<AccountPage> {
 
   @override
   Widget build(BuildContext context) {
-    var colors = Facade.of(context).colors;
-    var styles = Facade.of(context).styles;
+    var colors = Styles.colors;
     return Scaffold(
       backgroundColor: colors.scaffoldBackgroundColor,
       // A ScrollView that creates custom scroll effects using slivers.
@@ -84,7 +83,7 @@ class _AccountState extends State<AccountPage> {
             // This title is visible in both collapsed and expanded states.
             // When the "middle" parameter is omitted, the widget provided
             // in the "largeTitle" parameter is used instead in the collapsed state.
-            largeTitle: Text('Edit Profile', style: styles.titleTextStyle),
+            largeTitle: Text('Edit Profile', style: Styles.titleTextStyle),
           ),
           // This widget fills the remaining space in the viewport.
           // Drag the scrollable area to collapse the CupertinoSliverNavigationBar.
@@ -135,7 +134,7 @@ class _AccountState extends State<AccountPage> {
             title: Text('ID', style: TextStyle(color: primaryTextColor)),
             additionalInfo: SelectableText(
               widget.user.identifier.toString(),
-              style: Facade.of(context).styles.identifierTextStyle,
+              style: Styles.identifierTextStyle,
             ),
           ),
 
@@ -174,7 +173,7 @@ class _AccountState extends State<AccountPage> {
       alignment: AlignmentDirectional.bottomCenter,
       children: [
         if (_avatarPath == null)
-        Container(width: 256, height: 256, color: Facade.of(context).colors.logoBackgroundColor),
+        Container(width: 256, height: 256, color: Styles.colors.logoBackgroundColor),
         if (_avatarPath != null)
         Image.file(File(_avatarPath!), width: 256, height: 256, fit: BoxFit.cover),
         SizedBox(
@@ -200,8 +199,8 @@ class _AccountState extends State<AccountPage> {
       textAlign: TextAlign.end,
       controller: TextEditingController(text: _nickname),
       placeholder: 'your nickname',
-      decoration: Facade.of(context).styles.textFieldDecoration,
-      style: Facade.of(context).styles.textFieldStyle,
+      decoration: Styles.textFieldDecoration,
+      style: Styles.textFieldStyle,
       focusNode: _focusNode,
       onTapOutside: (event) => _focusNode.unfocus(),
       onChanged: (value) => _nickname = value,
@@ -209,7 +208,7 @@ class _AccountState extends State<AccountPage> {
   );
 
   Widget _updateButton(BuildContext context, {required Color textColor, required Color backgroundColor}) =>
-      _button('  Update & Broadcast', Styles.updateDocIcon, textColor: textColor, backgroundColor: backgroundColor,
+      _button('  Update & Broadcast', AppIcons.updateDocIcon, textColor: textColor, backgroundColor: backgroundColor,
         onPressed: () => _saveInfo(context).then((ok) {
           if (ok) {
             Alert.show(context, 'Success', 'Your profile is updated and broadcast to all friends!');
