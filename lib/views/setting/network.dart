@@ -46,7 +46,7 @@ class _NetworkState extends State<NetworkSettingPage> {
     backgroundColor: Styles.colors.scaffoldBackgroundColor,
     appBar: CupertinoNavigationBar(
       backgroundColor: Styles.colors.appBardBackgroundColor,
-      middle: Text('Relay Stations', style: Styles.titleTextStyle),
+      middle: Text('Relay Stations'.tr, style: Styles.titleTextStyle),
       trailing: IconButton(
           icon: const Icon(AppIcons.refreshStationsIcon, size: 16),
           onPressed: _refreshing ? null : () => _confirmRefresh(context)),

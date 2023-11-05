@@ -83,7 +83,7 @@ class _AccountState extends State<AccountPage> {
             // This title is visible in both collapsed and expanded states.
             // When the "middle" parameter is omitted, the widget provided
             // in the "largeTitle" parameter is used instead in the collapsed state.
-            largeTitle: Text('Edit Profile', style: Styles.titleTextStyle),
+            largeTitle: Text('Edit Profile'.tr, style: Styles.titleTextStyle),
           ),
           // This widget fills the remaining space in the viewport.
           // Drag the scrollable area to collapse the CupertinoSliverNavigationBar.
@@ -143,7 +143,7 @@ class _AccountState extends State<AccountPage> {
             backgroundColor: backgroundColor,
             backgroundColorActivated: backgroundColorActivated,
             padding: Styles.settingsSectionItemPadding,
-            title: Text('Nickname', style: TextStyle(color: primaryTextColor)),
+            title: Text('Nickname'.tr, style: TextStyle(color: primaryTextColor)),
             additionalInfo: SizedBox(
               width: 160,
               child: _nicknameText(context),
@@ -186,7 +186,7 @@ class _AccountState extends State<AccountPage> {
               foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
               shape: MaterialStateProperty.all(const LinearBorder()),
             ),
-            child: const Text('Change Avatar'),
+            child: Text('Change Avatar'.tr),
           ),
         )
       ],
@@ -198,7 +198,7 @@ class _AccountState extends State<AccountPage> {
     child: CupertinoTextField(
       textAlign: TextAlign.end,
       controller: TextEditingController(text: _nickname),
-      placeholder: 'your nickname',
+      placeholder: 'your nickname'.tr,
       decoration: Styles.textFieldDecoration,
       style: Styles.textFieldStyle,
       focusNode: _focusNode,
@@ -208,7 +208,7 @@ class _AccountState extends State<AccountPage> {
   );
 
   Widget _updateButton(BuildContext context, {required Color textColor, required Color backgroundColor}) =>
-      _button('  Update & Broadcast', AppIcons.updateDocIcon, textColor: textColor, backgroundColor: backgroundColor,
+      _button('  ${'Update & Broadcast'.tr}', AppIcons.updateDocIcon, textColor: textColor, backgroundColor: backgroundColor,
         onPressed: () => _saveInfo(context).then((ok) {
           if (ok) {
             Alert.show(context, 'Success', 'Your profile is updated and broadcast to all friends!');

@@ -97,7 +97,7 @@ class _SearchState extends State<SearchPage> implements lnc.Observer {
     navigationBar: CupertinoNavigationBar(
       backgroundColor: Styles.colors.appBardBackgroundColor,
       // backgroundColor: Styles.themeBarBackgroundColor,
-      middle: StatedTitleView.from(context, () => 'Search User'),
+      middle: StatedTitleView.from(context, () => 'Search User'.tr),
     ),
     child: SectionListView.builder(
       adapter: _adapter,

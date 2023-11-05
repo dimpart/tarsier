@@ -87,7 +87,7 @@ class _BlockListState extends State<BlockListPage> implements lnc.Observer {
     backgroundColor: Styles.colors.scaffoldBackgroundColor,
     appBar: CupertinoNavigationBar(
       backgroundColor: Styles.colors.appBardBackgroundColor,
-      middle: StatedTitleView.from(context, () => 'Blocked List'),
+      middle: StatedTitleView.from(context, () => 'Blocked List'.tr),
     ),
     body: SectionListView.builder(
       adapter: _adapter,
@@ -143,8 +143,7 @@ class _BlockListAdapter with SectionAdapterMixin {
 
   @override
   Widget getSectionFooter(BuildContext context, int section) {
-    String prompt = '* Here shows spammers who you blocked;\n'
-        '* You will never receive message from this list.';
+    String prompt = 'BlockList::Description'.tr;
     return Container(
       color: Styles.colors.appBardBackgroundColor,
       padding: const EdgeInsets.all(16),

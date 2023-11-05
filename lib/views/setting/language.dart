@@ -21,7 +21,7 @@ class _LanguageState extends State<LanguageSettingPage> {
     backgroundColor: Styles.colors.scaffoldBackgroundColor,
     appBar: CupertinoNavigationBar(
       backgroundColor: Styles.colors.appBardBackgroundColor,
-      middle: Text('Language', style: Styles.titleTextStyle),
+      middle: Text('Language'.tr, style: Styles.titleTextStyle),
     ),
     body: SectionListView.builder(
       adapter: _adapter,
@@ -52,7 +52,7 @@ class _LanguageCell extends StatefulWidget {
 
   final LanguageItem item;
 
-  int get order => item.order;
+  String get code => item.code;
   String get name => item.name;
 
   @override
@@ -64,7 +64,7 @@ class _LanguageCellState extends State<_LanguageCell> {
 
   late final LanguageDataSource _dataSource = LanguageDataSource();
 
-  bool get isSelected => widget.order == _dataSource.getCurrentOrder();
+  bool get isSelected => widget.code == _dataSource.getCurrentCode();
 
   @override
   Widget build(BuildContext context) => CupertinoTableCell(
@@ -86,9 +86,8 @@ class _LanguageCellState extends State<_LanguageCell> {
   );
 
   void selectLanguage() {
-    _dataSource.setLanguage(widget.order);
-    setState(() {
-    });
+    _dataSource.setLanguage(widget.code);
+    closePage();
   }
 
 }

@@ -86,7 +86,7 @@ class _StrangerListState extends State<StrangerListPage> implements lnc.Observer
     backgroundColor: Styles.colors.scaffoldBackgroundColor,
     appBar: CupertinoNavigationBar(
       backgroundColor: Styles.colors.appBardBackgroundColor,
-      middle: StatedTitleView.from(context, () => 'New Friends'),
+      middle: StatedTitleView.from(context, () => 'New Friends'.tr),
     ),
     body: SectionListView.builder(
       adapter: _adapter,
@@ -104,9 +104,7 @@ class _StrangerListAdapter with SectionAdapterMixin {
 
   @override
   Widget getSectionFooter(BuildContext context, int section) {
-    String prompt = '* Here shows strangers who want to make friends with you;\n'
-        '* You can add them to your contacts, or just ignore them;\n'
-        '* Click "Block" will add to "Blocked List" and never receive message from them.';
+    String prompt = 'Strangers::Description'.tr;
     return Container(
       color: Styles.colors.appBardBackgroundColor,
       padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
@@ -272,7 +270,7 @@ class _ChatTableCellState extends State<_ChatTableCell> implements lnc.Observer 
           //       Styles.colors.importantButtonColor),
           // ),
           onPressed: () => info.add(context: context),
-          child: const Text('Accept'),
+          child: Text('Accept'.tr),
         ),
       ),
     ],

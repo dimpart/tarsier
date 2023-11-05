@@ -115,7 +115,7 @@ class _ChatDetailState extends State<GroupChatDetailPage> implements lnc.Observe
       backgroundColor: Styles.colors.scaffoldBackgroundColor,
       appBar: CupertinoNavigationBar(
         backgroundColor: Styles.colors.appBardBackgroundColor,
-        middle: const Text('Group Chat Details'),
+        middle: Text('Group Chat Details'.tr),
       ),
       body: SingleChildScrollView(
         child: _body(context,
@@ -158,7 +158,7 @@ class _ChatDetailState extends State<GroupChatDetailPage> implements lnc.Observe
             backgroundColor: backgroundColor,
             backgroundColorActivated: backgroundColorActivated,
             padding: Styles.settingsSectionItemPadding,
-            title: Text('Group Name', style: TextStyle(color: primaryTextColor)),
+            title: Text('Group Name'.tr, style: TextStyle(color: primaryTextColor)),
             additionalInfo: SizedBox(
               width: 240,
               child: widget.info.isOwner ? _nameTextField(context) : Container(
@@ -175,7 +175,7 @@ class _ChatDetailState extends State<GroupChatDetailPage> implements lnc.Observe
             backgroundColor: backgroundColor,
             backgroundColorActivated: backgroundColorActivated,
             padding: Styles.settingsSectionItemPadding,
-            title: Text('Remark', style: TextStyle(color: primaryTextColor)),
+            title: Text('Remark'.tr, style: TextStyle(color: primaryTextColor)),
             additionalInfo: SizedBox(
               width: 240,
               child: _remarkTextField(context),
@@ -195,7 +195,7 @@ class _ChatDetailState extends State<GroupChatDetailPage> implements lnc.Observe
             backgroundColorActivated: backgroundColorActivated,
             padding: Styles.settingsSectionItemPadding,
             leading: Icon(AppIcons.adminIcon, color: primaryTextColor),
-            title: Text('Administrators', style: TextStyle(color: primaryTextColor)),
+            title: Text('Administrators'.tr, style: TextStyle(color: primaryTextColor)),
             additionalInfo: null,
             trailing: const CupertinoListTileChevron(),
             onTap: () => AdministratorsPage.open(context, widget.info),
@@ -206,7 +206,7 @@ class _ChatDetailState extends State<GroupChatDetailPage> implements lnc.Observe
             backgroundColorActivated: backgroundColorActivated,
             padding: Styles.settingsSectionItemPadding,
             leading: Icon(AppIcons.invitationIcon, color: primaryTextColor),
-            title: Text('Invitations', style: TextStyle(color: primaryTextColor)),
+            title: Text('Invitations'.tr, style: TextStyle(color: primaryTextColor)),
             additionalInfo: NumberBubble.fromInt(widget.info.invitations.length),
             trailing: const CupertinoListTileChevron(),
             onTap: () => InvitationsPage.open(context, widget.info),
@@ -226,7 +226,7 @@ class _ChatDetailState extends State<GroupChatDetailPage> implements lnc.Observe
               backgroundColorActivated: backgroundColorActivated,
               padding: Styles.settingsSectionItemPadding,
               leading: Icon(AppIcons.muteListIcon, color: primaryTextColor),
-              title: Text('Mute Notifications', style: TextStyle(color: primaryTextColor)),
+              title: Text('Mute Notifications'.tr, style: TextStyle(color: primaryTextColor)),
               additionalInfo: CupertinoSwitch(
                 value: widget.info.isMuted,
                 onChanged: (bool value) => setState(() {
@@ -262,7 +262,7 @@ class _ChatDetailState extends State<GroupChatDetailPage> implements lnc.Observe
   Widget _nameTextField(BuildContext context) => CupertinoTextField(
     textAlign: TextAlign.end,
     controller: TextEditingController(text: widget.info.name),
-    placeholder: 'Please input group name.',
+    placeholder: 'Please input group name'.tr,
     decoration: Styles.textFieldDecoration,
     style: Styles.textFieldStyle,
     readOnly: !widget.info.isOwner,
@@ -292,7 +292,7 @@ class _ChatDetailState extends State<GroupChatDetailPage> implements lnc.Observe
   Widget _remarkTextField(BuildContext context) => CupertinoTextField(
     textAlign: TextAlign.end,
     controller: TextEditingController(text: widget.info.remark.alias),
-    placeholder: 'Please input alias.',
+    placeholder: 'Please input alias'.tr,
     decoration: Styles.textFieldDecoration,
     style: Styles.textFieldStyle,
     focusNode: _remarkFocusNode,
@@ -319,12 +319,12 @@ class _ChatDetailState extends State<GroupChatDetailPage> implements lnc.Observe
   }
 
   Widget _clearButton(BuildContext context, {required Color textColor, required Color backgroundColor}) =>
-      _button('  Clear History', AppIcons.clearChatIcon, textColor: textColor, backgroundColor: backgroundColor,
+      _button('  ${'Clear History'.tr}', AppIcons.clearChatIcon, textColor: textColor, backgroundColor: backgroundColor,
         onPressed: () => _clearHistory(context, widget.info),
       );
 
   Widget _quitButton(BuildContext context, {required Color textColor, required Color backgroundColor}) =>
-      _button('  Quit Group', AppIcons.quitIcon, textColor: textColor, backgroundColor: backgroundColor,
+      _button('  ${'Quit Group'.tr}', AppIcons.quitIcon, textColor: textColor, backgroundColor: backgroundColor,
         onPressed: () => widget.info.quit(context: context),
       );
 

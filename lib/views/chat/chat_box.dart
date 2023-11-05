@@ -229,10 +229,7 @@ class _HistoryAdapter with SectionAdapterMixin {
 
   @override
   Widget getSectionFooter(BuildContext context, int section) {
-    String tag = _conversation.isUser ? 'receiver' : 'group members';
-    String prompt = 'This app is powered by DIM, an E2EE (End-to-End Encrypted) technology.'
-        ' Your messages will be encrypted before sending out,'
-        ' no one can decrypt the contents except the $tag.';
+    String prompt = 'ChatBox::Description'.tr;
     return Container(
       color: Styles.colors.appBardBackgroundColor,
       padding: const EdgeInsets.all(16),

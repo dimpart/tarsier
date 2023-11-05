@@ -190,7 +190,7 @@ class _ProfileState extends State<ProfilePage> implements lnc.Observer {
             backgroundColor: backgroundColor,
             backgroundColorActivated: backgroundColorActivated,
             padding: Styles.settingsSectionItemPadding,
-            title: Text('Remark', style: TextStyle(color: primaryTextColor)),
+            title: Text('Remark'.tr, style: TextStyle(color: primaryTextColor)),
             additionalInfo: SizedBox(
               width: 160,
               child: _remarkTextField(context),
@@ -211,7 +211,7 @@ class _ProfileState extends State<ProfilePage> implements lnc.Observer {
             backgroundColorActivated: backgroundColorActivated,
             padding: Styles.settingsSectionItemPadding,
             leading: Icon(AppIcons.blockListIcon, color: primaryTextColor),
-            title: Text('Block Messages', style: TextStyle(color: primaryTextColor)),
+            title: Text('Block Messages'.tr, style: TextStyle(color: primaryTextColor)),
             additionalInfo: CupertinoSwitch(
               value: widget.info.isBlocked,
               onChanged: (bool value) => setState(() {
@@ -229,7 +229,7 @@ class _ProfileState extends State<ProfilePage> implements lnc.Observer {
             backgroundColorActivated: backgroundColorActivated,
             padding: Styles.settingsSectionItemPadding,
             leading: Icon(AppIcons.muteListIcon, color: primaryTextColor),
-            title: Text('Mute Notifications', style: TextStyle(color: primaryTextColor)),
+            title: Text('Mute Notifications'.tr, style: TextStyle(color: primaryTextColor)),
             additionalInfo: CupertinoSwitch(
               value: widget.info.isMuted,
               onChanged: (bool value) => setState(() {
@@ -295,7 +295,7 @@ class _ProfileState extends State<ProfilePage> implements lnc.Observer {
   Widget _remarkTextField(BuildContext context) => CupertinoTextField(
     textAlign: TextAlign.end,
     controller: TextEditingController(text: widget.info.remark.alias),
-    placeholder: 'Please input alias.',
+    placeholder: 'Please input alias'.tr,
     decoration: Styles.textFieldDecoration,
     style: Styles.textFieldStyle,
     focusNode: _focusNode,
@@ -322,22 +322,22 @@ class _ProfileState extends State<ProfilePage> implements lnc.Observer {
   }
 
   Widget _addButton(BuildContext context, {required Color textColor, required Color backgroundColor}) =>
-      _button('  Add Contact', AppIcons.addFriendIcon, textColor: textColor, backgroundColor: backgroundColor,
+      _button('  ${'Add Contact'.tr}', AppIcons.addFriendIcon, textColor: textColor, backgroundColor: backgroundColor,
         onPressed: () => widget.info.add(context: context),
       );
 
   Widget _sendButton(BuildContext context, {required Color textColor, required Color backgroundColor}) =>
-      _button('  Send Message', AppIcons.sendMsgIcon, textColor: textColor, backgroundColor: backgroundColor,
+      _button('  ${'Send Message'.tr}', AppIcons.sendMsgIcon, textColor: textColor, backgroundColor: backgroundColor,
         onPressed: () => _sendMessage(context, widget.info, widget.fromChat),
       );
 
   Widget _shareButton(BuildContext context, {required Color textColor, required Color backgroundColor}) =>
-      _button('  Share Contact', AppIcons.shareIcon, textColor: textColor, backgroundColor: backgroundColor,
+      _button('  ${'Share Contact'.tr}', AppIcons.shareIcon, textColor: textColor, backgroundColor: backgroundColor,
         onPressed: () => _shareContact(context, widget.info),
       );
 
   Widget _deleteButton(BuildContext context, {required Color textColor, required Color backgroundColor}) =>
-      _button('  Delete Contact', AppIcons.deleteIcon, textColor: textColor, backgroundColor: backgroundColor,
+      _button('  ${'Delete Contact'.tr}', AppIcons.deleteIcon, textColor: textColor, backgroundColor: backgroundColor,
         onPressed: () => widget.info.delete(context: context),
       );
 

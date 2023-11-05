@@ -21,7 +21,7 @@ class _BrightnessState extends State<BrightnessSettingPage> {
     backgroundColor: Styles.colors.scaffoldBackgroundColor,
     appBar: CupertinoNavigationBar(
       backgroundColor: Styles.colors.appBardBackgroundColor,
-      middle: Text('Brightness', style: Styles.titleTextStyle),
+      middle: Text('Brightness'.tr, style: Styles.titleTextStyle),
     ),
     body: SectionListView.builder(
       adapter: _adapter,
@@ -81,7 +81,7 @@ class _BrightnessCellState extends State<_BrightnessCell> {
     color: Styles.colors.secondaryTextColor,
   );
 
-  Widget get brightnessName => Text(widget.name);
+  Widget get brightnessName => Text(widget.name.tr);
 
   Widget? get selectedFlag => !isSelected ? null : Icon(AppIcons.selectedIcon,
     color: Styles.colors.primaryTextColor,

@@ -84,7 +84,7 @@ class _ChatListState extends State<GroupChatsPage> implements lnc.Observer {
     backgroundColor: Styles.colors.scaffoldBackgroundColor,
     appBar: CupertinoNavigationBar(
       backgroundColor: Styles.colors.appBardBackgroundColor,
-      middle: StatedTitleView.from(context, () => 'Group Chats'),
+      middle: StatedTitleView.from(context, () => 'Group Chats'.tr),
       trailing: plusButton(context),
     ),
     body: SectionListView.builder(
@@ -103,7 +103,7 @@ class _ChatListAdapter with SectionAdapterMixin {
 
   @override
   Widget getSectionFooter(BuildContext context, int section) {
-    String prompt = '* Here shows chat histories of all your groups.';
+    String prompt = 'GroupList::Description'.tr;
     return Container(
       color: Styles.colors.appBardBackgroundColor,
       padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),

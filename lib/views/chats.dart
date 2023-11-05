@@ -12,9 +12,9 @@ import 'chat/chat_box.dart';
 class ChatHistoryPage extends StatefulWidget {
   const ChatHistoryPage({super.key});
 
-  static BottomNavigationBarItem barItem() => const BottomNavigationBarItem(
-    icon: Icon(AppIcons.chatsTabIcon),
-    label: 'Chats',
+  static BottomNavigationBarItem barItem() => BottomNavigationBarItem(
+    icon: const Icon(AppIcons.chatsTabIcon),
+    label: 'Chats'.tr,
   );
 
   @override
@@ -92,7 +92,7 @@ class _ChatListState extends State<ChatHistoryPage> implements lnc.Observer {
     backgroundColor: Styles.colors.scaffoldBackgroundColor,
     appBar: CupertinoNavigationBar(
       backgroundColor: Styles.colors.appBardBackgroundColor,
-      middle: StatedTitleView.from(context, () => 'Secure Chat'),
+      middle: StatedTitleView.from(context, () => 'Secure Chat'.tr),
       trailing: plusButton(context),
     ),
     body: SectionListView.builder(
@@ -111,8 +111,7 @@ class _ChatListAdapter with SectionAdapterMixin {
 
   @override
   Widget getSectionFooter(BuildContext context, int section) {
-    String prompt = '* Here shows chat histories of your friends only;\n'
-        '* Strangers will be placed in "Contacts -> New Friends".';
+    String prompt = 'ChatList::Description'.tr;
     return Container(
       color: Styles.colors.appBardBackgroundColor,
       padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),

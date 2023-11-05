@@ -17,9 +17,9 @@ import 'contact/mute_list.dart';
 class ContactListPage extends StatefulWidget {
   const ContactListPage({super.key});
 
-  static BottomNavigationBarItem barItem() => const BottomNavigationBarItem(
-    icon: _ContactsIconView(icon: Icon(AppIcons.contactsTabIcon)),
-    label: 'Contacts',
+  static BottomNavigationBarItem barItem() => BottomNavigationBarItem(
+    icon: const _ContactsIconView(icon: Icon(AppIcons.contactsTabIcon)),
+    label: 'Contacts'.tr,
   );
 
   @override
@@ -109,7 +109,7 @@ class _ContactListState extends State<ContactListPage> implements lnc.Observer {
     backgroundColor: Styles.colors.scaffoldBackgroundColor,
     appBar: CupertinoNavigationBar(
       backgroundColor: Styles.colors.appBardBackgroundColor,
-      middle: StatedTitleView.from(context, () => 'Contacts'),
+      middle: StatedTitleView.from(context, () => 'Contacts'.tr),
       trailing: SearchPage.searchButton(context),
     ),
     body: SectionListView.builder(
@@ -197,7 +197,7 @@ class _ContactListAdapter with SectionAdapterMixin {
           color: CupertinoColors.white,
         ),
       ),
-      title: const Text('New Friends'),
+      title: Text('New Friends'.tr),
       additionalInfo: _NewFriendCounter(),
       trailing: const CupertinoListTileChevron(),
       onTap: () => StrangerListPage.open(context),
@@ -211,7 +211,7 @@ class _ContactListAdapter with SectionAdapterMixin {
         color: CupertinoColors.white,
       ),
     ),
-    title: const Text('Group Chats'),
+    title: Text('Group Chats'.tr),
     trailing: const CupertinoListTileChevron(),
     onTap: () => GroupChatsPage.open(context),
   );
@@ -224,7 +224,7 @@ class _ContactListAdapter with SectionAdapterMixin {
           color: CupertinoColors.white,
         ),
       ),
-      title: const Text('Blocked List'),
+      title: Text('Blocked List'.tr),
       trailing: const CupertinoListTileChevron(),
       onTap: () => BlockListPage.open(context),
   );
@@ -237,7 +237,7 @@ class _ContactListAdapter with SectionAdapterMixin {
         color: CupertinoColors.white,
       ),
     ),
-    title: const Text('Muted List'),
+    title: Text('Muted List'.tr),
     trailing: const CupertinoListTileChevron(),
     onTap: () => MuteListPage.open(context),
   );

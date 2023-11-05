@@ -47,7 +47,7 @@ class _ExportState extends State<ExportPage> {
           // This title is visible in both collapsed and expanded states.
           // When the "middle" parameter is omitted, the widget provided
           // in the "largeTitle" parameter is used instead in the collapsed state.
-          largeTitle: Text('Mnemonic', style: Styles.titleTextStyle),
+          largeTitle: Text('Mnemonic'.tr, style: Styles.titleTextStyle),
         ),
         // This widget fills the remaining space in the viewport.
         // Drag the scrollable area to collapse the CupertinoSliverNavigationBar.
@@ -69,11 +69,7 @@ class _ExportState extends State<ExportPage> {
         child: _mosaics(context),
       ),
       const SizedBox(height: 16,),
-      _memo(context, '* Mnemonic is your private key,'
-          ' anyone got these words can own your account;'),
-      _memo(context, '* You could write it down on a piece of paper'
-          ' and keep it somewhere safety,'
-          ' take a screenshot and store it in your computer is not recommended.'),
+      _memo(context, 'Mnemonic::Description'.tr),
       const SizedBox(height: 32,),
       _toggleButton(context),
       const SizedBox(height: 64,),
@@ -159,7 +155,7 @@ class _ExportState extends State<ExportPage> {
     child: CupertinoButton(
       color: visible ? Styles.colors.normalButtonColor
           : Styles.colors.importantButtonColor,
-      child: Text(visible ? 'Hide' : 'Show', style: Styles.buttonTextStyle),
+      child: Text(visible ? 'Hide'.tr : 'Show'.tr, style: Styles.buttonTextStyle),
       onPressed: () => setState(() {
         visible = !visible;
       }),

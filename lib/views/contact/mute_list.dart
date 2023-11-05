@@ -87,7 +87,7 @@ class _MuteListState extends State<MuteListPage> implements lnc.Observer {
     backgroundColor: Styles.colors.scaffoldBackgroundColor,
     appBar: CupertinoNavigationBar(
       backgroundColor: Styles.colors.appBardBackgroundColor,
-      middle: StatedTitleView.from(context, () => 'Muted List'),
+      middle: StatedTitleView.from(context, () => 'Muted List'.tr),
     ),
     body: SectionListView.builder(
       adapter: _adapter,
@@ -143,8 +143,7 @@ class _MuteListAdapter with SectionAdapterMixin {
 
   @override
   Widget getSectionFooter(BuildContext context, int section) {
-    String prompt = '* Here shows noisy friends who you don\'t value very much;\n'
-        '* You can still chat with them, but never receive notification from this list.';
+    String prompt = 'MuteList::Description'.tr;
     return Container(
       color: Styles.colors.appBardBackgroundColor,
       padding: const EdgeInsets.all(16),

@@ -82,7 +82,7 @@ class _InvitationsState extends State<InvitationsPage> implements lnc.Observer {
     backgroundColor: Styles.colors.scaffoldBackgroundColor,
     appBar: CupertinoNavigationBar(
       backgroundColor: Styles.colors.appBardBackgroundColor,
-      middle: StatedTitleView.from(context, () => 'Invitations'),
+      middle: StatedTitleView.from(context, () => 'Invitations'.tr),
       trailing: _confirmButton(context),
     ),
     body: SectionListView.builder(
@@ -97,7 +97,7 @@ class _InvitationsState extends State<InvitationsPage> implements lnc.Observer {
       return null;
     }
     return TextButton(
-      child: const Text('Confirm', style: TextStyle(
+      child: Text('Confirm'.tr, style: const TextStyle(
         fontWeight: FontWeight.bold,
         color: CupertinoColors.systemRed,
       ),),
@@ -298,7 +298,7 @@ class _InvitationCellState extends State<_InvitationCell> implements lnc.Observe
                 Text(TimeUtils.getTimeString(time), style: const TextStyle(
                     color: CupertinoColors.systemGrey
                 ),),
-              const Text('invited by'),
+              Text('invited by'.tr),
             ],
           ),
         ),

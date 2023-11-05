@@ -15,9 +15,9 @@ import 'setting/network.dart';
 class SettingsPage extends StatelessWidget {
   const SettingsPage({super.key});
 
-  static BottomNavigationBarItem barItem() => const BottomNavigationBarItem(
-    icon: Icon(AppIcons.settingsTabIcon),
-    label: 'Settings',
+  static BottomNavigationBarItem barItem() => BottomNavigationBarItem(
+    icon: const Icon(AppIcons.settingsTabIcon),
+    label: 'Settings'.tr,
   );
 
   @override
@@ -34,7 +34,7 @@ class SettingsPage extends StatelessWidget {
             // This title is visible in both collapsed and expanded states.
             // When the "middle" parameter is omitted, the widget provided
             // in the "largeTitle" parameter is used instead in the collapsed state.
-            largeTitle: Text('Settings',
+            largeTitle: Text('Settings'.tr,
               style: Styles.titleTextStyle,
             ),
           ),
@@ -77,8 +77,8 @@ class SettingsPage extends StatelessWidget {
           ),
           /// Export Private Key
           _listTile(
-            leading: AppIcons.exportAccountIcon, title: 'Export',
-            additional: 'Mnemonic',
+            leading: AppIcons.exportAccountIcon, title: 'Export'.tr,
+            additional: 'Mnemonic'.tr,
             backgroundColor: backgroundColor,
             backgroundColorActivated: backgroundColorActivated,
             primaryTextColor: primaryTextColor,
@@ -98,7 +98,7 @@ class SettingsPage extends StatelessWidget {
         children: [
           /// Language
           _listTile(
-            leading: AppIcons.languageIcon, title: 'Language',
+            leading: AppIcons.languageIcon, title: 'Language'.tr,
             additional: LanguageDataSource().getCurrentName(),
             backgroundColor: backgroundColor,
             backgroundColorActivated: backgroundColorActivated,
@@ -111,8 +111,8 @@ class SettingsPage extends StatelessWidget {
           ),
           /// Brightness
           _listTile(
-            leading: AppIcons.brightnessIcon, title: 'Brightness',
-            additional: BrightnessDataSource().getCurrentName(),
+            leading: AppIcons.brightnessIcon, title: 'Brightness'.tr,
+            additional: BrightnessDataSource().getCurrentName().tr,
             backgroundColor: backgroundColor,
             backgroundColorActivated: backgroundColorActivated,
             primaryTextColor: primaryTextColor,
@@ -134,8 +134,8 @@ class SettingsPage extends StatelessWidget {
         children: [
           /// Relay Stations
           _listTile(
-            leading: AppIcons.setNetworkIcon, title: 'Network',
-            additional: 'Relay Stations',
+            leading: AppIcons.setNetworkIcon, title: 'Network'.tr,
+            additional: 'Relay Stations'.tr,
             backgroundColor: backgroundColor,
             backgroundColorActivated: backgroundColorActivated,
             primaryTextColor: primaryTextColor,
@@ -157,7 +157,7 @@ class SettingsPage extends StatelessWidget {
         children: [
           /// Source Codes
           _listTile(
-            leading: AppIcons.setOpenSourceIcon, title: 'Source',
+            leading: AppIcons.setOpenSourceIcon, title: 'Source'.tr,
             additional: 'github.com/dimchat',
             backgroundColor: backgroundColor,
             backgroundColorActivated: backgroundColorActivated,
@@ -169,8 +169,8 @@ class SettingsPage extends StatelessWidget {
           ),
           /// Privacy Policy
           _listTile(
-            leading: AppIcons.setTermsIcon, title: 'Terms',
-            additional: 'Privacy Policy',
+            leading: AppIcons.setTermsIcon, title: 'Terms'.tr,
+            additional: 'Privacy Policy'.tr,
             backgroundColor: backgroundColor,
             backgroundColorActivated: backgroundColorActivated,
             primaryTextColor: primaryTextColor,
@@ -193,7 +193,7 @@ class SettingsPage extends StatelessWidget {
     GlobalVariable shared = GlobalVariable();
     Client client = shared.terminal;
     return _listTile(
-        leading: AppIcons.setAboutIcon, title: 'About',
+        leading: AppIcons.setAboutIcon, title: 'About'.tr,
         additional: 'Tarsier (v${client.versionName})',
         trailing: false,
         backgroundColor: backgroundColor,

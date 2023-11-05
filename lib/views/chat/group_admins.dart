@@ -83,7 +83,7 @@ class _AdministratorsState extends State<AdministratorsPage> implements lnc.Obse
     backgroundColor: Styles.colors.scaffoldBackgroundColor,
     appBar: CupertinoNavigationBar(
       backgroundColor: Styles.colors.appBardBackgroundColor,
-      middle: StatedTitleView.from(context, () => 'Administrators'),
+      middle: StatedTitleView.from(context, () => 'Administrators'.tr),
       trailing: widget.info.isOwner ? _plusButton(context) : null,
     ),
     body: SectionListView.builder(
@@ -247,7 +247,7 @@ class _ContactListAdapter with SectionAdapterMixin {
     String title;
     if (section == 0) {
       // fixed section
-      title = '#Owner';
+      title = '#${'Owner'.tr}';
     } else {
       title = _dataSource.getSection(section - 1);
     }
