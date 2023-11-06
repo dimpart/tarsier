@@ -10,21 +10,24 @@ import '../contact/profile.dart';
 import 'chat_box.dart';
 
 
+Widget entityPreview(Conversation info, {double width = 48, double height = 48, TextStyle? textStyle}) => Column(
+  children: [
+    info.getImage(width: width, height: height,),
+    SizedBox(
+      width: width,
+      child: info.getNameLabel(
+        textAlign: TextAlign.center,
+        overflow: TextOverflow.ellipsis,
+        style: textStyle,
+      ),
+    ),
+  ],
+);
+
+
 Widget contactCard(BuildContext context, ContactInfo info, {double width = 64, double height = 64}) => GestureDetector(
   onTap: () => ProfilePage.open(context, info.identifier,),
-  child: Column(
-    children: [
-      info.getImage(width: width, height: height,),
-      SizedBox(
-        width: width,
-        child: info.getNameLabel(
-          textAlign: TextAlign.center,
-          overflow: TextOverflow.ellipsis,
-          style: Styles.titleTextStyle,
-        ),
-      ),
-    ],
-  ),
+  child: entityPreview(info, width: width, height: height, textStyle: Styles.titleTextStyle),
 );
 
 Widget plusButton(BuildContext context) => IconButton(

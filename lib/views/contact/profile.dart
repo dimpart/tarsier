@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:dim_flutter/dim_flutter.dart';
 import 'package:lnc/lnc.dart' as lnc;
 
+import '../chat/associates.dart';
 import '../chat/chat_box.dart';
 import '../chat/pick_chat.dart';
 
@@ -378,10 +379,22 @@ void _shareContact(BuildContext ctx, ContactInfo info) {
     Log.debug('sharing contact: $info => $chat');
     ID cid = info.identifier;
     if (chat.identifier == cid) {
-      Alert.show(ctx, 'Share error', 'Cannot share to itself');
+      Alert.show(ctx, 'Error', 'Cannot share to itself');
       return;
     }
-    Alert.confirm(ctx, 'Confirm', 'Share "${info.title}" with ${chat.title}?',
+    Widget from = entityPreview(info);
+    Widget to = entityPreview(chat);
+    Widget body = Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        from,
+        const SizedBox(width: 32,),
+        const Text('~>'),
+        const SizedBox(width: 32,),
+        to,
+      ],
+    );
+    Alert.confirm(ctx, 'Confirm Share', body,
       okAction: () => _sendContact(chat.identifier,
         identifier: info.identifier, name: info.title, avatar: info.avatar,
       ).then((value) {

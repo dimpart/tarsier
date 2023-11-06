@@ -200,7 +200,7 @@ class _InvitationsAdapter with SectionAdapterMixin {
     List<Invitation> invitations = info.invitations;
     if (indexPath.item >= invitations.length) {
       Log.error('out of range: ${invitations.length}, $indexPath');
-      return const Text('null');
+      return const Text('');
     }
     Invitation item = invitations[indexPath.item];
     Log.warning('show item: $item');

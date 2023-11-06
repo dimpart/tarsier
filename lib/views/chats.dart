@@ -134,7 +134,7 @@ class _ChatListAdapter with SectionAdapterMixin {
     List<Conversation> conversations = _dataSource.conversations;
     if (indexPath.item >= conversations.length) {
       Log.error('out of range: ${conversations.length}, $indexPath');
-      return const Text('null');
+      return const Text('');
     }
     Conversation info = conversations[indexPath.item];
     Log.warning('show item: $info');
@@ -186,10 +186,9 @@ class _ChatTableCellState extends State<_ChatTableCell> {
       },
     onLongPress: () {
       Log.warning('long press: ${widget.info}');
-      Alert.actionSheet(context,
-        'Confirm', 'Are you sure to remove this conversation?',
-        'Remove ${widget.info.title}',
-            () => _removeConversation(context, widget.info.identifier),
+      Alert.confirm(context, 'Confirm Delete',
+        entityPreview(widget.info),
+        okAction: () => _removeConversation(context, widget.info.identifier),
       );
       },
   );
@@ -197,10 +196,14 @@ class _ChatTableCellState extends State<_ChatTableCell> {
   void _removeConversation(BuildContext context, ID chat) {
     Log.warning('removing $chat');
     Amanuensis clerk = Amanuensis();
-    clerk.removeConversation(chat).onError((error, stackTrace) {
-      Alert.show(context, 'Error', 'Failed to remove conversation');
-      return false;
-    });
+    String msg = 'Sure to remove this conversation?\n'
+        'This action is not recoverable.';
+    Alert.confirm(context, 'Confirm Delete', msg,
+      okAction: () => clerk.removeConversation(chat).onError((error, stackTrace) {
+        Alert.show(context, 'Error', 'Failed to remove conversation');
+        return false;
+      })
+    );
   }
 
   Widget _leading(Conversation info) {

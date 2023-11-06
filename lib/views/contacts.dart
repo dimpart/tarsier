@@ -5,6 +5,7 @@ import 'package:flutter_section_list/flutter_section_list.dart';
 import 'package:dim_flutter/dim_flutter.dart';
 import 'package:lnc/lnc.dart' as lnc;
 
+import 'chat/associates.dart';
 import 'chat/group_chats.dart';
 
 import 'contact/profile.dart';
@@ -181,10 +182,9 @@ class _ContactListAdapter with SectionAdapterMixin {
     ContactInfo info = _dataSource.getItem(section - 1, index);
     return ProfilePage.cell(info, onLongPress: () {
       Log.warning('long press: $info');
-      Alert.actionSheet(context,
-        'Confirm', 'Are you sure to remove this contact?',
-        'Remove ${info.title}',
-            () => info.delete(context: context),
+      Alert.confirm(context, 'Confirm Delete',
+        entityPreview(info, width: 256, height: 256),
+        okAction: () => info.delete(context: context),
       );
     });
   }

@@ -50,7 +50,7 @@ class _PickChatState extends State<PickChatPage> with SectionAdapterMixin {
     List<Conversation> conversations = _clerk.conversations;
     if (indexPath.item >= conversations.length) {
       Log.error('out of range: ${conversations.length}, $indexPath');
-      return const Text('null');
+      return const Text('');
     }
     Conversation info = conversations[indexPath.item];
     Log.warning('show item: $info');

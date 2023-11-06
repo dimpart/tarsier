@@ -126,7 +126,7 @@ class _ChatListAdapter with SectionAdapterMixin {
     List<Conversation> groupChats = _dataSource.groupChats;
     if (indexPath.item >= groupChats.length) {
       Log.error('out of range: ${groupChats.length}, $indexPath');
-      return const Text('null');
+      return const Text('');
     }
     Conversation info = groupChats[indexPath.item];
     Log.warning('show item: $info');
