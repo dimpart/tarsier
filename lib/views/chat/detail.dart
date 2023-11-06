@@ -229,7 +229,7 @@ class _ChatDetailState extends State<ChatDetailPage> implements lnc.Observer {
 }
 
 void _clearHistory(BuildContext ctx, ContactInfo info) {
-  String msg = 'Are you sure want to clear chat history of this friend?'
+  String msg = 'Sure to clear chat history of this friend?'
       ' This action cannot be restored.';
   Alert.confirm(ctx, 'Confirm', msg,
     okAction: () => _doClear(ctx, info.identifier),

@@ -162,7 +162,7 @@ void _addAdmin(BuildContext context, List<ID> newAdmins, GroupInfo groupInfo) {
     return;
   }
   // confirm to save
-  Alert.confirm(context, 'Confirm', text,
+  Alert.confirm(context, 'Conform Add', text,
     okAction: () => db.saveAdministrators(allAdmins, group: groupInfo.identifier)
   );
 }
@@ -185,7 +185,7 @@ void _removeAdmin(BuildContext context, ID admin, GroupInfo groupInfo) {
   AccountDBI db = shared.facebook.database;
   String text = 'Are you sure to remove this administrator?';
   // confirm to save
-  Alert.confirm(context, 'Confirm', text,
+  Alert.confirm(context, 'Confirm Delete', text,
       okAction: () => db.saveAdministrators(allAdmins, group: groupInfo.identifier)
   );
 }
@@ -279,7 +279,7 @@ class _ContactListAdapter with SectionAdapterMixin {
         return _ownerItem(context);
       } else {
         // error
-        return const Text('error');
+        return Text('Error'.tr);
       }
     }
     ContactInfo info = _dataSource.getItem(section - 1, index);
@@ -316,7 +316,7 @@ class _ContactListAdapter with SectionAdapterMixin {
     ContactInfo? info = owner == null ? null : ContactInfo.fromID(owner);
     if (info == null) {
       // error
-      return const Text('Owner not found');
+      return Text('Owner not found'.tr);
     }
     return ProfilePage.cell(info);
   }
@@ -326,13 +326,7 @@ class _ContactListAdapter with SectionAdapterMixin {
 
   @override
   Widget getSectionFooter(BuildContext context, int section) {
-    String prompt = 'Rules:\n'
-        '  1. Owner or administrators can review invitations;\n'
-        '  2. Owner or administrators can add/remove members directly;\n'
-        '  3. Owner can hire/fire administrators, administrators can resign itself;\n'
-        '  4. Owner can edit group name;\n'
-        '  5. Owner cannot leave the group;\n'
-        '  6. Administrator cannot leave the group before retired.';
+    String prompt = 'Administrators::Description'.tr;
     return Container(
       color: Styles.colors.appBardBackgroundColor,
       padding: const EdgeInsets.all(16),

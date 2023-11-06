@@ -352,7 +352,7 @@ class _ChatDetailState extends State<GroupChatDetailPage> implements lnc.Observe
 }
 
 void _clearHistory(BuildContext ctx, GroupInfo info) {
-  String msg = 'Are you sure want to clear chat history of this group?'
+  String msg = 'Sure to clear chat history of this group?'
       ' This action cannot be restored.';
   Alert.confirm(ctx, 'Confirm', msg,
     okAction: () => _doClear(ctx, info.identifier),

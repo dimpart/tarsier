@@ -5,6 +5,7 @@ import 'package:flutter_section_list/flutter_section_list.dart';
 import 'package:dim_flutter/dim_flutter.dart';
 import 'package:lnc/lnc.dart' as lnc;
 
+import '../chat/associates.dart';
 import '../chat/chat_box.dart';
 
 
@@ -224,10 +225,9 @@ class _ChatTableCellState extends State<_ChatTableCell> implements lnc.Observer 
     },
     onLongPress: () {
       Log.warning('long press: ${widget.info}');
-      Alert.actionSheet(context,
-        'Confirm', 'Are you sure to remove this friend?',
-        'Remove ${widget.info.title}',
-            () => _removeConversation(context, widget.info.identifier),
+      Alert.confirm(context, 'Confirm Delete',
+        entityPreview(widget.info, width: 128, height: 128),
+        okAction: () => _removeConversation(context, widget.info.identifier),
       );
     },
   );
@@ -269,7 +269,10 @@ class _ChatTableCellState extends State<_ChatTableCell> implements lnc.Observer 
           //   backgroundColor: MaterialStateProperty.all<Color>(
           //       Styles.colors.importantButtonColor),
           // ),
-          onPressed: () => info.add(context: context),
+          onPressed: () => Alert.confirm(context, 'Confirm Add',
+            entityPreview(info, width: 128, height: 128),
+            okAction: () => info.add(context: context),
+          ),
           child: Text('Accept'.tr),
         ),
       ),

@@ -176,14 +176,14 @@ class _ContactListAdapter with SectionAdapterMixin {
         return _muteListItem(context);
       } else {
         // error
-        return const Text('error');
+        return Text('Error'.tr);
       }
     }
     ContactInfo info = _dataSource.getItem(section - 1, index);
     return ProfilePage.cell(info, onLongPress: () {
       Log.warning('long press: $info');
       Alert.confirm(context, 'Confirm Delete',
-        entityPreview(info, width: 256, height: 256),
+        entityPreview(info, width: 128, height: 128),
         okAction: () => info.delete(context: context),
       );
     });

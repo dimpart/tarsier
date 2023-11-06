@@ -174,10 +174,7 @@ class _InvitationsAdapter with SectionAdapterMixin {
 
   @override
   Widget getSectionFooter(BuildContext context, int section) {
-    String prompt = 'Rules:\n'
-        '  1. Owner or administrators can add member directly;\n'
-        '  2. Other members can create invitations and waiting reviewed by administrators;\n'
-        '  3. Any administrator can confirm the invitations and refresh the member list.';
+    String prompt = 'Invitations::Description'.tr;
     return Container(
       color: Styles.colors.appBardBackgroundColor,
       padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),

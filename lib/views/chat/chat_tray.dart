@@ -54,7 +54,7 @@ class _InputState extends State<ChatInputTray> {
             minLines: 1,
             maxLines: 8,
             controller: _controller,
-            placeholder: 'Input text message',
+            placeholder: 'Input text message'.tr,
             decoration: Styles.textFieldDecoration,
             style: Styles.textFieldStyle,
             keyboardType: TextInputType.multiline,

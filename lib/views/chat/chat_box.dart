@@ -9,6 +9,7 @@ import 'package:lnc/lnc.dart' as lnc;
 
 import '../contact/profile.dart';
 
+import 'associates.dart';
 import 'chat_flag.dart';
 import 'chat_title.dart';
 import 'chat_tray.dart';
@@ -192,7 +193,7 @@ class _ChatBoxState extends State<ChatBox> implements lnc.Observer {
       return Center(
         child: Container(
           padding: const EdgeInsets.all(16),
-          child: Text('Blocked',
+          child: Text('Blocked'.tr,
             style: TextStyle(
               color: Styles.colors.primaryTextColor,
             ),
@@ -203,7 +204,7 @@ class _ChatBoxState extends State<ChatBox> implements lnc.Observer {
       return Center(
         child: Container(
           padding: const EdgeInsets.all(16),
-          child: Text('Non-Member',
+          child: Text('Non-Member'.tr,
             style: TextStyle(
               color: Styles.colors.primaryTextColor,
             ),
@@ -498,12 +499,12 @@ void _forwardImage(BuildContext ctx, ImageContent content, ID sender) {
       }];
       PickChatPage.open(ctx,
         onPicked: (chat) => Alert.confirm(ctx,
-          'Confirm', 'Are you sure to share image "$filename" with ${chat.title}?',
+          'Confirm Forward', entityPreview(chat),
           okAction: () => _sendImage(chat.identifier,
             path: path, filename: filename, thumbnail: thumbnail, traces: traces,
           ).then((value) {
             if (value) {
-              Alert.show(ctx, 'Shared', 'Image message forwarded to ${chat.title}');
+              Alert.show(ctx, 'Forwarded', 'Image message forwarded to ${chat.title}');
             } else {
               Alert.show(ctx, 'Error', 'Failed to share image with ${chat.title}');
             }
@@ -550,11 +551,11 @@ void _forwardWebPage(BuildContext ctx, PageContent content, ID sender) {
 void _shareWebPage(BuildContext ctx, Uri url, {required String title, String? desc, Uint8List? icon}) {
   PickChatPage.open(ctx,
     onPicked: (chat) => Alert.confirm(ctx,
-      'Confirm', 'Are you sure to share web page "$title" with ${chat.title}?',
+      'Confirm Forward', entityPreview(chat),
       okAction: () => _sendWebPage(chat.identifier,
         url, title: title, desc: desc, icon: icon,
       ).then((value) {
-        Alert.show(ctx, 'Shared', 'Web page "$title" forwarded to ${chat.title}');
+        Alert.show(ctx, 'Forwarded', 'Web page "$title" forwarded to ${chat.title}');
       }),
     ),
   );
@@ -579,12 +580,12 @@ void _forwardNameCard(BuildContext ctx, NameCard content, ID sender) {
   }];
   PickChatPage.open(ctx,
     onPicked: (chat) => Alert.confirm(ctx,
-      'Confirm', 'Are you sure to share name card "${content.name}" with ${chat.title}?',
+      'Confirm Forward', entityPreview(chat),
       okAction: () => _sendContact(chat.identifier,
         identifier: content.identifier, name: content.name, avatar: content.avatar?.url.toString(),
         traces: traces,
       ).then((value) {
-        Alert.show(ctx, 'Shared', 'Name Card "${content.name}" forwarded to ${chat.title}');
+        Alert.show(ctx, 'Forwarded', 'Name Card "${content.name}" forwarded to ${chat.title}');
       }),
     ),
   );

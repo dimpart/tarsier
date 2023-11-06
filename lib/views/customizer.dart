@@ -207,9 +207,10 @@ class SettingsPage extends StatelessWidget {
   void _showAbout(BuildContext context, String url, Client client) =>
       FrostedGlassPage.show(context, title: 'About Tarsier', body: RichText(
         text: TextSpan(
-          text: 'Secure chat application,'
-              ' powered by DIM, E2EE (End-to-End Encrypted) technology.\n'
+          text: 'Secure chat application powered by DIM,'
+              ' E2EE (End-to-End Encrypted) technology.\n'
               '\n'
+              'Author: Albert Moky\n'
               'Version: ${client.versionName} (build ${client.buildNumber})\n'
               'Website: ',
           style: const TextStyle(

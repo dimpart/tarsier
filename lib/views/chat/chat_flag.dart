@@ -267,22 +267,22 @@ class _SendState extends State<ChatSendFlag> implements lnc.Observer {
   String? get text {
     switch (status) {
       case _MsgStatus.kWaiting: {
-        return 'Waiting to send';
+        return 'Waiting to send'.tr;
       }
       case _MsgStatus.kSent: {
-        return 'Sent to relay station';
+        return 'Sent to relay station'.tr;
       }
       case _MsgStatus.kBlocked: {
-        return 'Message is rejected';
+        return 'Message is rejected'.tr;
       }
       case _MsgStatus.kReceived: {
-        return 'Your friend received';
+        return 'Your friend received'.tr;
       }
       case _MsgStatus.kExpired: {
-        return 'No response';
+        return 'No response'.tr;
       }
       default: {
-        return 'Stranded';
+        return 'Stranded'.tr;
       }
     }
   }
