@@ -312,20 +312,17 @@ class _SendState extends State<ChatSendFlag> implements lnc.Observer {
 
   Future<void> _resendMessage() async {
     Log.warning('re-send message: ${widget.iMsg}');
-    GlobalVariable shared = GlobalVariable();
-    SharedMessenger? messenger = shared.messenger;
-    if (messenger == null) {
-      assert(false, 'should not happen');
-      return;
-    }
+    // clear last signature for repacking
     InstantMessage? iMsg = widget.iMsg;
-    // iMsg.remove('signature');
+    iMsg.remove('signature');
     if (mounted) {
       setState(() {
         _flags[iMsg.content.sn] = _MsgStatus.kWaiting;
       });
     }
-    ReliableMessage? rMsg = await messenger.sendInstantMessage(iMsg);
+    // send again
+    GlobalVariable shared = GlobalVariable();
+    ReliableMessage? rMsg = await shared.emitter.sendInstantMessage(iMsg);
     if (rMsg == null) {
       Log.error('failed to send instant message: $iMsg');
     }

@@ -64,7 +64,7 @@ class _BrightnessCellState extends State<_BrightnessCell> {
 
   late final BrightnessDataSource _dataSource = BrightnessDataSource();
 
-  bool get isSelected => widget.order == _dataSource.getCurrentOrder();
+  bool get isSelected => widget.order == _dataSource.getCurrentBrightnessOrder();
 
   @override
   Widget build(BuildContext context) => CupertinoTableCell(
@@ -81,7 +81,9 @@ class _BrightnessCellState extends State<_BrightnessCell> {
     color: Styles.colors.secondaryTextColor,
   );
 
-  Widget get brightnessName => Text(widget.name.tr);
+  Widget get brightnessName => Text(widget.name.tr,
+    style: isSelected ? const TextStyle(color: CupertinoColors.systemRed) : null,
+  );
 
   Widget? get selectedFlag => !isSelected ? null : Icon(AppIcons.selectedIcon,
     color: Styles.colors.primaryTextColor,
@@ -89,7 +91,7 @@ class _BrightnessCellState extends State<_BrightnessCell> {
 
   void selectBrightness() {
     _dataSource.setBrightness(widget.order);
-    closePage();
+    // closePage();
   }
 
 }

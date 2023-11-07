@@ -64,7 +64,7 @@ class _LanguageCellState extends State<_LanguageCell> {
 
   late final LanguageDataSource _dataSource = LanguageDataSource();
 
-  bool get isSelected => widget.code == _dataSource.getCurrentCode();
+  bool get isSelected => widget.code == _dataSource.getCurrentLanguageCode();
 
   @override
   Widget build(BuildContext context) => CupertinoTableCell(
@@ -79,7 +79,9 @@ class _LanguageCellState extends State<_LanguageCell> {
     return null;
   }
 
-  Widget get languageName => Text(widget.name);
+  Widget get languageName => Text(widget.name.tr,
+    style: isSelected ? const TextStyle(color: CupertinoColors.systemRed) : null,
+  );
 
   Widget? get selectedFlag => !isSelected ? null : Icon(AppIcons.selectedIcon,
     color: Styles.colors.primaryTextColor,
@@ -87,7 +89,7 @@ class _LanguageCellState extends State<_LanguageCell> {
 
   void selectLanguage() {
     _dataSource.setLanguage(widget.code);
-    closePage();
+    // closePage();
   }
 
 }

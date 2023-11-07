@@ -99,7 +99,7 @@ class SettingsPage extends StatelessWidget {
           /// Language
           _listTile(
             leading: AppIcons.languageIcon, title: 'Language'.tr,
-            additional: LanguageDataSource().getCurrentName(),
+            additional: LanguageDataSource().getCurrentLanguageName().tr,
             backgroundColor: backgroundColor,
             backgroundColorActivated: backgroundColorActivated,
             primaryTextColor: primaryTextColor,
@@ -112,7 +112,7 @@ class SettingsPage extends StatelessWidget {
           /// Brightness
           _listTile(
             leading: AppIcons.brightnessIcon, title: 'Brightness'.tr,
-            additional: BrightnessDataSource().getCurrentName().tr,
+            additional: BrightnessDataSource().getCurrentBrightnessName().tr,
             backgroundColor: backgroundColor,
             backgroundColorActivated: backgroundColorActivated,
             primaryTextColor: primaryTextColor,
