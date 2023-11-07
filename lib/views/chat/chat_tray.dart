@@ -105,8 +105,8 @@ void _sendImage(BuildContext context, Conversation chat) =>
       // send adjusted image data with thumbnail
       Uint8List thumbnail = await compressThumbnail(data);
       GlobalVariable shared = GlobalVariable();
-      shared.emitter.sendImage(data, thumbnail, chat.identifier);
+      shared.emitter.sendImage(data, 'image.jpeg', thumbnail, chat.identifier);
     }));
 
 void _sendVoice(Uint8List data, double duration, Conversation chat) =>
-    GlobalVariable().emitter.sendVoice(data, duration, chat.identifier);
+    GlobalVariable().emitter.sendVoice(data, 'voice.mp4', duration, chat.identifier);

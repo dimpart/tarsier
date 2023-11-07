@@ -482,6 +482,14 @@ void _openProfile(BuildContext ctx, ID uid, Conversation info) {
   ProfilePage.open(ctx, uid, fromChat: info.identifier);
 }
 
+Widget _previewText(String text) => SizedBox(
+  width: 64,
+  child: Text(text,
+    maxLines: 3,
+    overflow: TextOverflow.ellipsis,
+  ),
+);
+
 void _forwardImage(BuildContext ctx, ImageContent content, ID sender) {
   // get local file path, if not exists
   // try to download from file server
@@ -499,7 +507,7 @@ void _forwardImage(BuildContext ctx, ImageContent content, ID sender) {
       }];
       PickChatPage.open(ctx,
         onPicked: (chat) => Alert.confirm(ctx,
-          'Confirm Forward', entityPreview(chat),
+          'Confirm Forward', _forwardImagePreview(content, chat),
           okAction: () => _sendImage(chat.identifier,
             path: path, filename: filename, thumbnail: thumbnail, traces: traces,
           ).then((value) {
@@ -514,6 +522,29 @@ void _forwardImage(BuildContext ctx, ImageContent content, ID sender) {
     }
   });
 }
+Widget _forwardImagePreview(ImageContent content, Conversation chat) {
+  Widget to = entityPreview(chat);
+  Widget from;
+  Uint8List? thumbnail = content.thumbnail;
+  if (thumbnail != null) {
+    from = Image.memory(thumbnail);
+    from = SizedBox(width: 64, child: from,);
+  } else {
+    String? filename = content.filename ??= 'Image';
+    from = _previewText(filename);
+  }
+  Widget body = Row(
+    mainAxisAlignment: MainAxisAlignment.center,
+    children: [
+      from,
+      const SizedBox(width: 32,),
+      const Text('~>'),
+      const SizedBox(width: 32,),
+      to,
+    ],
+  );
+  return body;
+}
 Future<bool> _sendImage(ID receiver,
     {required String path, required String filename, Uint8List? thumbnail,
       required List traces}) async {
@@ -522,21 +553,14 @@ Future<bool> _sendImage(ID receiver,
   if (jpeg == null) {
     Log.error('failed to load image: $path');
     return false;
+  } else {
+    Log.debug('forwarding image to $receiver: "$filename", traces: $traces');
   }
-  // build image filename
-  String ext = Paths.extension(filename) ?? 'jpeg';
-  filename = Hex.encode(MD5.digest(jpeg));
-  // create image content
-  TransportableData ted = TransportableData.create(jpeg);
-  ImageContent content = FileContent.image(filename: '$filename.$ext', data: ted);
-  // add image data length & thumbnail into message content
-  content['length'] = jpeg.length;
-  content.thumbnail = thumbnail;
-  content['traces'] = traces;
-  Log.debug('forwarding image to $receiver: "$filename.$ext", traces: $traces');
-  // send image content
+  // send image content with traces
   GlobalVariable shared = GlobalVariable();
-  await shared.emitter.sendContent(content, receiver);
+  await shared.emitter.sendImage(jpeg, filename, thumbnail, receiver, {
+    'traces': traces,
+  });
   return true;
 }
 
@@ -551,7 +575,7 @@ void _forwardWebPage(BuildContext ctx, PageContent content, ID sender) {
 void _shareWebPage(BuildContext ctx, Uri url, {required String title, String? desc, Uint8List? icon}) {
   PickChatPage.open(ctx,
     onPicked: (chat) => Alert.confirm(ctx,
-      'Confirm Forward', entityPreview(chat),
+      'Confirm Forward', _shareWebPagePreview(title, icon, chat),
       okAction: () => _sendWebPage(chat.identifier,
         url, title: title, desc: desc, icon: icon,
       ).then((value) {
@@ -559,6 +583,29 @@ void _shareWebPage(BuildContext ctx, Uri url, {required String title, String? de
       }),
     ),
   );
+}
+Widget _shareWebPagePreview(String title, Uint8List? icon, Conversation chat) {
+  Widget to = entityPreview(chat);
+  Widget from;
+  if (icon != null) {
+    from = Image.memory(icon);
+    from = SizedBox(width: 64, child: from,);
+  } else if (title.isNotEmpty) {
+    from = _previewText(title);
+  } else {
+    from = const Icon(AppIcons.webpageIcon);
+  }
+  Widget body = Row(
+    mainAxisAlignment: MainAxisAlignment.center,
+    children: [
+      from,
+      const SizedBox(width: 32,),
+      const Text('~>'),
+      const SizedBox(width: 32,),
+      to,
+    ],
+  );
+  return body;
 }
 Future<void> _sendWebPage(ID receiver, Uri url,
     {required String title, String? desc, Uint8List? icon}) async {
@@ -580,7 +627,7 @@ void _forwardNameCard(BuildContext ctx, NameCard content, ID sender) {
   }];
   PickChatPage.open(ctx,
     onPicked: (chat) => Alert.confirm(ctx,
-      'Confirm Forward', entityPreview(chat),
+      'Confirm Forward', _forwardNameCardPreview(content, chat),
       okAction: () => _sendContact(chat.identifier,
         identifier: content.identifier, name: content.name, avatar: content.avatar?.url.toString(),
         traces: traces,
@@ -589,6 +636,31 @@ void _forwardNameCard(BuildContext ctx, NameCard content, ID sender) {
       }),
     ),
   );
+}
+Widget _forwardNameCardPreview(NameCard content, Conversation chat) {
+  Widget to = entityPreview(chat);
+  Widget from;
+  PortableNetworkFile? avatar = content.avatar;
+  if (avatar != null) {
+    from = NameCardView.avatarImage(content);
+  } else {
+    String name = content.name;
+    if (name.isEmpty) {
+      name = content.identifier.toString();
+    }
+    from = _previewText(name);
+  }
+  Widget body = Row(
+    mainAxisAlignment: MainAxisAlignment.center,
+    children: [
+      from,
+      const SizedBox(width: 32,),
+      const Text('~>'),
+      const SizedBox(width: 32,),
+      to,
+    ],
+  );
+  return body;
 }
 Future<void> _sendContact(ID receiver,
     {required ID identifier, required String name, String? avatar,
