@@ -225,7 +225,7 @@ class _ChatTableCellState extends State<_ChatTableCell> implements lnc.Observer 
     onLongPress: () {
       Log.warning('long press: ${widget.info}');
       Alert.confirm(context, 'Confirm Delete',
-        entityPreview(widget.info),
+        previewEntity(widget.info),
         okAction: () => _removeConversation(context, widget.info.identifier),
       );
     },

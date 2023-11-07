@@ -9,7 +9,6 @@ import 'package:lnc/lnc.dart' as lnc;
 
 import '../contact/profile.dart';
 
-import 'associates.dart';
 import 'chat_flag.dart';
 import 'chat_title.dart';
 import 'chat_tray.dart';
@@ -523,7 +522,7 @@ void _forwardImage(BuildContext ctx, ImageContent content, ID sender) {
   });
 }
 Widget _forwardImagePreview(ImageContent content, Conversation chat) {
-  Widget to = entityPreview(chat);
+  Widget to = previewEntity(chat);
   Widget from;
   Uint8List? thumbnail = content.thumbnail;
   if (thumbnail != null) {
@@ -585,7 +584,7 @@ void _shareWebPage(BuildContext ctx, Uri url, {required String title, String? de
   );
 }
 Widget _shareWebPagePreview(String title, Uint8List? icon, Conversation chat) {
-  Widget to = entityPreview(chat);
+  Widget to = previewEntity(chat);
   Widget from;
   if (icon != null) {
     from = Image.memory(icon);
@@ -638,7 +637,7 @@ void _forwardNameCard(BuildContext ctx, NameCard content, ID sender) {
   );
 }
 Widget _forwardNameCardPreview(NameCard content, Conversation chat) {
-  Widget to = entityPreview(chat);
+  Widget to = previewEntity(chat);
   Widget from;
   PortableNetworkFile? avatar = content.avatar;
   if (avatar != null) {

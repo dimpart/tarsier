@@ -95,6 +95,9 @@ class _InvitationsState extends State<InvitationsPage> implements lnc.Observer {
     if (!_adapter.canReview) {
       Log.info('only group owner/administrator can review invitations: $info');
       return null;
+    } else if (info.invitations.isEmpty) {
+      Log.info('invitation not found: $info');
+      return null;
     }
     return TextButton(
       child: Text('Confirm'.tr, style: const TextStyle(
@@ -103,23 +106,26 @@ class _InvitationsState extends State<InvitationsPage> implements lnc.Observer {
       ),),
       onPressed: () {
         List<ID> newMembers = _getNewMembers(info.invitations, _adapter.denied);
-        String text;
+        // check members
         if (newMembers.isEmpty) {
-          text = 'Are you sure want to reject all these invitations?';
-        } else if (newMembers.length == 1) {
-          text = 'Are you sure want to accept this user into this group?';
+          Widget body = Text('Are you sure want to reject all these invitations?'.tr);
+          Alert.confirm(context, 'Confirm Delete', body,
+            okAction: () => _refreshMembers(newMembers, info).then((ok) {
+              if (ok) {
+                Navigator.pop(context);
+              }
+            }),
+          );
         } else {
-          text = 'Are you sure want to accept ${newMembers.length} users into this group?';
+          previewMembers(newMembers).then((body) => Alert.confirm(context, 'Confirm Add',
+            body,
+            okAction: () => _refreshMembers(newMembers, info).then((ok) {
+              if (ok) {
+                Navigator.pop(context);
+              }
+            }),
+          ));
         }
-        Alert.confirm(context, 'Confirm', text,
-          okAction: () => _refreshMembers(newMembers, info).then((ok) {
-            if (ok) {
-              Navigator.pop(context);
-            }
-          }).onError((error, stackTrace) {
-            Alert.show(context, 'Error', '$error');
-          }),
-        );
       },
     );
   }
@@ -295,7 +301,7 @@ class _InvitationCellState extends State<_InvitationCell> implements lnc.Observe
                 Text(TimeUtils.getTimeString(time), style: const TextStyle(
                     color: CupertinoColors.systemGrey
                 ),),
-              Text('invited by'.tr),
+              Text('Invited by'.tr),
             ],
           ),
         ),

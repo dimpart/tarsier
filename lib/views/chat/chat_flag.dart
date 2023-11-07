@@ -318,13 +318,9 @@ class _SendState extends State<ChatSendFlag> implements lnc.Observer {
       assert(false, 'should not happen');
       return;
     }
-    Map info = widget.iMsg.copyMap(false);
-    info.remove('signature');
-    InstantMessage? iMsg = InstantMessage.parse(info);
-    if (iMsg == null) {
-      assert(false, 'should not happen');
-      return;
-    } else if (mounted) {
+    InstantMessage? iMsg = widget.iMsg;
+    // iMsg.remove('signature');
+    if (mounted) {
       setState(() {
         _flags[iMsg.content.sn] = _MsgStatus.kWaiting;
       });
@@ -332,10 +328,6 @@ class _SendState extends State<ChatSendFlag> implements lnc.Observer {
     ReliableMessage? rMsg = await messenger.sendInstantMessage(iMsg);
     if (rMsg == null) {
       Log.error('failed to send instant message: $iMsg');
-    } else {
-      String? signature = rMsg.getString('signature', null);
-      Log.debug('keep signature: $signature');
-      widget.iMsg['signature'] = signature;
     }
   }
 

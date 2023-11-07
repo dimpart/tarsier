@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:dim_flutter/dim_flutter.dart';
 import 'package:lnc/lnc.dart' as lnc;
 
-import '../chat/associates.dart';
 import '../chat/chat_box.dart';
 import '../chat/pick_chat.dart';
 
@@ -382,8 +381,8 @@ void _shareContact(BuildContext ctx, ContactInfo info) {
       Alert.show(ctx, 'Error', 'Cannot share to itself');
       return;
     }
-    Widget from = entityPreview(info);
-    Widget to = entityPreview(chat);
+    Widget from = previewEntity(info);
+    Widget to = previewEntity(chat);
     Widget body = Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [

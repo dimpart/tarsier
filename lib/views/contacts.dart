@@ -5,7 +5,6 @@ import 'package:flutter_section_list/flutter_section_list.dart';
 import 'package:dim_flutter/dim_flutter.dart';
 import 'package:lnc/lnc.dart' as lnc;
 
-import 'chat/associates.dart';
 import 'chat/group_chats.dart';
 
 import 'contact/profile.dart';
@@ -183,7 +182,7 @@ class _ContactListAdapter with SectionAdapterMixin {
     return ProfilePage.cell(info, onLongPress: () {
       Log.warning('long press: $info');
       Alert.confirm(context, 'Confirm Delete',
-        entityPreview(info, width: 128, height: 128),
+        previewEntity(info, width: 128, height: 128),
         okAction: () => info.delete(context: context),
       );
     });

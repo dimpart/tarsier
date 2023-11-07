@@ -148,25 +148,18 @@ void _addAdmin(BuildContext context, List<ID> newAdmins, GroupInfo groupInfo) {
   // check changed
   GlobalVariable shared = GlobalVariable();
   AccountDBI db = shared.facebook.database;
-  String text;
-  if (added > 1) {
-    text = 'Are you sure to add $added administrators?';
-  } else if (added == 1) {
-    text = 'Are you sure to add this administrator?';
-  } else if (removed == 0) {
-    Log.warning('nothing changed');
-    return;
-  } else {
+  if (added == 0 && removed == 0) {
     assert(false, 'duplicated administrators: $oldAdmins');
     db.saveAdministrators(allAdmins, group: groupInfo.identifier);
     return;
   }
   // confirm to save
-  Alert.confirm(context, 'Conform Add', text,
-    okAction: () => db.saveAdministrators(allAdmins, group: groupInfo.identifier)
-  );
+  previewMembers(newAdmins).then((body) => Alert.confirm(context, 'Confirm Add',
+    body,
+    okAction: () => db.saveAdministrators(allAdmins, group: groupInfo.identifier),
+  ));
 }
-void _removeAdmin(BuildContext context, ID admin, GroupInfo groupInfo) {
+void _removeAdmin(BuildContext context, ContactInfo adminInfo, GroupInfo groupInfo) {
   List<ID> oldAdmins = groupInfo.admins;
   List<ID> allAdmins = [];
   // old admins
@@ -177,15 +170,15 @@ void _removeAdmin(BuildContext context, ID admin, GroupInfo groupInfo) {
     allAdmins.add(item);
   }
   // remove admin
-  if (allAdmins.contains(admin)) {
-    allAdmins.remove(admin);
+  if (allAdmins.contains(adminInfo.identifier)) {
+    allAdmins.remove(adminInfo.identifier);
   }
   // check changed
   GlobalVariable shared = GlobalVariable();
   AccountDBI db = shared.facebook.database;
-  String text = 'Are you sure to remove this administrator?';
-  // confirm to save
-  Alert.confirm(context, 'Confirm Delete', text,
+  // confirm to save new administrators
+  Alert.confirm(context, 'Confirm Delete',
+      previewEntity(adminInfo),
       okAction: () => db.saveAdministrators(allAdmins, group: groupInfo.identifier)
   );
 }
@@ -286,7 +279,7 @@ class _ContactListAdapter with SectionAdapterMixin {
     Widget? trailing;
     if (_canRemove(info, _info)) {
       trailing = IconButton(icon: const Icon(AppIcons.removeIcon, color: CupertinoColors.systemRed,),
-        onPressed: () => _removeAdmin(context, info.identifier, _info),
+        onPressed: () => _removeAdmin(context, info, _info),
       );
     }
     return ProfilePage.cell(info, trailing: trailing);

@@ -114,7 +114,7 @@ class _ParticipantsState extends State<ParticipantsWidget> implements lnc.Observ
     ),
     itemCount: itemCount,
     itemBuilder: (BuildContext ctx, int index) {
-      onTap() => Alert.show(context, 'Notice', 'Please review invitations first.');
+      onTap() => Alert.show(context, 'Notice', 'Please review invitations first.'.tr);
       GroupInfo info = widget.info;
       if (index == plusIndex) {
         bool canReview = info.isOwner || info.isAdmin;
@@ -136,28 +136,15 @@ class _ParticipantsState extends State<ParticipantsWidget> implements lnc.Observ
 
 }
 
-Future<String> _getNames(List<ID> members) async {
-  assert(members.isNotEmpty, 'members should not be empty here');
-  GlobalVariable shared = GlobalVariable();
-  String nickname = await shared.facebook.getName(members.first);
-  String text = nickname;
-  for (int i = 1; i < members.length; ++i) {
-    nickname = await shared.facebook.getName(members[i]);
-    text += ', $nickname';
-  }
-  return text;
-}
-
 void _addMembers(BuildContext ctx, GroupInfo groupInfo, Set<ID> members) {
   if (members.isEmpty) {
     return;
   }
   List<ID> newMembers = members.toList();
-  _getNames(newMembers).then((names) {
-    Alert.confirm(ctx, 'Confirm', 'Are you sure want to invite $names into this group?',
-      okAction: () => _doAddMembers(ctx, groupInfo, newMembers),
-    );
-  });
+  previewMembers(newMembers).then((body) => Alert.confirm(ctx, 'Confirm Add',
+    body,
+    okAction: () => _doAddMembers(ctx, groupInfo, newMembers),
+  ));
 }
 void _doAddMembers(BuildContext ctx, GroupInfo groupInfo, List<ID> newMembers) {
   ID group = groupInfo.identifier;
@@ -181,11 +168,10 @@ void _removeMembers(BuildContext ctx, GroupInfo groupInfo, Set<ID> members) {
     return;
   }
   List<ID> expelMembers = members.toList();
-  _getNames(expelMembers).then((names) {
-    Alert.confirm(ctx, 'Confirm', 'Are you sure want to expel $names from this group?',
-      okAction: () => _doRemoveMembers(ctx, groupInfo, expelMembers),
-    );
-  });
+  previewMembers(expelMembers).then((body) => Alert.confirm(ctx, 'Confirm Delete',
+    body,
+    okAction: () => _doRemoveMembers(ctx, groupInfo, expelMembers),
+  ));
 }
 void _doRemoveMembers(BuildContext ctx, GroupInfo groupInfo, List<ID> expelMembers) {
   ID group = groupInfo.identifier;
