@@ -53,7 +53,7 @@ class _SearchState extends State<SearchPage> implements lnc.Observer {
     String name = notification.name;
     Map? info = notification.userInfo;
     if (name == NotificationNames.kSearchUpdated) {
-      _reload(info?['cmd']);
+      await _reload(info?['cmd']);
     }
   }
 

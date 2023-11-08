@@ -41,6 +41,7 @@ class _ChatDetailState extends State<GroupChatDetailPage> implements lnc.Observe
   _ChatDetailState() {
     var nc = lnc.NotificationCenter();
     nc.addObserver(this, NotificationNames.kDocumentUpdated);
+    nc.addObserver(this, NotificationNames.kMembersUpdated);
     nc.addObserver(this, NotificationNames.kGroupHistoryUpdated);
     nc.addObserver(this, NotificationNames.kAdministratorsUpdated);
   }
@@ -57,6 +58,7 @@ class _ChatDetailState extends State<GroupChatDetailPage> implements lnc.Observe
     var nc = lnc.NotificationCenter();
     nc.removeObserver(this, NotificationNames.kAdministratorsUpdated);
     nc.removeObserver(this, NotificationNames.kGroupHistoryUpdated);
+    nc.removeObserver(this, NotificationNames.kMembersUpdated);
     nc.removeObserver(this, NotificationNames.kDocumentUpdated);
     super.dispose();
   }
@@ -70,11 +72,13 @@ class _ChatDetailState extends State<GroupChatDetailPage> implements lnc.Observe
       assert(identifier != null, 'notification error: $notification');
       if (identifier == widget.info.identifier) {
         Log.info('document updated: $identifier');
-        if (mounted) {
-          setState(() {
-            // update name in title
-          });
-        }
+        await _reload();
+      }
+    } else if (name == NotificationNames.kMembersUpdated) {
+      ID? identifier = userInfo?['ID'];
+      if (identifier == widget.info.identifier) {
+        Log.info('group members updated: $identifier');
+        await _reload();
       }
     } else if (name == NotificationNames.kGroupHistoryUpdated) {
       ID? identifier = userInfo?['ID'];
@@ -116,7 +120,7 @@ class _ChatDetailState extends State<GroupChatDetailPage> implements lnc.Observe
       backgroundColor: Styles.colors.scaffoldBackgroundColor,
       appBar: CupertinoNavigationBar(
         backgroundColor: Styles.colors.appBardBackgroundColor,
-        middle: Text('Group Chat Details'.tr),
+        middle: Text('${'Group Chat Details'.tr} (${widget.info.members.length})'),
       ),
       body: SingleChildScrollView(
         child: _body(context,

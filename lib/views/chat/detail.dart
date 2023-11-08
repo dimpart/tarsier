@@ -64,11 +64,7 @@ class _ChatDetailState extends State<ChatDetailPage> implements lnc.Observer {
       assert(identifier != null, 'notification error: $notification');
       if (identifier == widget.info.identifier) {
         Log.info('document updated: $identifier');
-        if (mounted) {
-          setState(() {
-            // update name in title
-          });
-        }
+        await _reload();
       }
     } else if (name == NotificationNames.kContactsUpdated) {
       ID? contact = userInfo?['contact'];

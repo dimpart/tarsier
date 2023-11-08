@@ -22,7 +22,7 @@ class _ExportState extends State<ExportPage> {
     Keychain keychain = Keychain(shared.database);
     String? mnemonic = await keychain.mnemonic;
     Log.debug('mnemonic: $mnemonic');
-    if (mnemonic != null && mounted) {
+    if (mounted && mnemonic != null) {
       setState(() {
         _words.addAll(mnemonic.split(' '));
       });

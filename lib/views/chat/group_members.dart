@@ -46,10 +46,10 @@ class _MembersState extends State<MembersPage> implements lnc.Observer {
         Log.info('group document updated: $chat');
         await _reload();
       }
-    } else if (name == NotificationNames.kAdministratorsUpdated) {
+    } else if (name == NotificationNames.kMembersUpdated) {
       ID? chat = userInfo?['ID'];
       if (chat == widget.info.identifier) {
-        Log.info('group administrators updated: $chat');
+        Log.info('group members updated: $chat');
         await _reload();
       }
     }
