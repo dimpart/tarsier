@@ -106,14 +106,14 @@ class _RegisterState extends State<RegisterPage> {
         // When the "middle" parameter is omitted, the widget provided
         // in the "largeTitle" parameter is used instead in the collapsed state.
         largeTitle: Text(
-          widget._info.importing ? 'Import' : 'Register',
+          widget._info.importing ? 'Import'.tr : 'Register'.tr,
           style: const TextStyle(
             color: titleColor,
           ),
         ),
         trailing: TextButton(
           child: Text(
-            widget._info.importing ? 'Register' : 'Import',
+            widget._info.importing ? 'Register'.tr : 'Import'.tr,
             style: const TextStyle(
               color: secondaryTitleColor,
             ),
@@ -209,12 +209,12 @@ class _RegisterState extends State<RegisterPage> {
       tiles.add(_tile(widget._info.getWord(index), index));
     }
     List<Row> rows = [
-      const Row(
+      Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Text(
-            'Mnemonic Codes',
-            style: TextStyle(
+            'Mnemonic Codes'.tr,
+            style: const TextStyle(
               color: secondaryTitleColor,
               fontSize: 20,
             ),
@@ -225,9 +225,7 @@ class _RegisterState extends State<RegisterPage> {
         children: [
           SizedBox(
             width: 320,
-            child: _memo('Mnemonic is the private key for an existing account,'
-                ' if you don\'t have one, please click "Register" button'
-                ' on the top-right corner to generate a new one.',
+            child: _memo('MnemonicCodes::Description'.tr,
             ),
           ),
         ],
@@ -335,9 +333,9 @@ class _RegisterState extends State<RegisterPage> {
 
   Widget _nicknameField(BuildContext context) => Row(
     children: [
-      const Text(
-        'Name: ',
-        style: TextStyle(
+      Text(
+        '${'Name'.tr}: ',
+        style: const TextStyle(
           color: textColor,
           fontSize: 20,
         ),
@@ -346,7 +344,7 @@ class _RegisterState extends State<RegisterPage> {
         width: 160,
         child: CupertinoTextField(
           textAlign: TextAlign.center,
-          placeholder: 'your nickname',
+          placeholder: 'Your nickname'.tr,
           decoration: BoxDecoration(
             color: CupertinoColors.white,
             border: Border.all(
@@ -363,7 +361,7 @@ class _RegisterState extends State<RegisterPage> {
           focusNode: _focusNode,
           onTapOutside: (event) => _focusNode.unfocus(),
           onChanged: (value) => setState(() {
-            widget._info.nickname = value;
+            widget._info.nickname = value.trim();
           }),
         ),
       ),
@@ -409,8 +407,8 @@ class _RegisterState extends State<RegisterPage> {
       ),
       const Text('Agreed with the', style: TextStyle(color: CupertinoColors.black)),
       TextButton(
-        child: const Text('DIM Privacy Policy',
-          style: TextStyle(color: buttonColor),
+        child: Text('DIM ${'Privacy Policy'.tr}',
+          style: const TextStyle(color: buttonColor),
         ),
         onPressed: () => Config().termsURL.then((url) => Browser.open(context,
           url: url,
@@ -424,9 +422,9 @@ class _RegisterState extends State<RegisterPage> {
 void _submit(BuildContext context, _RegisterInfo info) =>
     _checkCurrentUser(context, () {
       if (info.nickname.isEmpty) {
-        Alert.show(context, 'Input Name', 'Please input your nickname.');
+        Alert.show(context, 'Input Name', 'Please input your nickname'.tr);
       } else if (!info.agreed) {
-        Alert.show(context, 'Privacy Policy', 'Please read and agree the privacy policy.');
+        Alert.show(context, 'Privacy Policy', 'Please agree the privacy policy'.tr);
       } else {
         (info.importing ? _importAccount(context, info) : _createAccount(context, info))
             .then((identifier) => {
@@ -436,10 +434,9 @@ void _submit(BuildContext context, _RegisterInfo info) =>
                   return false;
                 })
               } else if (info.importing) {
-                Alert.show(context, 'Error', 'Failed to import account,'
-                    ' please check your mnemonic codes.')
+                Alert.show(context, 'Error', 'Failed to import account'.tr)
               } else {
-                Alert.show(context, 'Fatal Error', 'Failed to generate ID.')
+                Alert.show(context, 'Fatal Error', 'Failed to generate ID'.tr)
               }
             });
       }
