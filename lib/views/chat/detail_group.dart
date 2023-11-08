@@ -7,6 +7,7 @@ import 'package:lnc/lnc.dart' as lnc;
 import 'detail_participants.dart';
 import 'group_admins.dart';
 import 'group_invitations.dart';
+import 'group_members.dart';
 
 
 class GroupChatDetailPage extends StatefulWidget {
@@ -130,6 +131,21 @@ class _ChatDetailState extends State<GroupChatDetailPage> implements lnc.Observe
     );
   }
 
+  bool _hasMoreMembers() {
+    GroupInfo info = widget.info;
+    bool canInvite = info.isMember;
+    bool canExpel = info.isOwner || info.isAdmin;
+    int count = info.members.length;
+    if (canExpel) {
+      count += 2;
+    } else if (canInvite) {
+      count += 1;
+    }
+    return 0 < _maxItems && _maxItems < count;
+  }
+
+  final int _maxItems = 20;
+
   Widget _body(BuildContext context, {
     required Color backgroundColor,
     required Color backgroundColorActivated,
@@ -144,8 +160,23 @@ class _ChatDetailState extends State<GroupChatDetailPage> implements lnc.Observe
       Container(
         color: backgroundColor,
         padding: const EdgeInsets.all(16),
-        child: ParticipantsWidget(widget.info),
+        child: ParticipantsWidget(widget.info, maxItems: _maxItems),
       ),
+      if (_hasMoreMembers())
+        Container(
+          color: backgroundColor,
+          padding: const EdgeInsets.only(bottom: 16),
+          child: GestureDetector(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text('View More Members'.tr),
+                const CupertinoListTileChevron(),
+              ],
+            ),
+            onTap: () => MembersPage.open(context, widget.info),
+          ),
+        ),
       const SizedBox(height: 16,),
 
       CupertinoListSection(

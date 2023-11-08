@@ -7,9 +7,10 @@ import 'associates.dart';
 
 
 class ParticipantsWidget extends StatefulWidget {
-  const ParticipantsWidget(this.info, {super.key});
+  const ParticipantsWidget(this.info, {super.key, required this.maxItems});
 
   final GroupInfo info;
+  final int maxItems;
 
   @override
   State<StatefulWidget> createState() => _ParticipantsState();
@@ -95,12 +96,22 @@ class _ParticipantsState extends State<ParticipantsWidget> implements lnc.Observ
   bool get canInvite => widget.info.isMember;
   bool get canExpel => widget.info.isOwner || widget.info.isAdmin;
 
-  int get itemCount => widget.info.members.length + (
-      canExpel ? 2 : (canInvite ? 1 : 0)
-  );
+  int get itemCount {
+    int count = widget.info.members.length;
+    if (canExpel) {
+      count += 2;
+    } else if (canInvite) {
+      count += 1;
+    }
+    if (0 < widget.maxItems && widget.maxItems < count) {
+      count = widget.maxItems;
+    }
+    return count;
+  }
 
-  int get plusIndex => canInvite ? widget.info.members.length : -1;
-  int get minusIndex => canExpel ? plusIndex + 1 : -1;
+  int get minusIndex => canExpel ? itemCount - 1 : -1;  // the last item
+  int get plusIndex => canExpel ? itemCount - 2         // before last item
+      : canInvite ? itemCount - 1 : -1;                 // the last item
 
   @override
   Widget build(BuildContext context) => GridView.builder(
