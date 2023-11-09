@@ -268,52 +268,59 @@ class _AccountState extends State<AccountPage> {
   }));
 
   Future<bool> _saveInfo(BuildContext context) async {
-    // 1. get old visa document
-    User user = widget.user;
-    Visa? visa = await user.visa
-        .onError((error, stackTrace) {
-          Alert.show(context, 'Error', 'Failed to get visa');
-          return null;
-        });
-    if (visa?.publicKey == null) {
-      assert(false, 'should not happen');
-      Document? doc = Document.create(Document.kVisa, user.identifier);
-      assert(doc is Visa, 'failed to create visa document');
-      visa = doc as Visa;
-      PrivateKey? key = PrivateKey.generate(AsymmetricKey.kRSA);
-      assert(key is EncryptKey, 'failed to create visa key');
-      visa.publicKey = key as EncryptKey;
-    } else {
-      // create new one for modifying
-      Document? doc = Document.parse(visa?.copyMap(false));
-      assert(doc is Visa, 'failed to create visa document');
-      visa = doc as Visa;
-    }
-    // 2. get sign key
+    // save profile for current user
     GlobalVariable shared = GlobalVariable();
-    SharedFacebook facebook = shared.facebook;
-    SignKey? sKey = await facebook.getPrivateKeyForVisaSignature(user.identifier)
+    User user = widget.user;
+    // 1. get sign key for current user
+    SignKey? sKey = await shared.facebook.getPrivateKeyForVisaSignature(user.identifier)
         .onError((error, stackTrace) {
           Alert.show(context, 'Error', 'Failed to get private key');
           return null;
         });
     if (sKey == null) {
-      assert(false, 'should not happen');
+      assert(false, 'private key not found: $user');
       return false;
     }
+    // 2. get visa document for current user
+    Visa? visa = await user.visa
+        .onError((error, stackTrace) {
+          Alert.show(context, 'Error', 'Failed to get visa');
+          return null;
+        });
+    if (visa == null) {
+      // FIXME: query from station or create a new one?
+      assert(false, 'user error: $user');
+      return false;
+    } else {
+      // clone for modifying
+      Document? doc = Document.parse(visa.copyMap(false));
+      if (doc is Visa) {
+        visa = doc;
+      } else {
+        assert(false, 'visa error: $visa');
+        return false;
+      }
+    }
+    // 3. update visa document
+    assert(visa.publicKey != null, 'visa error: $visa');
     visa.setProperty('app_id', 'chat.dim.tarsier');
-    // 3. set name & avatar url in visa document and sign it
-    visa.name = _nickname?.trim();
-    visa.avatar = PortableNetworkFile.parse(_avatarUrl?.toString());
-    var sig = visa.sign(sKey);
-    assert(sig != null, 'failed to sign visa: $user, $visa');
-    // 4. save it
-    bool ok = await facebook.saveDocument(visa)
+    // set name
+    String? nickname = _nickname?.trim();
+    visa.name = nickname;
+    // set avatar URL
+    String? url = _avatarUrl?.toString();
+    visa.avatar = PortableNetworkFile.parse(url);
+    // 4. sign it
+    Uint8List? sig = visa.sign(sKey);
+    assert(sig != null, 'failed to sign visa: $visa, $user');
+    // 5. save it
+    bool ok = await shared.facebook.saveDocument(visa)
         .onError((error, stackTrace) {
           Alert.show(context, 'Error', 'Failed to save visa document');
           return false;
         });
-    assert(ok, 'failed to save visa: $user, $visa');
+    assert(ok, 'failed to save visa: $visa');
+    Log.info('visa updated: $ok, $visa');
     if (ok) {
       // broadcast this document to all friends
       try {
