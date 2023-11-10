@@ -197,7 +197,7 @@ class _ChatDetailState extends State<ChatDetailPage> implements lnc.Observer {
   );
 
   Widget _clearButton(BuildContext context, {required Color textColor, required Color backgroundColor}) =>
-      _button('  ${'Clear History'.tr}', AppIcons.clearChatIcon, textColor: textColor, backgroundColor: backgroundColor,
+      _button('Clear History'.tr, AppIcons.clearChatIcon, textColor: textColor, backgroundColor: backgroundColor,
         onPressed: () => _clearHistory(context, widget.info),
       );
 
@@ -212,6 +212,7 @@ class _ChatDetailState extends State<ChatDetailPage> implements lnc.Observer {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Icon(icon, color: textColor,),
+              const SizedBox(width: 12,),
               Text(title,
                 style: TextStyle(color: textColor, fontWeight: FontWeight.bold,),
               ),
@@ -225,9 +226,7 @@ class _ChatDetailState extends State<ChatDetailPage> implements lnc.Observer {
 }
 
 void _clearHistory(BuildContext ctx, ContactInfo info) {
-  String msg = 'Sure to clear chat history of this friend?'
-      ' This action cannot be restored.';
-  Alert.confirm(ctx, 'Confirm', msg,
+  Alert.confirm(ctx, 'Confirm', 'Sure to clear chat history of this friend?'.tr,
     okAction: () => _doClear(ctx, info.identifier),
   );
 }
@@ -237,7 +236,7 @@ void _doClear(BuildContext ctx, ID chat) {
     if (ok) {
       Navigator.pop(ctx);
     } else {
-      Alert.show(ctx, 'Error', 'Failed to clear chat history');
+      Alert.show(ctx, 'Error', 'Failed to clear chat history'.tr);
     }
   });
 }

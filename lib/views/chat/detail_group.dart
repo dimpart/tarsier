@@ -120,7 +120,9 @@ class _ChatDetailState extends State<GroupChatDetailPage> implements lnc.Observe
       backgroundColor: Styles.colors.scaffoldBackgroundColor,
       appBar: CupertinoNavigationBar(
         backgroundColor: Styles.colors.appBardBackgroundColor,
-        middle: Text('${'Group Chat Details'.tr} (${widget.info.members.length})'),
+        middle: Text('Group Chat Details (@count)'.trParams({
+          'count': widget.info.members.length.toString(),
+        }))
       ),
       body: SingleChildScrollView(
         child: _body(context,
@@ -354,12 +356,12 @@ class _ChatDetailState extends State<GroupChatDetailPage> implements lnc.Observe
   }
 
   Widget _clearButton(BuildContext context, {required Color textColor, required Color backgroundColor}) =>
-      _button('  ${'Clear History'.tr}', AppIcons.clearChatIcon, textColor: textColor, backgroundColor: backgroundColor,
+      _button('Clear History'.tr, AppIcons.clearChatIcon, textColor: textColor, backgroundColor: backgroundColor,
         onPressed: () => _clearHistory(context, widget.info),
       );
 
   Widget _quitButton(BuildContext context, {required Color textColor, required Color backgroundColor}) =>
-      _button('  ${'Quit Group'.tr}', AppIcons.quitIcon, textColor: textColor, backgroundColor: backgroundColor,
+      _button('Quit Group'.tr, AppIcons.quitIcon, textColor: textColor, backgroundColor: backgroundColor,
         onPressed: () => widget.info.quit(context: context),
       );
 
@@ -374,6 +376,7 @@ class _ChatDetailState extends State<GroupChatDetailPage> implements lnc.Observe
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Icon(icon, color: textColor,),
+              const SizedBox(width: 12,),
               Text(title,
                 style: TextStyle(color: textColor, fontWeight: FontWeight.bold,),
               ),
@@ -387,9 +390,7 @@ class _ChatDetailState extends State<GroupChatDetailPage> implements lnc.Observe
 }
 
 void _clearHistory(BuildContext ctx, GroupInfo info) {
-  String msg = 'Sure to clear chat history of this group?'
-      ' This action cannot be restored.';
-  Alert.confirm(ctx, 'Confirm', msg,
+  Alert.confirm(ctx, 'Confirm', 'Sure to clear chat history of this group?'.tr,
     okAction: () => _doClear(ctx, info.identifier),
   );
 }
@@ -399,7 +400,7 @@ void _doClear(BuildContext ctx, ID chat) {
     if (ok) {
       Navigator.pop(ctx);
     } else {
-      Alert.show(ctx, 'Error', 'Failed to clear chat history');
+      Alert.show(ctx, 'Error', 'Failed to clear chat history'.tr);
     }
   });
 }

@@ -71,6 +71,9 @@ class _ChatListState extends State<ChatHistoryPage> implements lnc.Observer {
         _adapter.notifyDataChange();
       });
     }
+    BurnAfterReadingDataSource bar = BurnAfterReadingDataSource();
+    bool ok = await bar.burnAll();
+    Log.info('burned: $ok');
   }
   Future<void> _testSpeeds() async {
     // wait a while to test all stations

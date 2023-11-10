@@ -57,10 +57,9 @@ class _NetworkState extends State<NetworkSettingPage> {
   );
 
   void _confirmRefresh(BuildContext context) {
-    Alert.confirm(context,
-        'Refresh Stations',
-        'The fastest station will be connected automatically next time.',
-        okAction: _refreshStations
+    Alert.confirm(context, 'Refresh Stations',
+      'The fastest station will be connected automatically next time.',
+      okAction: _refreshStations,
     );
     // // TEST:
     // GlobalVariable shared = GlobalVariable();

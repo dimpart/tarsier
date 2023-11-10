@@ -495,7 +495,11 @@ void _forwardImage(BuildContext ctx, ImageContent content, ID sender) {
   FileTransfer ftp = FileTransfer();
   ftp.getFilePath(content).then((path) {
     if (path == null) {
-      Alert.show(ctx, 'Image Not Found', 'Failed to load image: ${content.filename}');
+      Alert.show(ctx, 'Image Not Found',
+        'Failed to load image @filename'.trParams({
+          'filename': '${content.filename}',
+        })
+      );
     } else {
       String filename = content.filename ?? Paths.filename(path) ?? 'a.jpeg';
       Uint8List? thumbnail = content.thumbnail;
@@ -505,15 +509,23 @@ void _forwardImage(BuildContext ctx, ImageContent content, ID sender) {
         'time': content.getDouble('time', 0),
       }];
       PickChatPage.open(ctx,
-        onPicked: (chat) => Alert.confirm(ctx,
-          'Confirm Forward', _forwardImagePreview(content, chat),
+        onPicked: (chat) => Alert.confirm(ctx, 'Confirm Forward',
+          _forwardImagePreview(content, chat),
           okAction: () => _sendImage(chat.identifier,
             path: path, filename: filename, thumbnail: thumbnail, traces: traces,
-          ).then((value) {
-            if (value) {
-              Alert.show(ctx, 'Forwarded', 'Image message forwarded to ${chat.title}');
+          ).then((ok) {
+            if (ok) {
+              Alert.show(ctx, 'Forwarded',
+                'Image message forwarded to @chat'.trParams({
+                  'chat': chat.title,
+                }),
+              );
             } else {
-              Alert.show(ctx, 'Error', 'Failed to share image with ${chat.title}');
+              Alert.show(ctx, 'Error',
+                'Failed to share image with @chat'.trParams({
+                  'chat': chat.title,
+                }),
+              );
             }
           }),
         ),
@@ -573,12 +585,26 @@ void _forwardWebPage(BuildContext ctx, PageContent content, ID sender) {
 }
 void _shareWebPage(BuildContext ctx, Uri url, {required String title, String? desc, Uint8List? icon}) {
   PickChatPage.open(ctx,
-    onPicked: (chat) => Alert.confirm(ctx,
-      'Confirm Forward', _shareWebPagePreview(title, icon, chat),
+    onPicked: (chat) => Alert.confirm(ctx, 'Confirm Forward',
+      _shareWebPagePreview(title, icon, chat),
       okAction: () => _sendWebPage(chat.identifier,
         url, title: title, desc: desc, icon: icon,
-      ).then((value) {
-        Alert.show(ctx, 'Forwarded', 'Web page "$title" forwarded to ${chat.title}');
+      ).then((ok) {
+        if (ok) {
+          Alert.show(ctx, 'Forwarded',
+            'Web Page @title forwarded to @chat'.trParams({
+              'title': title,
+              'chat': chat.title,
+            }),
+          );
+        } else {
+          Alert.show(ctx, 'Error',
+            'Failed to share Web Page @title with @chat'.trParams({
+              'title': title,
+              'chat': chat.title,
+            }),
+          );
+        }
       }),
     ),
   );
@@ -606,7 +632,7 @@ Widget _shareWebPagePreview(String title, Uint8List? icon, Conversation chat) {
   );
   return body;
 }
-Future<void> _sendWebPage(ID receiver, Uri url,
+Future<bool> _sendWebPage(ID receiver, Uri url,
     {required String title, String? desc, Uint8List? icon}) async {
   // create web page content
   TransportableData? ted = icon == null ? null : TransportableData.create(icon);
@@ -616,6 +642,7 @@ Future<void> _sendWebPage(ID receiver, Uri url,
   // send web page content
   GlobalVariable shared = GlobalVariable();
   await shared.emitter.sendContent(content, receiver);
+  return true;
 }
 
 void _forwardNameCard(BuildContext ctx, NameCard content, ID sender) {
@@ -625,13 +652,27 @@ void _forwardNameCard(BuildContext ctx, NameCard content, ID sender) {
     'time': content.getDouble('time', 0),
   }];
   PickChatPage.open(ctx,
-    onPicked: (chat) => Alert.confirm(ctx,
-      'Confirm Forward', _forwardNameCardPreview(content, chat),
+    onPicked: (chat) => Alert.confirm(ctx, 'Confirm Forward',
+      _forwardNameCardPreview(content, chat),
       okAction: () => _sendContact(chat.identifier,
         identifier: content.identifier, name: content.name, avatar: content.avatar?.url.toString(),
         traces: traces,
-      ).then((value) {
-        Alert.show(ctx, 'Forwarded', 'Name Card "${content.name}" forwarded to ${chat.title}');
+      ).then((ok) {
+        if (ok) {
+          Alert.show(ctx, 'Forwarded',
+              'Name Card @name forwarded to @chat'.trParams({
+                'name': content.name,
+                'chat': chat.title,
+              })
+          );
+        } else {
+          Alert.show(ctx, 'Error',
+            'Failed to share Name Card @name with @chat'.trParams({
+              'name': content.name,
+              'chat': chat.title,
+            }),
+          );
+        }
       }),
     ),
   );
@@ -661,7 +702,7 @@ Widget _forwardNameCardPreview(NameCard content, Conversation chat) {
   );
   return body;
 }
-Future<void> _sendContact(ID receiver,
+Future<bool> _sendContact(ID receiver,
     {required ID identifier, required String name, String? avatar,
       required List traces}) async {
   NameCard content = NameCard.create(identifier, name, PortableNetworkFile.parse(avatar));
@@ -669,4 +710,5 @@ Future<void> _sendContact(ID receiver,
   Log.debug('forward name card to receiver: $receiver, $content');
   GlobalVariable shared = GlobalVariable();
   await shared.emitter.sendContent(content, receiver);
+  return true;
 }

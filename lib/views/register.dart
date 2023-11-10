@@ -407,8 +407,8 @@ class _RegisterState extends State<RegisterPage> {
       ),
       const Text('Agreed with the', style: TextStyle(color: CupertinoColors.black)),
       TextButton(
-        child: Text('DIM ${'Privacy Policy'.tr}',
-          style: const TextStyle(color: buttonColor),
+        child: const Text('DIM Privacy Policy',
+          style: TextStyle(color: buttonColor),
         ),
         onPressed: () => Config().termsURL.then((url) => Browser.open(context,
           url: url,

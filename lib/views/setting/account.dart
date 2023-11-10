@@ -198,7 +198,7 @@ class _AccountState extends State<AccountPage> {
     child: CupertinoTextField(
       textAlign: TextAlign.end,
       controller: TextEditingController(text: _nickname),
-      placeholder: 'your nickname'.tr,
+      placeholder: 'Your nickname'.tr,
       decoration: Styles.textFieldDecoration,
       style: Styles.textFieldStyle,
       focusNode: _focusNode,
@@ -208,12 +208,12 @@ class _AccountState extends State<AccountPage> {
   );
 
   Widget _updateButton(BuildContext context, {required Color textColor, required Color backgroundColor}) =>
-      _button('  ${'Update & Broadcast'.tr}', AppIcons.updateDocIcon, textColor: textColor, backgroundColor: backgroundColor,
+      _button('Update & Broadcast'.tr, AppIcons.updateDocIcon, textColor: textColor, backgroundColor: backgroundColor,
         onPressed: () => _saveInfo(context).then((ok) {
           if (ok) {
-            Alert.show(context, 'Success', 'Your profile is updated and broadcast to all friends!');
+            Alert.show(context, 'Success', 'Profile is updated'.tr);
           } else {
-            Alert.show(context, 'Error', 'Failed to update visa document.');
+            Alert.show(context, 'Error', 'Failed to update profile'.tr);
           }
         }),
       );
@@ -229,6 +229,7 @@ class _AccountState extends State<AccountPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Icon(icon, color: textColor,),
+              const SizedBox(width: 12,),
               Text(title,
                 style: TextStyle(color: textColor, fontWeight: FontWeight.bold,),
               ),
@@ -274,7 +275,7 @@ class _AccountState extends State<AccountPage> {
     // 1. get sign key for current user
     SignKey? sKey = await shared.facebook.getPrivateKeyForVisaSignature(user.identifier)
         .onError((error, stackTrace) {
-          Alert.show(context, 'Error', 'Failed to get private key');
+          Alert.show(context, 'Error', 'Failed to get private key'.tr);
           return null;
         });
     if (sKey == null) {
@@ -284,7 +285,7 @@ class _AccountState extends State<AccountPage> {
     // 2. get visa document for current user
     Visa? visa = await user.visa
         .onError((error, stackTrace) {
-          Alert.show(context, 'Error', 'Failed to get visa');
+          Alert.show(context, 'Error', 'Failed to get visa'.tr);
           return null;
         });
     if (visa == null) {
@@ -316,7 +317,7 @@ class _AccountState extends State<AccountPage> {
     // 5. save it
     bool ok = await shared.facebook.saveDocument(visa)
         .onError((error, stackTrace) {
-          Alert.show(context, 'Error', 'Failed to save visa document');
+          Alert.show(context, 'Error', 'Failed to save visa'.tr);
           return false;
         });
     assert(ok, 'failed to save visa: $visa');

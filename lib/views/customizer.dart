@@ -8,17 +8,49 @@ import 'package:lnc/lnc.dart' as lnc;
 import 'setting/account.dart';
 import 'setting/account_export.dart';
 import 'setting/brightness.dart';
+import 'setting/burn_after_reading.dart';
 import 'setting/language.dart';
 import 'setting/network.dart';
 
 
-class SettingsPage extends StatelessWidget {
+class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
 
   static BottomNavigationBarItem barItem() => BottomNavigationBarItem(
     icon: const Icon(AppIcons.settingsTabIcon),
     label: 'Settings'.tr,
   );
+
+  @override
+  State<SettingsPage> createState() => _SettingsPageState();
+}
+
+class _SettingsPageState extends State<SettingsPage> implements lnc.Observer {
+  _SettingsPageState() {
+    var nc = lnc.NotificationCenter();
+    nc.addObserver(this, NotificationNames.kSettingUpdated);
+  }
+
+  @override
+  void dispose() {
+    var nc = lnc.NotificationCenter();
+    nc.removeObserver(this, NotificationNames.kSettingUpdated);
+    super.dispose();
+  }
+
+  @override
+  Future<void> onReceiveNotification(lnc.Notification notification) async {
+    String name = notification.name;
+    Map? userInfo = notification.userInfo;
+    if (name == NotificationNames.kSettingUpdated) {
+      int? duration = userInfo?['duration'];
+      Log.info('setting updated, duration: $duration');
+      if (mounted) {
+        setState(() {
+        });
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -84,6 +116,19 @@ class SettingsPage extends StatelessWidget {
             primaryTextColor: primaryTextColor,
             secondaryTextColor: secondaryTextColor,
             onTap: () => openPage(const ExportPage(),
+            ),
+          ),
+          /// Burn After Reading
+          _listTile(
+            leading: AppIcons.burnIcon, title: 'Burn After Reading'.tr,
+            additional: BurnAfterReadingDataSource().getBurnAfterReadingDescription().tr,
+            backgroundColor: backgroundColor,
+            backgroundColorActivated: backgroundColorActivated,
+            primaryTextColor: primaryTextColor,
+            secondaryTextColor: secondaryTextColor,
+            onTap: () => showCupertinoDialog(
+              context: context,
+              builder: (context) => const BurnAfterReadingPage(),
             ),
           ),
         ],

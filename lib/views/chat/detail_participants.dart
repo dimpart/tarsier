@@ -125,7 +125,7 @@ class _ParticipantsState extends State<ParticipantsWidget> implements lnc.Observ
     ),
     itemCount: itemCount,
     itemBuilder: (BuildContext ctx, int index) {
-      onTap() => Alert.show(context, 'Notice', 'Please review invitations first.'.tr);
+      onTap() => Alert.show(context, 'Notice', 'Please review invitations'.tr);
       GroupInfo info = widget.info;
       if (index == plusIndex) {
         bool canReview = info.isOwner || info.isAdmin;
@@ -166,11 +166,11 @@ void _doAddMembers(BuildContext ctx, GroupInfo groupInfo, List<ID> newMembers) {
     } else if (groupInfo.isOwner || groupInfo.isAdmin) {
       Log.warning('added new members: $newMembers => $group');
     } else {
-      Alert.show(ctx, 'Success', 'A new invitation is sent to all administrators, now is waiting for review.');
+      Alert.show(ctx, 'Success', 'Invitation sent'.tr);
     }
   }).catchError((error, stackTrace) {
     Log.error('failed to invite members: $groupInfo, $error');
-    Alert.show(ctx, 'Error', error.toString());
+    Alert.show(ctx, 'Error', '$error');
   });
 }
 
@@ -195,6 +195,6 @@ void _doRemoveMembers(BuildContext ctx, GroupInfo groupInfo, List<ID> expelMembe
     }
   }).catchError((error, stackTrace) {
     Log.error('failed to remove members: $groupInfo, $error');
-    Alert.show(ctx, 'Error', error.toString());
+    Alert.show(ctx, 'Error', '$error');
   });
 }

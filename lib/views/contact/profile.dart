@@ -318,22 +318,22 @@ class _ProfileState extends State<ProfilePage> implements lnc.Observer {
   }
 
   Widget _addButton(BuildContext context, {required Color textColor, required Color backgroundColor}) =>
-      _button('  ${'Add Contact'.tr}', AppIcons.addFriendIcon, textColor: textColor, backgroundColor: backgroundColor,
+      _button('Add Contact'.tr, AppIcons.addFriendIcon, textColor: textColor, backgroundColor: backgroundColor,
         onPressed: () => widget.info.add(context: context),
       );
 
   Widget _sendButton(BuildContext context, {required Color textColor, required Color backgroundColor}) =>
-      _button('  ${'Send Message'.tr}', AppIcons.sendMsgIcon, textColor: textColor, backgroundColor: backgroundColor,
+      _button('Send Message'.tr, AppIcons.sendMsgIcon, textColor: textColor, backgroundColor: backgroundColor,
         onPressed: () => _sendMessage(context, widget.info, widget.fromChat),
       );
 
   Widget _shareButton(BuildContext context, {required Color textColor, required Color backgroundColor}) =>
-      _button('  ${'Share Contact'.tr}', AppIcons.shareIcon, textColor: textColor, backgroundColor: backgroundColor,
+      _button('Share Contact'.tr, AppIcons.shareIcon, textColor: textColor, backgroundColor: backgroundColor,
         onPressed: () => _shareContact(context, widget.info),
       );
 
   Widget _deleteButton(BuildContext context, {required Color textColor, required Color backgroundColor}) =>
-      _button('  ${'Delete Contact'.tr}', AppIcons.deleteIcon, textColor: textColor, backgroundColor: backgroundColor,
+      _button('Delete Contact'.tr, AppIcons.deleteIcon, textColor: textColor, backgroundColor: backgroundColor,
         onPressed: () => widget.info.delete(context: context),
       );
 
@@ -348,6 +348,7 @@ class _ProfileState extends State<ProfilePage> implements lnc.Observer {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Icon(icon, color: textColor,),
+              const SizedBox(width: 12,),
               Text(title,
                 style: TextStyle(color: textColor, fontWeight: FontWeight.bold,),
               ),
@@ -392,18 +393,33 @@ void _shareContact(BuildContext ctx, ContactInfo info) {
     Alert.confirm(ctx, 'Confirm Share', body,
       okAction: () => _sendContact(chat.identifier,
         identifier: info.identifier, name: info.title, avatar: info.avatar,
-      ).then((value) {
-        Alert.show(ctx, 'Shared', 'Contact "${info.title}" sent to ${chat.title}');
+      ).then((ok) {
+        if (ok) {
+          Alert.show(ctx, 'Shared',
+            'Contact @name shared to @chat'.trParams({
+              'name': info.title,
+              'chat': chat.title,
+            }),
+          );
+        } else {
+          Alert.show(ctx, 'Error',
+            'Failed to share contact @name with @chat'.trParams({
+              'name': info.title,
+              'chat': chat.title,
+            }),
+          );
+        }
       }),
     );
   });
 }
-Future<void> _sendContact(ID receiver,
+Future<bool> _sendContact(ID receiver,
     {required ID identifier, required String name, String? avatar}) async {
   NameCard content = NameCard.create(identifier, name, PortableNetworkFile.parse(avatar));
   Log.debug('name card: $content');
   GlobalVariable shared = GlobalVariable();
   await shared.emitter.sendContent(content, receiver);
+  return true;
 }
 
 //
