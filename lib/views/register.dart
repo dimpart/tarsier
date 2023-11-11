@@ -184,7 +184,7 @@ class _RegisterState extends State<RegisterPage> {
         height: 32,
       ),
       Container(
-        width: 240,
+        width: 260,
         alignment: Alignment.center,
         child: _nicknameField(context),
       ),

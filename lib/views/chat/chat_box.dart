@@ -576,9 +576,10 @@ Future<bool> _sendImage(ID receiver,
 }
 
 void _forwardWebPage(BuildContext ctx, PageContent content, ID sender) {
-  Uri? url = Browser.parseUri(content.url.toString());
+  String urlString = HtmlUri.getUriString(content);
+  Uri? url = HtmlUri.parseUri(urlString);
   if (url == null) {
-    Alert.show(ctx, 'URL Error', content.url.toString());
+    Alert.show(ctx, 'URL Error', urlString);
   } else {
     _shareWebPage(ctx, url, title: content.title, desc: content.desc, icon: content.icon);
   }
@@ -638,7 +639,9 @@ Future<bool> _sendWebPage(ID receiver, Uri url,
   TransportableData? ted = icon == null ? null : TransportableData.create(icon);
   PageContent content = PageContent.create(url: url,
       title: title, desc: desc, icon: ted);
-  Log.debug('share web page to $receiver: "$title", $url');
+  // check "data:text/html"
+  HtmlUri.setHtmlString(url, content);
+  Log.info('share web page to $receiver: "$title", $url');
   // send web page content
   GlobalVariable shared = GlobalVariable();
   await shared.emitter.sendContent(content, receiver);

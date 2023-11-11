@@ -162,14 +162,44 @@ class _SendState extends State<ChatSendFlag> implements lnc.Observer {
   }
 
   /// load traces to refresh message status
-  Future<_MsgStatus> _load() async {
+  Future<List<String>> _loadTraces() async {
+    GlobalVariable shared = GlobalVariable();
     ID sender = widget.iMsg.sender;
     int sn = widget.iMsg.content.sn;
     String? signature = widget.iMsg.getString('signature', null);
-    ID? mta;
-    GlobalVariable shared = GlobalVariable();
     List<String> traces = await shared.database.getTraces(sender, sn, signature);
-    Log.debug('got ${traces.length} traces for message: $sender, $sn, $signature');
+    Log.info('got ${traces.length} traces for message: $sender, $sn, $signature');
+    // count respond
+    int count = _countOfUsers(traces);
+    widget.iMsg['count_of_responded'] = count;
+    widget.iMsg['count_of_traces'] = traces.length;
+    return traces;
+  }
+  int _countOfUsers(List<String> traces) {
+    Set<ID> responses = {};
+    ID? mta;
+    for (String json in traces) {
+      mta = ID.parse(JSONMap.decode(json)?['ID']);
+      if (mta == null) {
+        Log.error('trace error: $json');
+      } else if (mta.type == EntityType.kStation) {
+        Log.debug('ignore response from station: $mta');
+      } else if (mta.isUser) {
+        Log.debug('responded from user: $mta');
+        // TODO: check whether is member?
+        //       skip group bot too
+        responses.add(mta);
+      } else {
+        Log.error('error response: $mta');
+      }
+    }
+    Log.info('responded users: ${responses.length}, $responses');
+    return responses.length;
+  }
+
+  Future<_MsgStatus> _refreshStatus(List<String> traces) async {
+    int sn = widget.iMsg.content.sn;
+    ID? mta;
     _MsgStatus status = _MsgStatus.kDefault;
     for (String json in traces) {
       mta = ID.parse(JSONMap.decode(json)?['ID']);
@@ -188,6 +218,7 @@ class _SendState extends State<ChatSendFlag> implements lnc.Observer {
   /// load traces to refresh message status,
   /// if it's waiting for response, reload after 5 minutes
   Future<void> _reload() async {
+    List<String> traces = await _loadTraces();
     // Check memory cache
     _MsgStatus? status = _flags[widget.iMsg.content.sn];
     if (status == _MsgStatus.kReceived) {
@@ -195,7 +226,7 @@ class _SendState extends State<ChatSendFlag> implements lnc.Observer {
       return;
     }
     // Try to load traces from database
-    status = await _load();
+    status = await _refreshStatus(traces);
     if (status == _MsgStatus.kReceived) {
       // Yes! It's received.
       return;
@@ -208,7 +239,8 @@ class _SendState extends State<ChatSendFlag> implements lnc.Observer {
       return;
     }
     // Still not received? Load it again.
-    await _load();
+    traces = await _loadTraces();
+    await _refreshStatus(traces);
   }
 
   @override
@@ -276,7 +308,14 @@ class _SendState extends State<ChatSendFlag> implements lnc.Observer {
         return 'Message is rejected'.tr;
       }
       case _MsgStatus.kReceived: {
-        return 'Your friend received'.tr;
+        if (_isPersonalChat()) {
+          return 'Your friend received'.tr;
+        } else {
+          int count = _countOfResponded();
+          return '@count members received'.trParams({
+            'count': '$count',
+          });
+        }
       }
       case _MsgStatus.kExpired: {
         return 'No response'.tr;
@@ -286,10 +325,18 @@ class _SendState extends State<ChatSendFlag> implements lnc.Observer {
       }
     }
   }
+  bool _isPersonalChat() => widget.iMsg.content.group == null;
+  int _countOfResponded() => widget.iMsg['count_of_responded'] ?? 0;
 
   @override
   Widget build(BuildContext context) {
     if (status == _MsgStatus.kReceived) {
+      if (widget.iMsg['count_of_responded'] == null) {
+        _loadTraces().then((value) {
+          setState(() {
+          });
+        });
+      }
       return _traceInfo();
     }
     return GestureDetector(
