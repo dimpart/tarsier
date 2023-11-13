@@ -202,7 +202,7 @@ class _SettingsPageState extends State<SettingsPage> implements lnc.Observer {
         children: [
           /// Source Codes
           _listTile(
-            leading: AppIcons.setOpenSourceIcon, title: 'Source'.tr,
+            leading: AppIcons.setOpenSourceIcon, title: 'Open Source'.tr,
             additional: 'github.com/dimchat',
             backgroundColor: backgroundColor,
             backgroundColorActivated: backgroundColorActivated,

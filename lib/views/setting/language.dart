@@ -69,7 +69,8 @@ class _LanguageCellState extends State<_LanguageCell> {
 
   @override
   Widget build(BuildContext context) => CupertinoTableCell(
-    leading: languageIcon,
+    leadingSize: 28,
+    leading: SizedBox(width: 40, height: 40, child: languageIcon,),
     title: languageName,
     trailing: selectedFlag,
     onTap: selectLanguage,

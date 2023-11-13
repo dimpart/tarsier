@@ -116,10 +116,17 @@ class _BurnCellState extends State<_BurnCell> {
 
   @override
   Widget build(BuildContext context) => CupertinoTableCell(
+    leadingSize: 28,
+    leading: SizedBox(width: 48, height: 48, child: leadingIcon,),
     title: description,
     trailing: selectedFlag,
     onTap: selectDuration,
   );
+
+  Icon? get leadingIcon {
+    // TODO:
+    return null;
+  }
 
   Widget get description => Text(widget.description.tr,
     style: isSelected ? const TextStyle(color: CupertinoColors.systemRed) : null,

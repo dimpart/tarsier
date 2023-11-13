@@ -69,7 +69,7 @@ class _BrightnessCellState extends State<_BrightnessCell> {
 
   @override
   Widget build(BuildContext context) => CupertinoTableCell(
-    leading: brightnessIcon,
+    leading: SizedBox(width: 48, height: 48, child: brightnessIcon,),
     title: brightnessName,
     trailing: selectedFlag,
     onTap: selectBrightness,
