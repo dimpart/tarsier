@@ -304,8 +304,7 @@ class _AccountState extends State<AccountPage> {
     }
     // 3. update visa document
     assert(visa.publicKey != null, 'visa error: $visa');
-    visa.setProperty('app_id', 'chat.dim.tarsier');
-    // set name
+    // set nickname
     String? nickname = _nickname?.trim();
     visa.name = nickname;
     // set avatar URL

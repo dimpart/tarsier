@@ -63,6 +63,10 @@ class _SendState extends State<ChatSendFlag> implements lnc.Observer {
         String? text = userInfo['text'];
         if (text != null && text.startsWith('Message is blocked')) {
           _flags[sn] = _MsgStatus.kBlocked;
+        } else {
+          // clear to reload
+          widget.iMsg['count_of_responded'] = null;
+          widget.iMsg['count_of_traces'] = null;
         }
         await _refresh(sn: sn, mta: mta);
       }
