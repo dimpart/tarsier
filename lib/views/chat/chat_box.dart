@@ -57,14 +57,22 @@ class _ChatBoxState extends State<ChatBox> implements lnc.Observer {
     await _reload();
     // set opened widget for disable updating unread count
     widget.info.widget = widget;
+    // clear badge
     Amanuensis clerk = Amanuensis();
     await clerk.clearUnread(widget.info);
   }
 
-  @override
-  void dispose() {
+  void _reset() async {
+    // clear badge
+    Amanuensis clerk = Amanuensis();
+    await clerk.clearUnread(widget.info);
     // remove opened widget for enable updating unread count
     widget.info.widget = null;
+  }
+
+  @override
+  void dispose() {
+    _reset();
     var nc = lnc.NotificationCenter();
     nc.removeObserver(this, NotificationNames.kGroupHistoryUpdated);
     nc.removeObserver(this, NotificationNames.kMembersUpdated);
