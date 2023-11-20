@@ -127,9 +127,7 @@ class _ChatBoxState extends State<ChatBox> implements lnc.Observer {
     Conversation info = widget.info;
     if (info is GroupInfo) {
       List<ContactInfo> members = ContactInfo.fromList(info.members);
-      if (members.length < 2) {
-        await shared.messenger?.queryMembers(info.identifier);
-      }
+      assert(members.isNotEmpty, 'members not found: $info');
     }
     var pair = await shared.database.getInstantMessages(info.identifier,
         limit: ChatBox.maxCountOfMessages);

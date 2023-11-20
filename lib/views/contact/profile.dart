@@ -26,10 +26,14 @@ class ProfilePage extends StatefulWidget {
     });
     // query for update
     GlobalVariable shared = GlobalVariable();
-    shared.messenger?.queryDocument(identifier);
-    if (identifier.isGroup) {
-      shared.messenger?.queryMembers(identifier);
-    }
+    shared.facebook.getDocuments(identifier).then((docs) {
+      lnc.Log.info('got ${docs.length} document(s) for: $identifier');
+      if (identifier.isGroup) {
+        shared.facebook.getMembers(identifier).then((members) {
+          lnc.Log.info('got ${docs.length} member(s) for: $identifier');
+        });
+      }
+    });
   }
 
   static Widget cell(ContactInfo info, {Widget? trailing, GestureLongPressCallback? onLongPress}) =>

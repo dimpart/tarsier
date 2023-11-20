@@ -28,8 +28,12 @@ class GroupChatDetailPage extends StatefulWidget {
     });
     // query for update
     GlobalVariable shared = GlobalVariable();
-    shared.messenger?.queryDocument(identifier);
-    shared.messenger?.queryMembers(identifier);
+    shared.facebook.getDocuments(identifier).then((docs) {
+      lnc.Log.info('got ${docs.length} document(s) for: $identifier');
+      shared.facebook.getMembers(identifier).then((members) {
+        lnc.Log.info('got ${docs.length} member(s) for: $identifier');
+      });
+    });
   }
 
   @override

@@ -25,7 +25,9 @@ class ChatDetailPage extends StatefulWidget {
     });
     // query for update
     GlobalVariable shared = GlobalVariable();
-    shared.messenger?.queryDocument(identifier);
+    shared.facebook.getDocuments(identifier).then((docs) {
+      lnc.Log.info('got ${docs.length} document(s) for: $identifier');
+    });
   }
 
   @override

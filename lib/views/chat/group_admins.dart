@@ -147,7 +147,7 @@ void _addAdmin(BuildContext context, List<ID> newAdmins, GroupInfo groupInfo) {
   }
   // check changed
   GlobalVariable shared = GlobalVariable();
-  AccountDBI db = shared.facebook.database;
+  AccountDBI db = shared.database;
   if (added == 0 && removed == 0) {
     assert(false, 'duplicated administrators: $oldAdmins');
     db.saveAdministrators(allAdmins, group: groupInfo.identifier);
@@ -175,7 +175,7 @@ void _removeAdmin(BuildContext context, ContactInfo adminInfo, GroupInfo groupIn
   }
   // check changed
   GlobalVariable shared = GlobalVariable();
-  AccountDBI db = shared.facebook.database;
+  AccountDBI db = shared.database;
   // confirm to save new administrators
   Alert.confirm(context, 'Confirm Delete',
       previewEntity(adminInfo),
