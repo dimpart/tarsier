@@ -28,7 +28,10 @@ class _PickChatState extends State<PickChatPage> with SectionAdapterMixin {
   final Amanuensis _clerk;
 
   Future<void> _reload() async {
-    await _clerk.loadConversations();
+    List<Conversation> chats = await _clerk.loadConversations();
+    for (Conversation item in chats) {
+      await item.reloadData();
+    }
     if (mounted) {
       setState(() {
         notifyDataChange();

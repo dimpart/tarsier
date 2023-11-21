@@ -65,18 +65,37 @@ class _ChatListState extends State<ChatHistoryPage> implements lnc.Observer {
   }
 
   Future<void> _reload() async {
-    await _clerk.loadConversations();
+    List<Conversation> chats = await _clerk.loadConversations();
+    for (Conversation item in chats) {
+      await item.reloadData();
+    }
     if (mounted) {
       setState(() {
         _adapter.notifyDataChange();
       });
     }
+    // burn expired messages
     BurnAfterReadingDataSource bar = BurnAfterReadingDataSource();
     bool ok = await bar.burnAll();
     Log.info('burned: $ok');
   }
-  Future<void> _testSpeeds() async {
-    // wait a while to test all stations
+
+  Future<void> _load() async {
+    List<Conversation> chats = await _clerk.loadConversations();
+    if (mounted) {
+      setState(() {
+        _adapter.notifyDataChange();
+      });
+    }
+    for (Conversation item in chats) {
+      await item.reloadData();
+    }
+    if (mounted) {
+      setState(() {
+        _adapter.notifyDataChange();
+      });
+    }
+    // wait a while to test speeds for all stations
     await Future.delayed(const Duration(seconds: 5));
     StationSpeeder speeder = StationSpeeder();
     await speeder.reload();
@@ -86,8 +105,7 @@ class _ChatListState extends State<ChatHistoryPage> implements lnc.Observer {
   @override
   void initState() {
     super.initState();
-    _reload();
-    _testSpeeds();
+    _load();
   }
 
   @override

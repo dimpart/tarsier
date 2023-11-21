@@ -75,10 +75,27 @@ class _StrangerListState extends State<StrangerListPage> implements lnc.Observer
     }
   }
 
+  Future<void> _load() async {
+    List<Conversation> chats = await _clerk.loadConversations();
+    if (mounted) {
+      setState(() {
+        _adapter.notifyDataChange();
+      });
+    }
+    for (Conversation item in chats) {
+      await item.reloadData();
+    }
+    if (mounted) {
+      setState(() {
+        _adapter.notifyDataChange();
+      });
+    }
+  }
+
   @override
   void initState() {
     super.initState();
-    _reload();
+    _load();
   }
 
   @override

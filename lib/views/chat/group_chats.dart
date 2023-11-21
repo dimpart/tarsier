@@ -65,7 +65,27 @@ class _ChatListState extends State<GroupChatsPage> implements lnc.Observer {
   }
 
   Future<void> _reload() async {
-    await _clerk.loadConversations();
+    List<Conversation> chats = await _clerk.loadConversations();
+    for (Conversation item in chats) {
+      await item.reloadData();
+    }
+    if (mounted) {
+      setState(() {
+        _adapter.notifyDataChange();
+      });
+    }
+  }
+
+  Future<void> _load() async {
+    List<Conversation> chats = await _clerk.loadConversations();
+    if (mounted) {
+      setState(() {
+        _adapter.notifyDataChange();
+      });
+    }
+    for (Conversation item in chats) {
+      await item.reloadData();
+    }
     if (mounted) {
       setState(() {
         _adapter.notifyDataChange();
@@ -76,7 +96,7 @@ class _ChatListState extends State<GroupChatsPage> implements lnc.Observer {
   @override
   void initState() {
     super.initState();
-    _reload();
+    _load();
   }
 
   @override

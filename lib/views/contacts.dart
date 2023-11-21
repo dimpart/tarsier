@@ -62,13 +62,13 @@ class _ContactListState extends State<ContactListPage> implements lnc.Observer {
     }
   }
 
-  Future<void> _reload() async {
+  Future<List<ID>?> _getContacts() async {
     GlobalVariable shared = GlobalVariable();
     // 0. check current user
     User? user = await shared.facebook.currentUser;
     if (user == null) {
       Log.error('current user not set');
-      return;
+      return null;
     }
     // 1. get contacts for current user
     SharedDatabase database = shared.database;
@@ -84,8 +84,17 @@ class _ContactListState extends State<ContactListPage> implements lnc.Observer {
         contacts = await database.getContacts(user: user.identifier);
       }
     }
-    // 2. load contact info
+    return contacts;
+  }
+
+  Future<void> _reload() async {
+    // 1. get contacts for current user
+    List<ID>? contacts = await _getContacts();
+    if (contacts == null) {
+      return;
+    }
     List<ContactInfo> array = ContactInfo.fromList(contacts);
+    // 2. load contact info
     for (ContactInfo item in array) {
       await item.reloadData();
     }
@@ -98,10 +107,37 @@ class _ContactListState extends State<ContactListPage> implements lnc.Observer {
     }
   }
 
+  Future<void> _load() async {
+    // 1. get contacts for current user
+    List<ID>? contacts = await _getContacts();
+    if (contacts == null) {
+      return;
+    }
+    List<ContactInfo> array = ContactInfo.fromList(contacts);
+    // 2. refresh contact list
+    _dataSource.refresh(array);
+    if (mounted) {
+      setState(() {
+        _adapter.notifyDataChange();
+      });
+    }
+    // 3. load contact info
+    for (ContactInfo item in array) {
+      await item.reloadData();
+    }
+    // 4. refresh contact list again
+    _dataSource.refresh(array);
+    if (mounted) {
+      setState(() {
+        _adapter.notifyDataChange();
+      });
+    }
+  }
+
   @override
   void initState() {
     super.initState();
-    _reload();
+    _load();
   }
 
   @override
@@ -278,6 +314,8 @@ abstract class _GreetingState<T extends StatefulWidget> extends State<T> impleme
     nc.addObserver(this, NotificationNames.kMuteListUpdated);
   }
 
+  late final Amanuensis _clerk = Amanuensis();
+
   int _count = 0;
 
   int get count => _count;
@@ -318,16 +356,13 @@ abstract class _GreetingState<T extends StatefulWidget> extends State<T> impleme
   }
 
   Future<void> _reload() async {
-    Amanuensis clerk = Amanuensis();
-    List<Conversation> strangers = clerk.strangers;
+    List<Conversation> chats = await _clerk.loadConversations();
+    for (Conversation item in chats) {
+      await item.reloadData();
+    }
+    List<Conversation> strangers = _clerk.strangers;
     int count = 0;
     for (Conversation item in strangers) {
-      await item.reloadData();
-      if (item is ContactInfo && item.isNewFriend) {
-          // ok
-      } else {
-        continue;
-      }
       if (item.isMuted) {
         Log.warning('muted stranger: $item');
         continue;
