@@ -140,7 +140,7 @@ class _ChatListAdapter with SectionAdapterMixin {
       return const Text('');
     }
     Conversation info = conversations[indexPath.item];
-    Log.warning('show item: $info');
+    Log.debug('show item: $info');
     return _ChatTableCell(info);
   }
 

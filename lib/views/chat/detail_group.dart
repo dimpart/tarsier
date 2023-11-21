@@ -26,14 +26,6 @@ class GroupChatDetailPage extends StatefulWidget {
     }).onError((error, stackTrace) {
       Alert.show(context, 'Error', '$error');
     });
-    // query for update
-    GlobalVariable shared = GlobalVariable();
-    shared.facebook.getDocuments(identifier).then((docs) {
-      lnc.Log.info('got ${docs.length} document(s) for: $identifier');
-      shared.facebook.getMembers(identifier).then((members) {
-        lnc.Log.info('got ${docs.length} member(s) for: $identifier');
-      });
-    });
   }
 
   @override

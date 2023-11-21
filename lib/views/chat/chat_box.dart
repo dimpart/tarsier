@@ -125,10 +125,6 @@ class _ChatBoxState extends State<ChatBox> implements lnc.Observer {
     GlobalVariable shared = GlobalVariable();
     ContentViewUtils.currentUser = await shared.facebook.currentUser;
     Conversation info = widget.info;
-    if (info is GroupInfo) {
-      List<ContactInfo> members = ContactInfo.fromList(info.members);
-      assert(members.isNotEmpty, 'members not found: $info');
-    }
     var pair = await shared.database.getInstantMessages(info.identifier,
         limit: ChatBox.maxCountOfMessages);
     Log.warning('message updated: ${pair.first.length}');
@@ -463,7 +459,12 @@ class _HistoryDataSource {
   List<InstantMessage> get allMessages => _messages;
 
   void refresh(List<InstantMessage> history) {
-    Log.debug('refreshing ${history.length} message(s)');
+    Log.debug('sort and refreshing ${history.length} message(s)');
+    history.sort((a, b) {
+      int ams = a.time?.millisecondsSinceEpoch ?? 0;
+      int bms = b.time?.millisecondsSinceEpoch ?? 0;
+      return bms - ams;
+    });
     _messages = history;
   }
 
