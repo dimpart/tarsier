@@ -52,13 +52,17 @@ class _AccountState extends State<AccountPage> {
     GlobalVariable shared = GlobalVariable();
     SharedFacebook facebook = shared.facebook;
     ID identifier = widget.user.identifier;
-    String name = await facebook.getName(identifier);
-    var pair = await facebook.getAvatar(identifier);
+    _nickname = await facebook.getName(identifier);
+    var pnf = await facebook.getAvatar(identifier);
+    if (pnf != null) {
+      var loader = AvatarFactory().getImageLoader(pnf);
+      // await loader.run();
+      _avatarPath = await loader.cacheFilePath;
+      _avatarUrl = pnf.url;
+      Log.info('avatar path: $_avatarPath, url: $_avatarUrl');
+    }
     if (mounted) {
       setState(() {
-        _nickname = name;
-        _avatarPath = pair.first;
-        _avatarUrl = pair.second;
       });
     }
   }
@@ -253,7 +257,7 @@ class _AccountState extends State<AccountPage> {
     if (ext == null || ext.toLowerCase() != 'png') {
       ext = 'jpeg';
     }
-    String filename = PNFHelper.filenameFromData(data, 'avatar.$ext');
+    String filename = URLHelper.filenameFromData(data, 'avatar.$ext');
     FileTransfer ftp = FileTransfer();
     ftp.uploadAvatar(data, filename, widget.user.identifier).then((url) {
       if (url == null) {

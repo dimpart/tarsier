@@ -259,18 +259,19 @@ class _ProfileState extends State<ProfilePage> implements lnc.Observer {
     ],
   );
 
-  Widget _avatarImage(BuildContext context) =>
-      widget.info.getImage(width: 256, height: 256, onTap: () {
-        GlobalVariable shared = GlobalVariable();
-        shared.facebook.getAvatar(widget.info.identifier).then((pair) {
-          String? path = pair.first;
-          if (path == null) {
-            Log.error('avatar image not found: ${widget.info.identifier}');
-          } else {
-            previewImage(context, path);
-          }
-        });
+  Widget _avatarImage(BuildContext context) => GestureDetector(
+    onTap: () {
+      GlobalVariable shared = GlobalVariable();
+      shared.facebook.getAvatar(widget.info.identifier).then((pnf) {
+        if (pnf == null) {
+          Log.error('avatar image not found: ${widget.info.identifier}');
+        } else {
+          previewAvatar(context, widget.info.identifier, pnf);
+        }
       });
+    },
+    child: widget.info.getImage(width: 256, height: 256, ),
+  );
 
   Widget _idLabel(BuildContext context) => Expanded(
     flex: 9,
