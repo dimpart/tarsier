@@ -1,3 +1,5 @@
+/.idea
+
 gradle-wrapper.jar
 /.gradle
 /captures/

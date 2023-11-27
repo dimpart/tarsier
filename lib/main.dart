@@ -59,7 +59,8 @@ void main() async {
 }
 
 void changeToMainPage(BuildContext context) {
-  closePage();
+  // closePage();
+  Navigator.pop(context);
   openPage(const _MainPage());
 }
 

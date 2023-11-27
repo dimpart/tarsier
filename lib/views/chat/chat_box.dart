@@ -386,7 +386,10 @@ class _HistoryAdapter with SectionAdapterMixin {
       return ContentViewUtils.getImageContentView(ctx,
         content, sender, _dataSource.allMessages,
         onLongPress: () => Alert.actionSheet(ctx, null, null,
-          'Forward Image', () => _forwardImage(ctx, content, sender),
+          Alert.action(AppIcons.shareIcon, 'Forward Image'),
+              () => _forwardImage(ctx, content, sender),
+          Alert.action(AppIcons.saveFileIcon, 'Save to Album'),
+              () => saveImageContent(ctx, content),
           // 'Save Image', () { },
         ),
       );
@@ -397,7 +400,8 @@ class _HistoryAdapter with SectionAdapterMixin {
     } else if (content is PageContent) {
       return ContentViewUtils.getPageContentView(ctx, content, sender,
         onLongPress: () => Alert.actionSheet(ctx, null, null,
-          'Forward Web Page', () => _forwardWebPage(ctx, content, sender),
+          Alert.action(AppIcons.shareIcon, 'Forward Web Page'),
+              () => _forwardWebPage(ctx, content, sender),
           // 'Save Image', () { },
         ),
         onWebShare: (url, {required title, desc, icon}) =>
@@ -406,7 +410,8 @@ class _HistoryAdapter with SectionAdapterMixin {
       return ContentViewUtils.getNameCardView(ctx, content,
         onTap: () => ProfilePage.open(ctx, content.identifier),
         onLongPress: () => Alert.actionSheet(ctx, null, null,
-          'Forward Name Card', () => _forwardNameCard(ctx, content, sender),
+          Alert.action(AppIcons.shareIcon, 'Forward Name Card'),
+              () => _forwardNameCard(ctx, content, sender),
         ),
       );
     } else {

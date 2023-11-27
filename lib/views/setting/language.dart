@@ -54,7 +54,7 @@ class _LanguageCell extends StatefulWidget {
   final LanguageItem item;
 
   String get code => item.code;
-  String get name => item.name;
+  String get name => item.desc == null ? item.name : '${item.name} - ${item.desc}';
 
   @override
   State<StatefulWidget> createState() => _LanguageCellState();
