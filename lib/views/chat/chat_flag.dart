@@ -337,8 +337,10 @@ class _SendState extends State<ChatSendFlag> implements lnc.Observer {
     if (status == _MsgStatus.kReceived) {
       if (widget.iMsg['count_of_responded'] == null) {
         _loadTraces().then((value) {
-          setState(() {
-          });
+          if (mounted) {
+            setState(() {
+            });
+          }
         });
       }
       return _traceInfo();

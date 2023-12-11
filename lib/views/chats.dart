@@ -175,8 +175,35 @@ class _ChatTableCell extends StatefulWidget {
 
 }
 
-class _ChatTableCellState extends State<_ChatTableCell> {
-  _ChatTableCellState();
+class _ChatTableCellState extends State<_ChatTableCell> implements lnc.Observer {
+  _ChatTableCellState() {
+    var nc = lnc.NotificationCenter();
+    nc.addObserver(this, NotificationNames.kMessageTyping);
+  }
+
+  @override
+  void dispose() {
+    var nc = lnc.NotificationCenter();
+    nc.removeObserver(this, NotificationNames.kMessageTyping);
+    super.dispose();
+  }
+
+  @override
+  Future<void> onReceiveNotification(lnc.Notification notification) async {
+    String name = notification.name;
+    Map? userInfo = notification.userInfo;
+    if (name == NotificationNames.kMessageTyping) {
+      ID? cid = userInfo?['ID'];
+      if (cid == widget.info.identifier) {
+        Log.info('message updated: $cid');
+        if (mounted) {
+          setState(() {
+            //
+          });
+        }
+      }
+    }
+  }
 
   Future<void> _reload() async {
     await widget.info.reloadData();
@@ -198,8 +225,8 @@ class _ChatTableCellState extends State<_ChatTableCell> {
     leadingSize: 72,
     leading: _leading(widget.info),
     title: widget.info.getNameLabel(),
-    subtitle: _lastMessage(widget.info.lastMessage),
-    additionalInfo: _timeLabel(widget.info.lastMessageTime),
+    subtitle: _lastMessage(widget.info),
+    additionalInfo: _timeLabel(widget.info),
     // trailing: const CupertinoListTileChevron(),
     onTap: () {
       Log.warning('tap: ${widget.info}');
@@ -235,14 +262,28 @@ class _ChatTableCellState extends State<_ChatTableCell> {
     }
   }
 
-  Widget? _lastMessage(String? last) {
+  Widget? _lastMessage(Conversation info) {
+    var shared = SharedEditingText();
+    String? text = shared.getConversationEditingText(info);
+    if (text != null && text.isNotEmpty) {
+      return RichText(text: TextSpan(
+        children: [
+          TextSpan(text: '[${'Draft'.tr}] ',
+            style: const TextStyle(color: CupertinoColors.systemRed),),
+          TextSpan(text: text,
+            style: const TextStyle(color: CupertinoColors.systemGrey),),
+        ]
+      ));
+    }
+    String? last = info.lastMessage;
     if (last == null) {
       return null;
     }
     return Text(last);
   }
 
-  Widget? _timeLabel(DateTime? time) {
+  Widget? _timeLabel(Conversation info) {
+    DateTime? time = info.lastMessageTime;
     if (time == null) {
       return null;
     }

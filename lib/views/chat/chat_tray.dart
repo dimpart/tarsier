@@ -2,6 +2,8 @@ import 'dart:typed_data';
 
 import 'package:flutter/cupertino.dart';
 
+import 'package:lnc/lnc.dart' as lnc;
+
 import 'package:dim_flutter/dim_flutter.dart';
 
 
@@ -27,6 +29,17 @@ class _InputState extends State<ChatInputTray> {
     _focusNode.dispose();
     _controller.dispose();
     super.dispose();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    // load editing text
+    var shared = SharedEditingText();
+    String? text = shared.getConversationEditingText(widget.info);
+    if (text != null) {
+      _controller.text = text;
+    }
   }
 
   @override
@@ -62,7 +75,10 @@ class _InputState extends State<ChatInputTray> {
             focusNode: _focusNode,
             onTapOutside: (event) => _focusNode.unfocus(),
             onSubmitted: (value) => _sendText(context, _controller, widget.info),
-            onChanged: (value) => setState(() {}),
+            onChanged: (value) => setState(() {
+              Log.warning('onChanged: $value');
+              _typing(_controller, widget.info);
+            }),
           ),
         ),
       if (_isVoice)
@@ -89,6 +105,15 @@ class _InputState extends State<ChatInputTray> {
 
 //--------
 
+void _typing(TextEditingController controller, Conversation chat) {
+  var shared = SharedEditingText();
+  shared.setConversationEditingText(controller.text, chat);
+  var nc = lnc.NotificationCenter();
+  nc.postNotification(NotificationNames.kMessageTyping, controller, {
+    'ID': chat.identifier,
+  });
+}
+
 void _sendText(BuildContext context, TextEditingController controller, Conversation chat) {
   String text = controller.text.trim();
   if (text.isNotEmpty) {
@@ -96,6 +121,8 @@ void _sendText(BuildContext context, TextEditingController controller, Conversat
     shared.emitter.sendText(text, chat.identifier);
   }
   controller.text = '';
+  var shared = SharedEditingText();
+  shared.setConversationEditingText('', chat);
 }
 
 void _sendImage(BuildContext context, Conversation chat) =>

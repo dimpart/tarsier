@@ -39,6 +39,7 @@ class _SearchState extends State<SearchPage> implements lnc.Observer {
   late final _SearchDataSource _dataSource;
   late final _SearchResultAdapter _adapter;
 
+  final TextEditingController _controller = TextEditingController();
   int _searchTag = 0;
 
   @override
@@ -89,6 +90,12 @@ class _SearchState extends State<SearchPage> implements lnc.Observer {
   void initState() {
     super.initState();
     _reload(null);
+    // load editing text
+    var shared = SharedEditingText();
+    String? text = shared.getSearchingText();
+    if (text != null) {
+      _controller.text = text;
+    }
   }
 
   @override
@@ -106,7 +113,12 @@ class _SearchState extends State<SearchPage> implements lnc.Observer {
 
   Widget _searchWidget(BuildContext context) => CupertinoSearchTextField(
     style: Styles.textFieldStyle,
+    controller: _controller,
     onSubmitted: (value) => _search(context, value),
+    onChanged: (value) => setState(() {
+      var shared = SharedEditingText();
+      shared.setSearchingText(_controller.text);
+    }),
   );
 
   Future<void> _search(BuildContext context, keywords) async {
