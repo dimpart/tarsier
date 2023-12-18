@@ -500,7 +500,7 @@ Future<bool> _addUser(BuildContext context, ID identifier) async {
 void _checkCurrentUser(BuildContext context, void Function() onNotFound) {
   GlobalVariable shared = GlobalVariable();
   Log.debug('checking permissions');
-  requestStoragePermissions(context, onGranted: (context) {
+  requestDatabasePermissions(context, onGranted: (context) {
     shared.facebook.currentUser.then((user) {
       if (user == null) {
         onNotFound();

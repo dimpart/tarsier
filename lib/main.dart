@@ -38,7 +38,7 @@ void main() async {
   // Check Brightness & Language
   await initFacade();
   // Check permission: Storage
-  bool permitted = await checkStoragePermissions();
+  bool permitted = await checkDatabasePermissions();
   // Launch the app
   if (!permitted) {
     // not granted for photos/storage, first run?
