@@ -169,7 +169,7 @@
         }
     }
     if (pack) {
-        NSLog(@"---- readWithBuffer: %lu byte(s)", [pack length]);
+        NSLog(@"---- readWithBuffer: %lu byte(s) from %@", [pack length], _remoteAddress);
         [dst putData:pack];
     }
     return [pack length];
@@ -183,7 +183,7 @@
     NSMutableData *data = [[NSMutableData alloc] initWithLength:len];
     [src getData:data];
     // send data
-    NSLog(@"---- writeWithBuffer: %lu byte(s)", [data length]);
+    NSLog(@"---- writeWithBuffer: %lu byte(s) to %@", [data length], _remoteAddress);
     [self.mars send:data handler:self];
     return data.length;;
 }

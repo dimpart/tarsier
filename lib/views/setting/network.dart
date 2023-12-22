@@ -103,7 +103,17 @@ class _StationListAdapter with SectionAdapterMixin {
       _dataSource.getSectionCount();
 
   @override
+  int numberOfItems(int section) => _dataSource.getItemCount(section);
+
+  @override
+  Widget getItem(BuildContext context, IndexPath indexPath) =>
+      _StationCell(_dataSource.getItem(indexPath.section, indexPath.item));
+
+  @override
   bool shouldExistSectionHeader(int section) => section > 0;  // hide 'gsp'
+
+  @override
+  bool shouldExistSectionFooter(int section) => section + 1 == numberOfSections();
 
   @override
   bool shouldSectionHeaderStick(int section) => true;
@@ -118,11 +128,22 @@ class _StationListAdapter with SectionAdapterMixin {
   );
 
   @override
-  int numberOfItems(int section) => _dataSource.getItemCount(section);
-
-  @override
-  Widget getItem(BuildContext context, IndexPath indexPath) =>
-      _StationCell(_dataSource.getItem(indexPath.section, indexPath.item));
+  Widget getSectionFooter(BuildContext context, int section) {
+    String prompt = 'RelayStations::Description'.tr;
+    return Container(
+      color: Styles.colors.appBardBackgroundColor,
+      padding: const EdgeInsets.all(16),
+      alignment: Alignment.center,
+      child: Row(
+        // crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Expanded(child: Text(prompt,
+            style: Styles.sectionFooterTextStyle,
+          )),
+        ],
+      ),
+    );
+  }
 
 }
 
@@ -141,6 +162,7 @@ class _StationCellState extends State<_StationCell> implements lnc.Observer {
   _StationCellState() {
 
     var nc = lnc.NotificationCenter();
+    nc.addObserver(this, NotificationNames.kStationsUpdated);
     nc.addObserver(this, NotificationNames.kStationSpeedUpdated);
   }
 
@@ -148,6 +170,7 @@ class _StationCellState extends State<_StationCell> implements lnc.Observer {
   void dispose() {
     var nc = lnc.NotificationCenter();
     nc.removeObserver(this, NotificationNames.kStationSpeedUpdated);
+    nc.removeObserver(this, NotificationNames.kStationsUpdated);
     super.dispose();
   }
 
@@ -156,11 +179,11 @@ class _StationCellState extends State<_StationCell> implements lnc.Observer {
     String name = notification.name;
     Map? userInfo = notification.userInfo;
     if (name == NotificationNames.kStationSpeedUpdated) {
-      VelocityMeter meter = userInfo!['meter'];
-      if (meter.port != widget.info.port || meter.host != widget.info.host) {
+      VelocityMeter? meter = userInfo?['meter'];
+      if (meter?.port != widget.info.port || meter?.host != widget.info.host) {
         return;
       }
-      String state = userInfo['state'];
+      String? state = userInfo?['state'];
       Log.debug('test state: $state, $meter');
       if (state == 'start') {
         Log.debug('start to test station speed: $meter');
@@ -172,7 +195,7 @@ class _StationCellState extends State<_StationCell> implements lnc.Observer {
         }
       } else if (state == 'connected') {
         Log.debug('connected to station: $meter');
-      } else if (state == 'failed' || meter.responseTime == null) {
+      } else if (state == 'failed' || meter?.responseTime == null) {
         Log.error('speed task failed: $meter, $state');
         if (mounted) {
           setState(() {
@@ -186,7 +209,19 @@ class _StationCellState extends State<_StationCell> implements lnc.Observer {
         if (mounted) {
           setState(() {
             widget.info.testTime = DateTime.now();
-            widget.info.responseTime = meter.responseTime;
+            widget.info.responseTime = meter?.responseTime;
+          });
+        }
+      }
+    } else if (name == NotificationNames.kStationsUpdated) {
+      ID? provider = userInfo?['provider'];
+      String? host = userInfo?['host'];
+      int? port = userInfo?['port'];
+      if (port == widget.info.port && host == widget.info.host &&
+          provider == widget.info.provider) {
+        if (mounted) {
+          setState(() {
+            //
           });
         }
       }
@@ -214,13 +249,29 @@ class _StationCellState extends State<_StationCell> implements lnc.Observer {
     leading: _getChosen(widget.info),
     title: Text(_getName(widget.info)),
     subtitle: Text('${widget.info.host}:${widget.info.port}'),
-    trailing: Text(_getResult(widget.info),
+    trailing: _getTrailing(widget.info),
+    onTap: () => _switchChosen(widget.info),
+  );
+
+  Widget _getTrailing(NeighborInfo info) {
+    Widget timeLabel = Text(_getResult(widget.info),
       style: TextStyle(
         fontSize: 10,
         color: _getColor(widget.info),
       ),
-    ),
-  );
+    );
+    if (info.chosen == 0) {
+      return timeLabel;
+    }
+    return Row(
+      children: [
+        timeLabel,
+        Icon(AppIcons.selectedIcon,
+          color: Styles.colors.primaryTextColor,
+        ),
+      ],
+    );
+  }
 
   bool _isCurrentStation(NeighborInfo info) {
     GlobalVariable shared = GlobalVariable();
@@ -275,4 +326,15 @@ class _StationCellState extends State<_StationCell> implements lnc.Observer {
     return CupertinoColors.systemGreen;
   }
 
+}
+
+void _switchChosen(NeighborInfo info) {
+  if (info.chosen > 0) {
+    info.chosen = 0;
+  } else {
+    info.chosen = 1;
+  }
+  GlobalVariable shared = GlobalVariable();
+  shared.database.updateStation(info.identifier, chosen: info.chosen,
+    host: info.host, port: info.port, provider: info.provider,);
 }
