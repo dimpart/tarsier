@@ -195,6 +195,31 @@ class _ProfileState extends State<ProfilePage> implements lnc.Observer {
         topMargin: 0,
         additionalDividerMargin: 32,
         children: [
+          /// Language
+          CupertinoListTile(
+            backgroundColor: backgroundColor,
+            backgroundColorActivated: backgroundColorActivated,
+            padding: Styles.settingsSectionItemPadding,
+            title: Text('Language'.tr, style: TextStyle(color: primaryTextColor)),
+            additionalInfo: Text(widget.info.language ?? 'Unknown'.tr),
+          ),
+          /// App Version
+          CupertinoListTile(
+            backgroundColor: backgroundColor,
+            backgroundColorActivated: backgroundColorActivated,
+            padding: Styles.settingsSectionItemPadding,
+            title: Text('App'.tr, style: TextStyle(color: primaryTextColor)),
+            additionalInfo: Text(widget.info.clientInfo ?? 'Unknown'.tr),
+          ),
+        ],
+      ),
+
+      if (widget.info.identifier.type != EntityType.kStation)
+      CupertinoListSection(
+        backgroundColor: dividerColor,
+        topMargin: 0,
+        additionalDividerMargin: 32,
+        children: [
           /// Block
           CupertinoListTile(
             backgroundColor: backgroundColor,
