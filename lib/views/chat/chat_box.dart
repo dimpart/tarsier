@@ -430,10 +430,13 @@ class _HistoryAdapter with SectionAdapterMixin {
           if (isMine)
             Expanded(flex: 1, child: Container()),
           if (!isMine)
-            IconButton(
+            GestureDetector(
+              child: Container(
                 padding: Styles.messageSenderAvatarPadding,
-                onPressed: () => _openProfile(context, sender, _conversation),
-                icon: image
+                child: image,
+              ),
+              onTap: () => _openProfile(context, sender, _conversation),
+              onLongPress: () => _onMentioned(sender),
             ),
           Expanded(flex: mainFlex, child: Column(
             crossAxisAlignment: isMine ? CrossAxisAlignment.end : CrossAxisAlignment.start,
@@ -491,6 +494,14 @@ void _openDetail(BuildContext ctx, Conversation info) {
 
 void _openProfile(BuildContext ctx, ID uid, Conversation info) {
   ProfilePage.open(ctx, uid, fromChat: info.identifier);
+}
+
+void _onMentioned(ID uid) {
+  // post notification async
+  var nc = lnc.NotificationCenter();
+  nc.postNotification(NotificationNames.kAvatarLongPressed, null, {
+    'user': uid,
+  });
 }
 
 Widget _previewText(String text) => SizedBox(

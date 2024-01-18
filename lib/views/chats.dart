@@ -266,20 +266,13 @@ class _ChatTableCellState extends State<_ChatTableCell> implements lnc.Observer 
     var shared = SharedEditingText();
     String? text = shared.getConversationEditingText(info);
     if (text != null && text.isNotEmpty) {
-      return RichText(text: TextSpan(
-        children: [
-          TextSpan(text: '[${'Draft'.tr}] ',
-            style: const TextStyle(color: CupertinoColors.systemRed),),
-          TextSpan(text: text,
-            style: const TextStyle(color: CupertinoColors.systemGrey),),
-        ]
-      ));
+      return _richMessage('[${'Draft'.tr}] ', text);
     }
-    String? last = info.lastMessage;
-    if (last == null) {
-      return null;
+    text = info.lastMessage ?? '';
+    if (info is GroupInfo && info.mentionedSerialNumber > 0) {
+      return _richMessage('[${'Mentioned'.tr}] ', text);
     }
-    return Text(last);
+    return Text(text, maxLines: 1, overflow: TextOverflow.ellipsis,);
   }
 
   Widget? _timeLabel(Conversation info) {
@@ -291,3 +284,13 @@ class _ChatTableCellState extends State<_ChatTableCell> implements lnc.Observer 
   }
 
 }
+
+
+Widget? _richMessage(String head, String body) => RichText(
+  maxLines: 1,
+  overflow: TextOverflow.ellipsis,
+  text: TextSpan(children: [
+    TextSpan(text: head, style: const TextStyle(color: CupertinoColors.systemRed),),
+    TextSpan(text: body, style: const TextStyle(color: CupertinoColors.systemGrey),),
+  ]),
+);

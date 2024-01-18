@@ -17,7 +17,11 @@ class ChatInputTray extends StatefulWidget {
 
 }
 
-class _InputState extends State<ChatInputTray> {
+class _InputState extends State<ChatInputTray> implements lnc.Observer {
+  _InputState() {
+    var nc = lnc.NotificationCenter();
+    nc.addObserver(this, NotificationNames.kAvatarLongPressed);
+  }
 
   final TextEditingController _controller = TextEditingController();
   final FocusNode _focusNode = FocusNode();
@@ -25,9 +29,39 @@ class _InputState extends State<ChatInputTray> {
   bool _isVoice = false;
 
   @override
+  Future<void> onReceiveNotification(lnc.Notification notification) async {
+    String name = notification.name;
+    Map? userInfo = notification.userInfo;
+    if (name == NotificationNames.kAvatarLongPressed) {
+      ID? user = userInfo?['user'];
+      if (user == null) {
+        assert(false, 'failed to get user: $userInfo');
+      } else {
+        GlobalVariable shared = GlobalVariable();
+        Visa? visa = await shared.facebook.getVisa(user);
+        String? nickname = visa?.name;
+        if (nickname != null && nickname.isNotEmpty) {
+          String text = _controller.text;
+          TextSelection selection = _controller.selection;
+          String mentioned = '@$nickname ';
+          if (selection.start < 0) {
+            _controller.text += mentioned;
+          } else {
+            _controller.text = text.replaceRange(selection.start, selection.end, mentioned);
+            _controller.selection = TextSelection.collapsed(offset: selection.baseOffset + mentioned.length);
+          }
+          _typing(_controller, widget.info);
+        }
+      }
+    }
+  }
+
+  @override
   void dispose() {
     _focusNode.dispose();
     _controller.dispose();
+    var nc = lnc.NotificationCenter();
+    nc.removeObserver(this, NotificationNames.kAvatarLongPressed);
     super.dispose();
   }
 

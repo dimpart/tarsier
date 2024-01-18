@@ -189,13 +189,14 @@ class _ProfileState extends State<ProfilePage> implements lnc.Observer {
         ],
       ),
 
-      if (widget.info.identifier.type != EntityType.kStation)
+      if (widget.info.language != null || widget.info.clientInfo != null)
       CupertinoListSection(
         backgroundColor: dividerColor,
         topMargin: 0,
         additionalDividerMargin: 32,
         children: [
           /// Language
+          if (widget.info.language != null)
           CupertinoListTile(
             backgroundColor: backgroundColor,
             backgroundColorActivated: backgroundColorActivated,
@@ -204,6 +205,7 @@ class _ProfileState extends State<ProfilePage> implements lnc.Observer {
             additionalInfo: Text(widget.info.language ?? 'Unknown'.tr),
           ),
           /// App Version
+          if (widget.info.clientInfo != null)
           CupertinoListTile(
             backgroundColor: backgroundColor,
             backgroundColorActivated: backgroundColorActivated,
