@@ -118,7 +118,7 @@ class _ChatDetailState extends State<GroupChatDetailPage> implements lnc.Observe
         backgroundColor: Styles.colors.appBardBackgroundColor,
         middle: Text('Group Chat Details (@count)'.trParams({
           'count': widget.info.members.length.toString(),
-        }))
+        }), style: Styles.titleTextStyle),
       ),
       body: SingleChildScrollView(
         child: _body(context,

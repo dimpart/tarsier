@@ -109,7 +109,7 @@ class _ChatDetailState extends State<ChatDetailPage> implements lnc.Observer {
       backgroundColor: Styles.colors.scaffoldBackgroundColor,
       appBar: CupertinoNavigationBar(
         backgroundColor: Styles.colors.appBardBackgroundColor,
-        middle: Text('Chat Details'.tr),
+        middle: Text('Chat Details'.tr, style: Styles.titleTextStyle),
       ),
       body: SingleChildScrollView(
         child: _body(context,

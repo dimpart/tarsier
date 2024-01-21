@@ -179,11 +179,13 @@ class _ChatTableCellState extends State<_ChatTableCell> implements lnc.Observer 
   _ChatTableCellState() {
     var nc = lnc.NotificationCenter();
     nc.addObserver(this, NotificationNames.kMessageTyping);
+    nc.addObserver(this, NotificationNames.kMuteListUpdated);
   }
 
   @override
   void dispose() {
     var nc = lnc.NotificationCenter();
+    nc.removeObserver(this, NotificationNames.kMuteListUpdated);
     nc.removeObserver(this, NotificationNames.kMessageTyping);
     super.dispose();
   }
@@ -201,6 +203,13 @@ class _ChatTableCellState extends State<_ChatTableCell> implements lnc.Observer 
             //
           });
         }
+      }
+    } else if (name == NotificationNames.kMuteListUpdated) {
+      ID? contact = userInfo?['muted'];
+      contact ??= userInfo?['unmuted'];
+      Log.info('muted contact updated: $contact');
+      if (contact == widget.info.identifier) {
+        await _reload();
       }
     }
   }
@@ -277,10 +286,20 @@ class _ChatTableCellState extends State<_ChatTableCell> implements lnc.Observer 
 
   Widget? _timeLabel(Conversation info) {
     DateTime? time = info.lastMessageTime;
-    if (time == null) {
+    bool? isMuted = info.isMuted;
+    if (time == null && isMuted != true) {
       return null;
+    } else if (time == null) {
+      return const Icon(AppIcons.mutedIcon, size: 12,);
+    } else if (isMuted != true) {
+      return Text(TimeUtils.getTimeString(time));
     }
-    return Text(TimeUtils.getTimeString(time));
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.end,
+      children: [
+      Text(TimeUtils.getTimeString(time)),
+      const Icon(AppIcons.mutedIcon, size: 12,),
+    ],);
   }
 
 }
