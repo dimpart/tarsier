@@ -77,7 +77,7 @@ class _TitleState extends State<ChatTitleView> implements lnc.Observer {
       setState(() {
       });
     }
-    if (state == SessionStateOrder.kDefault) {
+    if (state == SessionStateOrder.init.index) {
       // current user must be set before enter this page,
       // so just do connecting here.
       shared.terminal.reconnect();
