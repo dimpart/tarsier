@@ -1,5 +1,5 @@
 
-#import "SharedSession.h"
+#import <dim_flutter/DimFlutterPlugin.h>
 
 #import "GeneratedPluginRegistrant.h"
 
@@ -14,12 +14,6 @@
     // init method channels with flutter
     DIMChannelManager *manager = [DIMChannelManager sharedInstance];
     [manager initChannels:controller.binaryMessenger];
-    
-    // client session creator
-    DIMSessionController *sc = [DIMSessionController sharedInstance];
-    sc.creator = ^DIMClientSession *(id<DIMSessionDBI> db, id<MKMStation>  server) {
-        return [[SharedSession alloc] initWithDatabase:db station:server];
-    };
     
     // load plugins
     [DIMClientFacebook prepare];

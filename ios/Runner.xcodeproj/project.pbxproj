@@ -15,10 +15,6 @@
 		97C146FC1CF9000F007C117D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FA1CF9000F007C117D /* Main.storyboard */; };
 		97C146FE1CF9000F007C117D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FD1CF9000F007C117D /* Assets.xcassets */; };
 		97C147011CF9000F007C117D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FF1CF9000F007C117D /* LaunchScreen.storyboard */; };
-		E9AB6C7D2A1B650D0042E7C3 /* MarsHub.m in Sources */ = {isa = PBXBuildFile; fileRef = E9AB6C792A1B650C0042E7C3 /* MarsHub.m */; };
-		E9AB6C7E2A1B650D0042E7C3 /* SharedSession.m in Sources */ = {isa = PBXBuildFile; fileRef = E9AB6C7A2A1B650C0042E7C3 /* SharedSession.m */; };
-		E9AB6C8D2A1B69150042E7C3 /* MarsGate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E9AB6C752A1B64D00042E7C3 /* MarsGate.framework */; };
-		E9AB6C8E2A1B69150042E7C3 /* MarsGate.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = E9AB6C752A1B64D00042E7C3 /* MarsGate.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -29,20 +25,6 @@
 			remoteGlobalIDString = 97C146ED1CF9000F007C117D;
 			remoteInfo = Runner;
 		};
-		E9AB6C742A1B64D00042E7C3 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = E9AB6C6E2A1B64D00042E7C3 /* MarsGate.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = E9FAF5E8221EAC5F00DB6567;
-			remoteInfo = MarsGate;
-		};
-		E9AB6C762A1B64D00042E7C3 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = E9AB6C6E2A1B64D00042E7C3 /* MarsGate.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = E9FAF5F1221EAC5F00DB6567;
-			remoteInfo = MarsGateTests;
-		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -52,7 +34,6 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				E9AB6C8E2A1B69150042E7C3 /* MarsGate.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -76,11 +57,6 @@
 		97C146FD1CF9000F007C117D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		97C147001CF9000F007C117D /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		97C147021CF9000F007C117D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		E9AB6C6E2A1B64D00042E7C3 /* MarsGate.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = MarsGate.xcodeproj; path = ../../../moky/StarGate/MarsGate/MarsGate.xcodeproj; sourceTree = "<group>"; };
-		E9AB6C792A1B650C0042E7C3 /* MarsHub.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MarsHub.m; sourceTree = "<group>"; };
-		E9AB6C7A2A1B650C0042E7C3 /* SharedSession.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SharedSession.m; sourceTree = "<group>"; };
-		E9AB6C7B2A1B650C0042E7C3 /* MarsHub.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MarsHub.h; sourceTree = "<group>"; };
-		E9AB6C7C2A1B650C0042E7C3 /* SharedSession.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SharedSession.h; sourceTree = "<group>"; };
 		E9DCECFA2A261C1C007F0DFB /* Runner.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Runner.entitlements; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -96,7 +72,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E9AB6C8D2A1B69150042E7C3 /* MarsGate.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -125,7 +100,6 @@
 		97C146E51CF9000F007C117D = {
 			isa = PBXGroup;
 			children = (
-				E9AB6C6E2A1B64D00042E7C3 /* MarsGate.xcodeproj */,
 				E9AB6C782A1B650C0042E7C3 /* Classes */,
 				9740EEB11CF90186004384FC /* Flutter */,
 				97C146F01CF9000F007C117D /* Runner */,
@@ -169,22 +143,9 @@
 			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
-		E9AB6C6F2A1B64D00042E7C3 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				E9AB6C752A1B64D00042E7C3 /* MarsGate.framework */,
-				E9AB6C772A1B64D00042E7C3 /* MarsGateTests.xctest */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
 		E9AB6C782A1B650C0042E7C3 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
-				E9AB6C7B2A1B650C0042E7C3 /* MarsHub.h */,
-				E9AB6C792A1B650C0042E7C3 /* MarsHub.m */,
-				E9AB6C7C2A1B650C0042E7C3 /* SharedSession.h */,
-				E9AB6C7A2A1B650C0042E7C3 /* SharedSession.m */,
 			);
 			path = Classes;
 			sourceTree = "<group>";
@@ -266,12 +227,6 @@
 			mainGroup = 97C146E51CF9000F007C117D;
 			productRefGroup = 97C146EF1CF9000F007C117D /* Products */;
 			projectDirPath = "";
-			projectReferences = (
-				{
-					ProductGroup = E9AB6C6F2A1B64D00042E7C3 /* Products */;
-					ProjectRef = E9AB6C6E2A1B64D00042E7C3 /* MarsGate.xcodeproj */;
-				},
-			);
 			projectRoot = "";
 			targets = (
 				97C146ED1CF9000F007C117D /* Runner */,
@@ -279,23 +234,6 @@
 			);
 		};
 /* End PBXProject section */
-
-/* Begin PBXReferenceProxy section */
-		E9AB6C752A1B64D00042E7C3 /* MarsGate.framework */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.framework;
-			path = MarsGate.framework;
-			remoteRef = E9AB6C742A1B64D00042E7C3 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		E9AB6C772A1B64D00042E7C3 /* MarsGateTests.xctest */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.cfbundle;
-			path = MarsGateTests.xctest;
-			remoteRef = E9AB6C762A1B64D00042E7C3 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-/* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
 		331C80EF294D02FB00263BE5 /* Resources */ = {
@@ -367,8 +305,6 @@
 			files = (
 				978B8F6F1D3862AE00F588F7 /* AppDelegate.m in Sources */,
 				97C146F31CF9000F007C117D /* main.m in Sources */,
-				E9AB6C7D2A1B650D0042E7C3 /* MarsHub.m in Sources */,
-				E9AB6C7E2A1B650D0042E7C3 /* SharedSession.m in Sources */,
 				1498D2341E8E89220040F4C2 /* GeneratedPluginRegistrant.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
