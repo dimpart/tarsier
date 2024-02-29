@@ -3,7 +3,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
 import 'package:dim_flutter/dim_flutter.dart';
-import 'package:lnc/lnc.dart' as lnc;
+import 'package:lnc/notification.dart' as lnc;
 
 import 'setting/account.dart';
 import 'setting/account_export.dart';

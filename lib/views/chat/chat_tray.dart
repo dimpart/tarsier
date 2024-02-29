@@ -2,7 +2,7 @@ import 'dart:typed_data';
 
 import 'package:flutter/cupertino.dart';
 
-import 'package:lnc/lnc.dart' as lnc;
+import 'package:lnc/notification.dart' as lnc;
 
 import 'package:dim_flutter/dim_flutter.dart';
 

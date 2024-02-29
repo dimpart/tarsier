@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 
@@ -16,7 +14,7 @@ void main() async {
 
   // Set log level
   Log.level = Log.kDevelop;
-  if (Platform.isIOS) {
+  if (DevicePlatform.isIOS) {
     Log.colorful = false;
     Log.showTime = true;
     Log.showCaller = true;

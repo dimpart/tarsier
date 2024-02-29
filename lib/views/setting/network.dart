@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_section_list/flutter_section_list.dart';
 
 import 'package:dim_flutter/dim_flutter.dart';
-import 'package:lnc/lnc.dart' as lnc;
+import 'package:lnc/notification.dart' as lnc;
 
 
 class NetworkSettingPage extends StatefulWidget {
@@ -256,7 +256,7 @@ class _StationCellState extends State<_StationCell> implements lnc.Observer {
   Widget _getTrailing(NeighborInfo info) {
     Widget timeLabel = Text(_getResult(widget.info),
       style: TextStyle(
-        fontSize: 10,
+        fontSize: 12,
         color: _getColor(widget.info),
       ),
     );
