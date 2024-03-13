@@ -512,11 +512,27 @@ Widget _previewText(String text) => SizedBox(
   ),
 );
 
+Future<String?> _pathFromContent(ImageContent content) async {
+  PortableNetworkFile? pnf = PortableNetworkFile.parse(content);
+  if (pnf == null) {
+    assert(false, 'failed to parse PNF: $content');
+    return null;
+  }
+  PortableNetworkLoader loader = PortableNetworkLoader(pnf);
+  String? cachePath = await loader.cacheFilePath;
+  if (cachePath == null) {
+    return null;
+  } else if (await Paths.exists(cachePath)) {
+    return cachePath;
+  } else {
+    return null;
+  }
+}
+
 void _forwardImage(BuildContext ctx, ImageContent content, ID sender) {
   // get local file path, if not exists
   // try to download from file server
-  FileTransfer ftp = FileTransfer();
-  ftp.getFilePath(content).then((path) {
+  _pathFromContent(content).then((path) {
     if (path == null) {
       Alert.show(ctx, 'Image Not Found',
         'Failed to load image @filename'.trParams({
