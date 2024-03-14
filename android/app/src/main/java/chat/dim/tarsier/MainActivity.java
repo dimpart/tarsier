@@ -14,8 +14,6 @@ import io.flutter.Log;
 import io.flutter.embedding.android.FlutterActivity;
 import io.flutter.embedding.engine.FlutterEngine;
 
-import chat.dim.CryptoPlugins;
-import chat.dim.Register;
 import chat.dim.channels.ChannelManager;
 import chat.dim.filesys.LocalCache;
 import chat.dim.http.UpdateManager;
@@ -28,9 +26,10 @@ public class MainActivity extends FlutterActivity {
 
         prepareDirectories(this);
 
+        /* 'chat.dim.CryptoPlugins'
         CryptoPlugins.registerCryptoPlugins();
-
         Register.prepare();
+         */
 
         System.out.println("initialize flutter channels");
         ChannelManager manager = ChannelManager.getInstance();

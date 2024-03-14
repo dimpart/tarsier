@@ -63,8 +63,5 @@ flutter {
 }
 
 dependencies {
-    implementation group: 'chat.dim', name: 'Network', version: '0.2.2'
-    implementation group: 'chat.dim', name: 'CryptoPlugins', version: '1.0.1'
-
     implementation 'com.android.support:multidex:1.0.3'
 }
