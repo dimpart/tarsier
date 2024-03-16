@@ -257,7 +257,7 @@ class _ChatTableCellState extends State<_ChatTableCell> implements lnc.Observer 
         'This action is not recoverable.';
     Alert.confirm(context, 'Confirm Delete', msg,
       okAction: () => clerk.removeConversation(chat).onError((error, stackTrace) {
-        Alert.show(context, 'Error', 'Failed to remove conversation');
+        Alert.show(context, 'Error', 'Failed to remove conversation'.tr);
         return false;
       })
     );

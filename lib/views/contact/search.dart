@@ -70,6 +70,7 @@ class _SearchState extends State<SearchPage> implements lnc.Observer {
     int? tag = command['tag'];
     if (tag == _searchTag) {
       Log.debug('respond with search tag: $tag');
+      _searchTag = 0;
     } else {
       Log.error('search tag not match, ignore this response: $tag <> $_searchTag');
       return;
@@ -127,7 +128,7 @@ class _SearchState extends State<SearchPage> implements lnc.Observer {
     SharedMessenger? messenger = shared.messenger;
     if (messenger == null) {
       Log.error('messenger not set, not connect yet?');
-      Alert.show(context, 'Error', 'Failed to send command');
+      Alert.show(context, 'Error', 'Failed to send command'.tr);
       return;
     } else {
       if (mounted) {
@@ -163,8 +164,19 @@ class _SearchResultAdapter with SectionAdapterMixin {
   bool shouldExistSectionHeader(int section) => true;
 
   @override
+  bool shouldExistSectionFooter(int section) => state._searchTag > 0;
+
+  @override
   Widget getSectionHeader(BuildContext context, int section) =>
       state._searchWidget(context);
+
+  @override
+  Widget getSectionFooter(BuildContext context, int section) => Center(
+    child: Container(
+      padding: const EdgeInsets.all(8),
+      child: const CupertinoActivityIndicator(),
+    ),
+  );
 
   @override
   int numberOfItems(int section) => _dataSource.getItemCount(section);

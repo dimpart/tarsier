@@ -19,7 +19,7 @@ Widget plusButton(BuildContext context) => IconButton(
   iconSize: 16,
   onPressed: () => _getContacts().then((members) {
     if (members == null) {
-      Alert.show(context, 'Error', 'Failed to add members');
+      Alert.show(context, 'Error', 'Failed to add members'.tr);
     } else {
       Log.info('candidates: $members');
       MemberPicker.open(context, members,
@@ -33,7 +33,7 @@ Widget plusButton(BuildContext context) => IconButton(
 Widget plusCard(BuildContext context, Conversation fromWhere, {GestureTapCallback? onTap, MemberPickerCallback? onPicked}) => GestureDetector(
   onTap: onTap ?? () => _getContacts(fromWhere).then((members) {
     if (members == null) {
-      Alert.show(context, 'Error', 'Failed to add members');
+      Alert.show(context, 'Error', 'Failed to add members'.tr);
     } else if (fromWhere.isUser) {
       Log.info('candidates: $members');
       assert(fromWhere is ContactInfo, 'contact info error: $fromWhere');
@@ -68,7 +68,7 @@ Widget plusCard(BuildContext context, Conversation fromWhere, {GestureTapCallbac
 Widget minusCard(BuildContext context, GroupInfo fromWhere, {GestureTapCallback? onTap, required MemberPickerCallback onPicked}) => GestureDetector(
   onTap: onTap ?? () => _getMembers(fromWhere).then((members) {
     if (members == null) {
-      Alert.show(context, 'Error', 'Group not ready');
+      Alert.show(context, 'Error', 'Group not ready'.tr);
     } else {
       Log.info('candidates: $members');
       MemberPicker.open(context, members, onPicked: onPicked);
@@ -168,7 +168,7 @@ void _newChat(BuildContext context, List<ID> members) {
     SharedGroupManager man = SharedGroupManager();
     man.createGroup(members).then((group) {
       if (group == null) {
-        Alert.show(context, 'Error', 'Failed to create group');
+        Alert.show(context, 'Error', 'Failed to create group'.tr);
         return;
       }
       Log.warning('new group: $group');

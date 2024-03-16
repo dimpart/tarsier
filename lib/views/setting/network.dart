@@ -251,6 +251,7 @@ class _StationCellState extends State<_StationCell> implements lnc.Observer {
     subtitle: Text('${widget.info.host}:${widget.info.port}'),
     trailing: _getTrailing(widget.info),
     onTap: () => _switchChosen(widget.info),
+    onLongPress: () => _removeError(context, widget.info),
   );
 
   Widget _getTrailing(NeighborInfo info) {
@@ -326,15 +327,37 @@ class _StationCellState extends State<_StationCell> implements lnc.Observer {
     return CupertinoColors.systemGreen;
   }
 
-}
-
-void _switchChosen(NeighborInfo info) {
-  if (info.chosen > 0) {
-    info.chosen = 0;
-  } else {
-    info.chosen = 1;
+  void _removeError(BuildContext context, NeighborInfo info) {
+    String result = _getResult(info);
+    if (result != 'error') {
+      // Alert.show(context, 'Permission Denied', 'Cannot remove this station.'.tr);
+      return;
+    }
+    String remote = '${info.host}:${info.port}';
+    Alert.confirm(context, 'Confirm Delete', 'Sure to remove this station ($remote)?'.tr,
+      okAction: () {
+        GlobalVariable shared = GlobalVariable();
+        shared.database.removeStation(host: info.host, port: info.port, provider: info.provider).then((ok) {
+          if (ok) {
+            Alert.show(context, 'Success', 'Station ($remote) is removed.');
+            info.responseTime = null;
+          } else {
+            Alert.show(context, 'Error', 'Failed to remove station ($remote).');
+          }
+        });
+      }
+    );
   }
-  GlobalVariable shared = GlobalVariable();
-  shared.database.updateStation(info.identifier, chosen: info.chosen,
-    host: info.host, port: info.port, provider: info.provider,);
+
+  void _switchChosen(NeighborInfo info) {
+    if (info.chosen > 0) {
+      info.chosen = 0;
+    } else {
+      info.chosen = 1;
+    }
+    GlobalVariable shared = GlobalVariable();
+    shared.database.updateStation(info.identifier, chosen: info.chosen,
+      host: info.host, port: info.port, provider: info.provider,);
+  }
+
 }

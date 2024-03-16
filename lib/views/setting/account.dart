@@ -16,7 +16,7 @@ class AccountPage extends StatefulWidget {
     GlobalVariable shared = GlobalVariable();
     shared.facebook.currentUser.then((user) {
       if (user == null) {
-         Alert.show(context, 'Error', 'Current user not found');
+         Alert.show(context, 'Error', 'Current user not found'.tr);
       } else {
         showCupertinoDialog(
           context: context,
@@ -338,7 +338,7 @@ class _AccountState extends State<AccountPage> {
 
   /*
   void _exportKey(BuildContext context) {
-    Alert.show(context, 'Coming soon', 'Export private key');
+    Alert.show(context, 'Coming soon', 'Export private key'.tr);
   }
    */
 

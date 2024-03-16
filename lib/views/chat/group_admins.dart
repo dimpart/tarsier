@@ -107,7 +107,7 @@ class _AdministratorsState extends State<AdministratorsPage> implements lnc.Obse
         candidates.remove(item);
       }
       if (members.isEmpty) {
-        Alert.show(context, 'Error', 'Failed to add members');
+        Alert.show(context, 'Error', 'Failed to add members'.tr);
       } else {
         Log.info('candidates: $members');
         MemberPicker.open(context, candidates,

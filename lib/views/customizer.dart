@@ -258,10 +258,10 @@ class _SettingsPageState extends State<SettingsPage> implements lnc.Observer {
               'Author: Albert Moky\n'
               'Version: ${client.versionName} (build ${client.buildNumber})\n'
               'Website: ',
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 12,
             fontWeight: FontWeight.normal,
-            color: CupertinoColors.systemGrey,
+            color: Styles.colors.secondaryTextColor,
             decoration: TextDecoration.none,
           ),
           children: [

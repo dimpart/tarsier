@@ -397,7 +397,7 @@ void _shareContact(BuildContext ctx, ContactInfo info) {
     Log.debug('sharing contact: $info => $chat');
     ID cid = info.identifier;
     if (chat.identifier == cid) {
-      Alert.show(ctx, 'Error', 'Cannot share to itself');
+      Alert.show(ctx, 'Error', 'Cannot share to itself'.tr);
       return;
     }
     Widget from = previewEntity(info);
