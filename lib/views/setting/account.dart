@@ -1,4 +1,4 @@
-import 'dart:io';
+import 'dart:io' as io;
 import 'dart:typed_data';
 
 import 'package:flutter/cupertino.dart';
@@ -179,7 +179,7 @@ class _AccountState extends State<AccountPage> {
         if (_avatarPath == null)
         Container(width: 256, height: 256, color: Styles.colors.logoBackgroundColor),
         if (_avatarPath != null)
-        Image.file(File(_avatarPath!), width: 256, height: 256, fit: BoxFit.cover),
+        Image.file(io.File(_avatarPath!), width: 256, height: 256, fit: BoxFit.cover),
         SizedBox(
           width: 256,
           height: 36,
@@ -258,7 +258,7 @@ class _AccountState extends State<AccountPage> {
       ext = 'jpeg';
     }
     String filename = URLHelper.filenameFromData(data, 'avatar.$ext');
-    FileTransfer ftp = FileTransfer();
+    FileUploader ftp = FileUploader();
     ftp.uploadAvatar(data, filename, widget.user.identifier).then((url) {
       if (url == null) {
         Log.error('failed to upload avatar: $filename');
