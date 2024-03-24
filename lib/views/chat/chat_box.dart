@@ -396,7 +396,13 @@ class _HistoryAdapter with SectionAdapterMixin {
     } else if (content is AudioContent) {
       return ContentViewUtils.getAudioContentView(ctx, content, sender);
     } else if (content is VideoContent) {
-      return ContentViewUtils.getVideoContentView(ctx, content, sender);
+      return ContentViewUtils.getVideoContentView(ctx, content, sender,
+        onLongPress: () => Alert.actionSheet(ctx, null, null,
+          Alert.action(AppIcons.shareIcon, 'Forward Video'),
+              () => _forwardVideo(ctx, content, sender),
+          // 'Save Image', () { },
+        ),
+      );
     } else if (content is PageContent) {
       return ContentViewUtils.getPageContentView(ctx, content, sender,
         onLongPress: () => Alert.actionSheet(ctx, null, null,
@@ -529,6 +535,76 @@ Future<String?> _pathFromContent(ImageContent content) async {
   }
 }
 
+void _forwardVideo(BuildContext ctx, VideoContent content, ID sender) {
+  Uri? url = content.url;
+  if (url == null) {
+    assert(false, 'video URL not found: $content');
+    return;
+  }
+  var filename = content.filename;
+  filename ??= URLHelper.filenameFromURL(url, 'movie.mp4');
+  var title = content['title'];
+  var snapshot = content['snapshot'];
+  List traces = content['traces'] ?? [];
+  traces = [...traces, {
+    'ID': sender.toString(),
+    'time': content.getDouble('time', 0),
+  }];
+  PickChatPage.open(ctx, onPicked: (chat) => Alert.confirm(ctx, 'Confirm Forward',
+      _forwardVideoPreview(content, chat),
+      okAction: () => _sendVideo(chat.identifier,
+        url: url, filename: filename, title: title, snapshot: snapshot, traces: traces,
+      ).then((ok) {
+        if (ok) {
+          Alert.show(ctx, 'Forwarded',
+            'Video message forwarded to @chat'.trParams({
+              'chat': chat.title,
+            }),
+          );
+        } else {
+          Alert.show(ctx, 'Error',
+            'Failed to share video with @chat'.trParams({
+              'chat': chat.title,
+            }),
+          );
+        }
+      }),
+  ));
+}
+Widget _forwardVideoPreview(VideoContent content, Conversation chat) {
+  Widget to = previewEntity(chat);
+  Widget? from = Gallery.getSnapshot(content);
+  if (from != null) {
+    from = SizedBox(width: 64, child: from,);
+  } else {
+    String? title = content['title'];
+    if (title == null || title.isEmpty) {
+      title = content.filename ??= 'Video';
+    }
+    from = _previewText(title);
+  }
+  Widget body = Row(
+    mainAxisAlignment: MainAxisAlignment.center,
+    children: [
+      from,
+      const SizedBox(width: 32,),
+      const Text('~>'),
+      const SizedBox(width: 32,),
+      to,
+    ],
+  );
+  return body;
+}
+Future<bool> _sendVideo(ID receiver,
+    {required Uri url, String? filename, String? title, String? snapshot, required List traces}) async {
+  // send image content with traces
+  GlobalVariable shared = GlobalVariable();
+  await shared.emitter.sendVideo(url, filename: filename, title: title, snapshot: snapshot, extra: {
+    'traces': traces,
+  }, receiver: receiver);
+  return true;
+}
+
 void _forwardImage(BuildContext ctx, ImageContent content, ID sender) {
   // get local file path, if not exists
   // try to download from file server
@@ -541,7 +617,7 @@ void _forwardImage(BuildContext ctx, ImageContent content, ID sender) {
       );
     } else {
       String filename = content.filename ?? Paths.filename(path) ?? 'a.jpeg';
-      Uint8List? thumbnail = content.thumbnail;
+      String? thumbnail = content['thumbnail'];
       List traces = content['traces'] ?? [];
       traces = [...traces, {
         'ID': sender.toString(),
@@ -574,10 +650,8 @@ void _forwardImage(BuildContext ctx, ImageContent content, ID sender) {
 }
 Widget _forwardImagePreview(ImageContent content, Conversation chat) {
   Widget to = previewEntity(chat);
-  Widget from;
-  Uint8List? thumbnail = content.thumbnail;
-  if (thumbnail != null) {
-    from = Image.memory(thumbnail);
+  Widget? from = Gallery.getThumbnail(content);
+  if (from != null) {
     from = SizedBox(width: 64, child: from,);
   } else {
     String? filename = content.filename ??= 'Image';
@@ -596,7 +670,7 @@ Widget _forwardImagePreview(ImageContent content, Conversation chat) {
   return body;
 }
 Future<bool> _sendImage(ID receiver,
-    {required String path, required String filename, Uint8List? thumbnail,
+    {required String path, required String filename, String? thumbnail,
       required List traces}) async {
   // load image data
   Uint8List? jpeg = await ExternalStorage.loadBinary(path);
@@ -608,9 +682,9 @@ Future<bool> _sendImage(ID receiver,
   }
   // send image content with traces
   GlobalVariable shared = GlobalVariable();
-  await shared.emitter.sendImage(jpeg, filename, thumbnail, receiver, {
+  await shared.emitter.sendImage(jpeg, filename: filename, thumbnail: thumbnail, extra: {
     'traces': traces,
-  });
+  }, receiver: receiver);
   return true;
 }
 

@@ -152,7 +152,7 @@ void _sendText(BuildContext context, TextEditingController controller, Conversat
   String text = controller.text.trim();
   if (text.isNotEmpty) {
     GlobalVariable shared = GlobalVariable();
-    shared.emitter.sendText(text, chat.identifier);
+    shared.emitter.sendText(text, receiver: chat.identifier,);
   }
   controller.text = '';
   var shared = SharedEditingText();
@@ -164,10 +164,14 @@ void _sendImage(BuildContext context, Conversation chat) =>
       Log.info('picked image: $path');
     }, onRead: (path, jpeg) => adjustImage(jpeg, 2048, (Uint8List data) async {
       // send adjusted image data with thumbnail
-      Uint8List thumbnail = await compressThumbnail(data);
+      Uint8List small = await compressThumbnail(data);
+      var ted = TransportableData.create(small);
+      String thumbnail = ted.toString();
       GlobalVariable shared = GlobalVariable();
-      shared.emitter.sendImage(data, 'image.jpeg', thumbnail, chat.identifier);
+      shared.emitter.sendImage(data, filename: 'image.jpeg', thumbnail: thumbnail,
+        receiver: chat.identifier,);
     }));
 
 void _sendVoice(Uint8List data, double duration, Conversation chat) =>
-    GlobalVariable().emitter.sendVoice(data, 'voice.mp4', duration, chat.identifier);
+    GlobalVariable().emitter.sendVoice(data, filename: 'voice.mp4', duration: duration,
+      receiver: chat.identifier,);
