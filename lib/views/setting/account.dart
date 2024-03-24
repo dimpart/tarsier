@@ -1,4 +1,3 @@
-import 'dart:io' as io;
 import 'dart:typed_data';
 
 import 'package:flutter/cupertino.dart';
@@ -179,7 +178,7 @@ class _AccountState extends State<AccountPage> {
         if (_avatarPath == null)
         Container(width: 256, height: 256, color: Styles.colors.logoBackgroundColor),
         if (_avatarPath != null)
-        Image.file(io.File(_avatarPath!), width: 256, height: 256, fit: BoxFit.cover),
+        ImageUtils.fileImage(_avatarPath!, width: 256, height: 256, fit: BoxFit.cover),
         SizedBox(
           width: 256,
           height: 36,

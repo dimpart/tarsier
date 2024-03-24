@@ -53,7 +53,7 @@ Widget _shareWebPagePreview(String title, Uint8List? icon, Conversation chat) {
   Widget to = previewEntity(chat);
   Widget from;
   if (icon != null) {
-    from = Image.memory(icon);
+    from = ImageUtils.memoryImage(icon);
     from = SizedBox(width: 64, child: from,);
   } else if (title.isNotEmpty) {
     from = _previewText(title);
