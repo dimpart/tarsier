@@ -1,5 +1,3 @@
-import 'dart:typed_data';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_section_list/flutter_section_list.dart';
@@ -14,7 +12,10 @@ import 'chat_title.dart';
 import 'chat_tray.dart';
 import 'detail.dart';
 import 'detail_group.dart';
-import 'pick_chat.dart';
+import 'share_image.dart';
+import 'share_contact.dart';
+import 'share_page.dart';
+import 'share_video.dart';
 
 
 ///
@@ -176,7 +177,7 @@ class _ChatBoxState extends State<ChatBox> implements lnc.Observer {
         child: SectionListView.builder(
           reverse: true,
           adapter: _HistoryAdapter(widget.info,
-              dataSource: _dataSource,
+            dataSource: _dataSource,
           ),
         ),
       ),
@@ -387,7 +388,7 @@ class _HistoryAdapter with SectionAdapterMixin {
         content, sender, _dataSource.allMessages,
         onLongPress: () => Alert.actionSheet(ctx, null, null,
           Alert.action(AppIcons.shareIcon, 'Forward Image'),
-              () => _forwardImage(ctx, content, sender),
+              () => ShareImage.forwardImage(ctx, content, sender),
           Alert.action(AppIcons.saveFileIcon, 'Save to Album'),
               () => saveImageContent(ctx, content),
           // 'Save Image', () { },
@@ -399,31 +400,33 @@ class _HistoryAdapter with SectionAdapterMixin {
       return ContentViewUtils.getVideoContentView(ctx, content, sender,
         onLongPress: () => Alert.actionSheet(ctx, null, null,
           Alert.action(AppIcons.shareIcon, 'Forward Video'),
-              () => _forwardVideo(ctx, content, sender),
+              () => ShareVideo.forwardVideo(ctx, content, sender),
           // 'Save Image', () { },
         ),
+        onVideoShare: (url) =>
+            ShareVideo.forwardVideo(ctx, content, sender),
       );
     } else if (content is PageContent) {
       return ContentViewUtils.getPageContentView(ctx, content, sender,
         onLongPress: () => Alert.actionSheet(ctx, null, null,
           Alert.action(AppIcons.shareIcon, 'Forward Web Page'),
-              () => _forwardWebPage(ctx, content, sender),
+              () => ShareWebPage.forwardWebPage(ctx, content, sender),
           // 'Save Image', () { },
         ),
         onWebShare: (url, {required title, desc, icon}) =>
-            _shareWebPage(ctx, url, title: title, desc: desc, icon: icon),);
+            ShareWebPage.shareWebPage(ctx, url, title: title, desc: desc, icon: icon),);
     } else if (content is NameCard) {
       return ContentViewUtils.getNameCardView(ctx, content,
         onTap: () => ProfilePage.open(ctx, content.identifier),
         onLongPress: () => Alert.actionSheet(ctx, null, null,
           Alert.action(AppIcons.shareIcon, 'Forward Name Card'),
-              () => _forwardNameCard(ctx, content, sender),
+              () => ShareNameCard.forwardNameCard(ctx, content, sender),
         ),
       );
     } else {
       return ContentViewUtils.getTextContentView(ctx, content, sender,
         onWebShare: (url, {required title, desc, icon}) =>
-            _shareWebPage(ctx, url, title: title, desc: desc, icon: icon),
+            ShareWebPage.shareWebPage(ctx, url, title: title, desc: desc, icon: icon),
       );
     }
   }
@@ -508,323 +511,4 @@ void _onMentioned(ID uid) {
   nc.postNotification(NotificationNames.kAvatarLongPressed, null, {
     'user': uid,
   });
-}
-
-Widget _previewText(String text) => SizedBox(
-  width: 64,
-  child: Text(text,
-    maxLines: 3,
-    overflow: TextOverflow.ellipsis,
-  ),
-);
-
-Future<String?> _pathFromContent(ImageContent content) async {
-  PortableNetworkFile? pnf = PortableNetworkFile.parse(content);
-  if (pnf == null) {
-    assert(false, 'failed to parse PNF: $content');
-    return null;
-  }
-  PortableFileLoader loader = PortableFileLoader(pnf);
-  String? cachePath = await loader.cacheFilePath;
-  if (cachePath == null) {
-    return null;
-  } else if (await Paths.exists(cachePath)) {
-    return cachePath;
-  } else {
-    return null;
-  }
-}
-
-void _forwardVideo(BuildContext ctx, VideoContent content, ID sender) {
-  Uri? url = content.url;
-  if (url == null) {
-    assert(false, 'video URL not found: $content');
-    return;
-  }
-  var filename = content.filename;
-  filename ??= URLHelper.filenameFromURL(url, 'movie.mp4');
-  var title = content['title'];
-  var snapshot = content['snapshot'];
-  List traces = content['traces'] ?? [];
-  traces = [...traces, {
-    'ID': sender.toString(),
-    'time': content.getDouble('time', 0),
-  }];
-  PickChatPage.open(ctx, onPicked: (chat) => Alert.confirm(ctx, 'Confirm Forward',
-      _forwardVideoPreview(content, chat),
-      okAction: () => _sendVideo(chat.identifier,
-        url: url, filename: filename, title: title, snapshot: snapshot, traces: traces,
-      ).then((ok) {
-        if (ok) {
-          Alert.show(ctx, 'Forwarded',
-            'Video message forwarded to @chat'.trParams({
-              'chat': chat.title,
-            }),
-          );
-        } else {
-          Alert.show(ctx, 'Error',
-            'Failed to share video with @chat'.trParams({
-              'chat': chat.title,
-            }),
-          );
-        }
-      }),
-  ));
-}
-Widget _forwardVideoPreview(VideoContent content, Conversation chat) {
-  Widget to = previewEntity(chat);
-  Widget? from = Gallery.getSnapshot(content);
-  if (from != null) {
-    from = SizedBox(width: 64, child: from,);
-  } else {
-    String? title = content['title'];
-    if (title == null || title.isEmpty) {
-      title = content.filename ??= 'Video';
-    }
-    from = _previewText(title);
-  }
-  Widget body = Row(
-    mainAxisAlignment: MainAxisAlignment.center,
-    children: [
-      from,
-      const SizedBox(width: 32,),
-      const Text('~>'),
-      const SizedBox(width: 32,),
-      to,
-    ],
-  );
-  return body;
-}
-Future<bool> _sendVideo(ID receiver,
-    {required Uri url, String? filename, String? title, String? snapshot, required List traces}) async {
-  // send image content with traces
-  GlobalVariable shared = GlobalVariable();
-  await shared.emitter.sendVideo(url, filename: filename, title: title, snapshot: snapshot, extra: {
-    'traces': traces,
-  }, receiver: receiver);
-  return true;
-}
-
-void _forwardImage(BuildContext ctx, ImageContent content, ID sender) {
-  // get local file path, if not exists
-  // try to download from file server
-  _pathFromContent(content).then((path) {
-    if (path == null) {
-      Alert.show(ctx, 'Image Not Found',
-        'Failed to load image @filename'.trParams({
-          'filename': '${content.filename}',
-        })
-      );
-    } else {
-      String filename = content.filename ?? Paths.filename(path) ?? 'a.jpeg';
-      String? thumbnail = content['thumbnail'];
-      List traces = content['traces'] ?? [];
-      traces = [...traces, {
-        'ID': sender.toString(),
-        'time': content.getDouble('time', 0),
-      }];
-      PickChatPage.open(ctx,
-        onPicked: (chat) => Alert.confirm(ctx, 'Confirm Forward',
-          _forwardImagePreview(content, chat),
-          okAction: () => _sendImage(chat.identifier,
-            path: path, filename: filename, thumbnail: thumbnail, traces: traces,
-          ).then((ok) {
-            if (ok) {
-              Alert.show(ctx, 'Forwarded',
-                'Image message forwarded to @chat'.trParams({
-                  'chat': chat.title,
-                }),
-              );
-            } else {
-              Alert.show(ctx, 'Error',
-                'Failed to share image with @chat'.trParams({
-                  'chat': chat.title,
-                }),
-              );
-            }
-          }),
-        ),
-      );
-    }
-  });
-}
-Widget _forwardImagePreview(ImageContent content, Conversation chat) {
-  Widget to = previewEntity(chat);
-  Widget? from = Gallery.getThumbnail(content);
-  if (from != null) {
-    from = SizedBox(width: 64, child: from,);
-  } else {
-    String? filename = content.filename ??= 'Image';
-    from = _previewText(filename);
-  }
-  Widget body = Row(
-    mainAxisAlignment: MainAxisAlignment.center,
-    children: [
-      from,
-      const SizedBox(width: 32,),
-      const Text('~>'),
-      const SizedBox(width: 32,),
-      to,
-    ],
-  );
-  return body;
-}
-Future<bool> _sendImage(ID receiver,
-    {required String path, required String filename, String? thumbnail,
-      required List traces}) async {
-  // load image data
-  Uint8List? jpeg = await ExternalStorage.loadBinary(path);
-  if (jpeg == null) {
-    Log.error('failed to load image: $path');
-    return false;
-  } else {
-    Log.debug('forwarding image to $receiver: "$filename", traces: $traces');
-  }
-  // send image content with traces
-  GlobalVariable shared = GlobalVariable();
-  await shared.emitter.sendImage(jpeg, filename: filename, thumbnail: thumbnail, extra: {
-    'traces': traces,
-  }, receiver: receiver);
-  return true;
-}
-
-void _forwardWebPage(BuildContext ctx, PageContent content, ID sender) {
-  String urlString = HtmlUri.getUriString(content);
-  Uri? url = HtmlUri.parseUri(urlString);
-  if (url == null) {
-    Alert.show(ctx, 'URL Error', urlString);
-  } else {
-    _shareWebPage(ctx, url, title: content.title, desc: content.desc, icon: content.icon);
-  }
-}
-void _shareWebPage(BuildContext ctx, Uri url, {required String title, String? desc, Uint8List? icon}) {
-  PickChatPage.open(ctx,
-    onPicked: (chat) => Alert.confirm(ctx, 'Confirm Forward',
-      _shareWebPagePreview(title, icon, chat),
-      okAction: () => _sendWebPage(chat.identifier,
-        url, title: title, desc: desc, icon: icon,
-      ).then((ok) {
-        if (ok) {
-          Alert.show(ctx, 'Forwarded',
-            'Web Page @title forwarded to @chat'.trParams({
-              'title': title,
-              'chat': chat.title,
-            }),
-          );
-        } else {
-          Alert.show(ctx, 'Error',
-            'Failed to share Web Page @title with @chat'.trParams({
-              'title': title,
-              'chat': chat.title,
-            }),
-          );
-        }
-      }),
-    ),
-  );
-}
-Widget _shareWebPagePreview(String title, Uint8List? icon, Conversation chat) {
-  Widget to = previewEntity(chat);
-  Widget from;
-  if (icon != null) {
-    from = Image.memory(icon);
-    from = SizedBox(width: 64, child: from,);
-  } else if (title.isNotEmpty) {
-    from = _previewText(title);
-  } else {
-    from = const Icon(AppIcons.webpageIcon);
-  }
-  Widget body = Row(
-    mainAxisAlignment: MainAxisAlignment.center,
-    children: [
-      from,
-      const SizedBox(width: 32,),
-      const Text('~>'),
-      const SizedBox(width: 32,),
-      to,
-    ],
-  );
-  return body;
-}
-Future<bool> _sendWebPage(ID receiver, Uri url,
-    {required String title, String? desc, Uint8List? icon}) async {
-  // create web page content
-  TransportableData? ted = icon == null ? null : TransportableData.create(icon);
-  PageContent content = PageContent.create(url: url,
-      title: title, desc: desc, icon: ted);
-  // check "data:text/html"
-  HtmlUri.setHtmlString(url, content);
-  Log.info('share web page to $receiver: "$title", $url');
-  // send web page content
-  GlobalVariable shared = GlobalVariable();
-  await shared.emitter.sendContent(content, receiver);
-  return true;
-}
-
-void _forwardNameCard(BuildContext ctx, NameCard content, ID sender) {
-  List traces = content['traces'] ?? [];
-  traces = [...traces, {
-    'ID': sender.toString(),
-    'time': content.getDouble('time', 0),
-  }];
-  PickChatPage.open(ctx,
-    onPicked: (chat) => Alert.confirm(ctx, 'Confirm Forward',
-      _forwardNameCardPreview(content, chat),
-      okAction: () => _sendContact(chat.identifier,
-        identifier: content.identifier, name: content.name, avatar: content.avatar?.url.toString(),
-        traces: traces,
-      ).then((ok) {
-        if (ok) {
-          Alert.show(ctx, 'Forwarded',
-              'Name Card @name forwarded to @chat'.trParams({
-                'name': content.name,
-                'chat': chat.title,
-              })
-          );
-        } else {
-          Alert.show(ctx, 'Error',
-            'Failed to share Name Card @name with @chat'.trParams({
-              'name': content.name,
-              'chat': chat.title,
-            }),
-          );
-        }
-      }),
-    ),
-  );
-}
-Widget _forwardNameCardPreview(NameCard content, Conversation chat) {
-  Widget to = previewEntity(chat);
-  Widget from;
-  PortableNetworkFile? avatar = content.avatar;
-  if (avatar != null) {
-    from = NameCardView.avatarImage(content);
-  } else {
-    String name = content.name;
-    if (name.isEmpty) {
-      name = content.identifier.toString();
-    }
-    from = _previewText(name);
-  }
-  Widget body = Row(
-    mainAxisAlignment: MainAxisAlignment.center,
-    children: [
-      from,
-      const SizedBox(width: 32,),
-      const Text('~>'),
-      const SizedBox(width: 32,),
-      to,
-    ],
-  );
-  return body;
-}
-Future<bool> _sendContact(ID receiver,
-    {required ID identifier, required String name, String? avatar,
-      required List traces}) async {
-  NameCard content = NameCard.create(identifier, name, PortableNetworkFile.parse(avatar));
-  content['traces'] = traces;
-  Log.debug('forward name card to receiver: $receiver, $content');
-  GlobalVariable shared = GlobalVariable();
-  await shared.emitter.sendContent(content, receiver);
-  return true;
 }
