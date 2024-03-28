@@ -17,7 +17,7 @@ class ProfilePage extends StatefulWidget {
   static void open(BuildContext context, ID identifier, {ID? fromChat}) {
     ContactInfo? info = ContactInfo.fromID(identifier);
     info?.reloadData().then((value) {
-      showCupertinoDialog(
+      showPage(
         context: context,
         builder: (context) => ProfilePage(info, fromChat),
       );
@@ -386,7 +386,7 @@ class _ProfileState extends State<ProfilePage> implements lnc.Observer {
 void _sendMessage(BuildContext ctx, ContactInfo info, ID? fromChat) {
   if (info.identifier == fromChat) {
     // this page is open from a chat box
-    Navigator.pop(ctx);
+    closePage(ctx);
   } else {
     ChatBox.open(ctx, info);
   }

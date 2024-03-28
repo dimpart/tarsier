@@ -13,7 +13,7 @@ class PickChatPage extends StatefulWidget {
   final PickChatCallback onPicked;
 
   static void open(BuildContext context, {required PickChatCallback onPicked}) =>
-      showCupertinoDialog(
+      showPage(
         context: context,
         builder: (context) => PickChatPage(onPicked: onPicked),
       );
@@ -58,7 +58,7 @@ class _PickChatState extends State<PickChatPage> with SectionAdapterMixin {
     Conversation info = conversations[indexPath.item];
     Log.warning('show item: $info');
     return _PickChatCell(info, () {
-      Navigator.pop(context);
+      closePage(context);
       widget.onPicked(info);
     });
   }

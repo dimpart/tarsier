@@ -57,9 +57,13 @@ void main() async {
 }
 
 void changeToMainPage(BuildContext context) {
-  // closePage();
-  Navigator.pop(context);
-  openPage(const _MainPage());
+  // Navigator.pop(...)
+  closePage(context);
+  // showCupertinoDialog(...)
+  showPage(
+    context: context,
+    builder: (context) => const _MainPage(),
+  );
 }
 
 class _MainPage extends StatefulWidget {

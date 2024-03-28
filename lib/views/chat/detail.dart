@@ -16,7 +16,7 @@ class ChatDetailPage extends StatefulWidget {
     assert(identifier.isUser, 'ID error: $identifier');
     ContactInfo? info = ContactInfo.fromID(identifier);
     info?.reloadData().then((value) {
-      showCupertinoDialog(
+      showPage(
         context: context,
         builder: (context) => ChatDetailPage(info),
       );
@@ -231,7 +231,7 @@ void _doClear(BuildContext ctx, ID chat) {
   Amanuensis clerk = Amanuensis();
   clerk.clearConversation(chat).then((ok) {
     if (ok) {
-      Navigator.pop(ctx);
+      closePage(ctx);
     } else {
       Alert.show(ctx, 'Error', 'Failed to clear chat history'.tr);
     }

@@ -115,7 +115,9 @@ class _SettingsPageState extends State<SettingsPage> implements lnc.Observer {
             backgroundColorActivated: backgroundColorActivated,
             primaryTextColor: primaryTextColor,
             secondaryTextColor: secondaryTextColor,
-            onTap: () => openPage(const ExportPage(),
+            onTap: () => showPage(
+              context: context,
+              builder: (context) => const ExportPage(),
             ),
           ),
           /// Burn After Reading
@@ -126,7 +128,7 @@ class _SettingsPageState extends State<SettingsPage> implements lnc.Observer {
             backgroundColorActivated: backgroundColorActivated,
             primaryTextColor: primaryTextColor,
             secondaryTextColor: secondaryTextColor,
-            onTap: () => showCupertinoDialog(
+            onTap: () => showPage(
               context: context,
               builder: (context) => const BurnAfterReadingPage(),
             ),
@@ -149,7 +151,7 @@ class _SettingsPageState extends State<SettingsPage> implements lnc.Observer {
             backgroundColorActivated: backgroundColorActivated,
             primaryTextColor: primaryTextColor,
             secondaryTextColor: secondaryTextColor,
-            onTap: () => showCupertinoDialog(
+            onTap: () => showPage(
               context: context,
               builder: (context) => const LanguageSettingPage(),
             ),
@@ -162,7 +164,7 @@ class _SettingsPageState extends State<SettingsPage> implements lnc.Observer {
             backgroundColorActivated: backgroundColorActivated,
             primaryTextColor: primaryTextColor,
             secondaryTextColor: secondaryTextColor,
-            onTap: () => showCupertinoDialog(
+            onTap: () => showPage(
               context: context,
               builder: (context) => const BrightnessSettingPage(),
             ),
@@ -185,7 +187,7 @@ class _SettingsPageState extends State<SettingsPage> implements lnc.Observer {
             backgroundColorActivated: backgroundColorActivated,
             primaryTextColor: primaryTextColor,
             secondaryTextColor: secondaryTextColor,
-            onTap: () => showCupertinoDialog(
+            onTap: () => showPage(
               context: context,
               builder: (context) => const NetworkSettingPage(),
             ),

@@ -1,5 +1,3 @@
-import 'dart:typed_data';
-
 import 'package:flutter/widgets.dart';
 
 import 'package:dim_flutter/dim_flutter.dart';
@@ -15,11 +13,12 @@ abstract class ShareWebPage {
     if (url == null) {
       Alert.show(ctx, 'URL Error', urlString);
     } else {
-      shareWebPage(ctx, url, title: content.title, desc: content.desc, icon: content.icon);
+      var small = content['icon'];
+      shareWebPage(ctx, url, title: content.title, desc: content.desc, icon: small);
     }
   }
 
-  static void shareWebPage(BuildContext ctx, Uri url, {required String title, String? desc, Uint8List? icon}) {
+  static void shareWebPage(BuildContext ctx, Uri url, {required String title, String? desc, String? icon}) {
     PickChatPage.open(ctx,
       onPicked: (chat) => Alert.confirm(ctx, 'Confirm Forward',
         _shareWebPagePreview(title, icon, chat),
@@ -49,11 +48,11 @@ abstract class ShareWebPage {
 }
 
 
-Widget _shareWebPagePreview(String title, Uint8List? icon, Conversation chat) {
+Widget _shareWebPagePreview(String title, String? icon, Conversation chat) {
   Widget to = previewEntity(chat);
-  Widget from;
+  Widget? from;
   if (icon != null) {
-    from = ImageUtils.memoryImage(icon);
+    from = ImageUtils.getImage(icon);
     from = SizedBox(width: 64, child: from,);
   } else if (title.isNotEmpty) {
     from = _previewText(title);
@@ -74,11 +73,12 @@ Widget _shareWebPagePreview(String title, Uint8List? icon, Conversation chat) {
 }
 
 Future<bool> _sendWebPage(ID receiver, Uri url,
-    {required String title, String? desc, Uint8List? icon}) async {
+    {required String title, String? desc, String? icon}) async {
   // create web page content
-  TransportableData? ted = icon == null ? null : TransportableData.create(icon);
-  PageContent content = PageContent.create(url: url,
-      title: title, desc: desc, icon: ted);
+  PageContent content = PageContent.create(url: url, title: title, desc: desc);
+  if (icon != null) {
+    content['icon'] = icon;
+  }
   // check "data:text/html"
   HtmlUri.setHtmlString(url, content);
   Log.info('share web page to $receiver: "$title", $url');

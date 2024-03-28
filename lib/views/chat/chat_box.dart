@@ -28,7 +28,7 @@ class ChatBox extends StatefulWidget {
 
   static int maxCountOfMessages = 2048;
 
-  static void open(BuildContext context, Conversation info) => showCupertinoDialog(
+  static void open(BuildContext context, Conversation info) => showPage(
     context: context,
     builder: (context) => ChatBox(info),
   );

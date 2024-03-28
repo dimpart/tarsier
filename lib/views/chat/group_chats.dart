@@ -12,7 +12,7 @@ import 'chat_box.dart';
 class GroupChatsPage extends StatefulWidget {
   const GroupChatsPage({super.key});
 
-  static void open(BuildContext context) => showCupertinoDialog(
+  static void open(BuildContext context) => showPage(
     context: context,
     builder: (context) => const GroupChatsPage(),
   );

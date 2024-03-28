@@ -11,7 +11,7 @@ import '../chat/chat_box.dart';
 class StrangerListPage extends StatefulWidget {
   const StrangerListPage({super.key});
 
-  static void open(BuildContext context) => showCupertinoDialog(
+  static void open(BuildContext context) => showPage(
     context: context,
     builder: (context) => const StrangerListPage(),
   );

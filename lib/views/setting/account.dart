@@ -17,7 +17,7 @@ class AccountPage extends StatefulWidget {
       if (user == null) {
          Alert.show(context, 'Error', 'Current user not found'.tr);
       } else {
-        showCupertinoDialog(
+        showPage(
           context: context,
           builder: (context) => AccountPage(user),
         );

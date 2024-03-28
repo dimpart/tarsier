@@ -19,7 +19,7 @@ class GroupChatDetailPage extends StatefulWidget {
     assert(identifier.isGroup, 'ID error: $identifier');
     GroupInfo? info = GroupInfo.fromID(identifier);
     info?.reloadData().then((value) {
-      showCupertinoDialog(
+      showPage(
         context: context,
         builder: (context) => GroupChatDetailPage(info),
       );
@@ -394,7 +394,7 @@ void _doClear(BuildContext ctx, ID chat) {
   Amanuensis clerk = Amanuensis();
   clerk.clearConversation(chat).then((ok) {
     if (ok) {
-      Navigator.pop(ctx);
+      closePage(ctx);
     } else {
       Alert.show(ctx, 'Error', 'Failed to clear chat history'.tr);
     }

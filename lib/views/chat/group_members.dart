@@ -12,7 +12,7 @@ class MembersPage extends StatefulWidget {
 
   final GroupInfo info;
 
-  static void open(BuildContext context, GroupInfo info) => showCupertinoDialog(
+  static void open(BuildContext context, GroupInfo info) => showPage(
     context: context,
     builder: (context) => MembersPage(info),
   );

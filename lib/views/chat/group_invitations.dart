@@ -15,7 +15,7 @@ class InvitationsPage extends StatefulWidget {
 
   final GroupInfo info;
 
-  static void open(BuildContext context, GroupInfo info) => showCupertinoDialog(
+  static void open(BuildContext context, GroupInfo info) => showPage(
     context: context,
     builder: (context) => InvitationsPage(info),
   );
@@ -112,7 +112,7 @@ class _InvitationsState extends State<InvitationsPage> implements lnc.Observer {
           Alert.confirm(context, 'Confirm Delete', body,
             okAction: () => _refreshMembers(newMembers, info).then((ok) {
               if (ok) {
-                Navigator.pop(context);
+                closePage(context);
               }
             }),
           );
@@ -121,7 +121,7 @@ class _InvitationsState extends State<InvitationsPage> implements lnc.Observer {
             body,
             okAction: () => _refreshMembers(newMembers, info).then((ok) {
               if (ok) {
-                Navigator.pop(context);
+                closePage(context);
               }
             }),
           ));

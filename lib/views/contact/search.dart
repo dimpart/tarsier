@@ -17,7 +17,7 @@ class SearchPage extends StatefulWidget {
     onPressed: () => open(context),
   );
 
-  static void open(BuildContext context) => showCupertinoDialog(
+  static void open(BuildContext context) => showPage(
     context: context,
     builder: (context) => const SearchPage(),
   );

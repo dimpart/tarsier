@@ -11,7 +11,7 @@ import 'profile.dart';
 class MuteListPage extends StatefulWidget {
   const MuteListPage({super.key});
 
-  static void open(BuildContext context) => showCupertinoDialog(
+  static void open(BuildContext context) => showPage(
     context: context,
     builder: (context) => const MuteListPage(),
   );
