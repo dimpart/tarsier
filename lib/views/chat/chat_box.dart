@@ -403,7 +403,7 @@ class _HistoryAdapter with SectionAdapterMixin {
               () => ShareVideo.forwardVideo(ctx, content, sender),
           // 'Save Image', () { },
         ),
-        onVideoShare: (url) =>
+        onVideoShare: (url, {required title, required filename, required snapshot}) =>
             ShareVideo.forwardVideo(ctx, content, sender),
       );
     } else if (content is PageContent) {
@@ -413,7 +413,7 @@ class _HistoryAdapter with SectionAdapterMixin {
               () => ShareWebPage.forwardWebPage(ctx, content, sender),
           // 'Save Image', () { },
         ),
-        onWebShare: (url, {required title, desc, icon}) =>
+        onWebShare: (url, {required title, required desc, required icon}) =>
             ShareWebPage.shareWebPage(ctx, url, title: title, desc: desc, icon: icon),);
     } else if (content is NameCard) {
       return ContentViewUtils.getNameCardView(ctx, content,
@@ -425,8 +425,10 @@ class _HistoryAdapter with SectionAdapterMixin {
       );
     } else {
       return ContentViewUtils.getTextContentView(ctx, content, sender,
-        onWebShare: (url, {required title, desc, icon}) =>
+        onWebShare: (url, {required title, required desc, required icon}) =>
             ShareWebPage.shareWebPage(ctx, url, title: title, desc: desc, icon: icon),
+        onVideoShare: (url, {required title, required filename, required snapshot}) =>
+            ShareVideo.shareVideo(ctx, url, filename: filename, title: title, snapshot: snapshot,)
       );
     }
   }

@@ -17,15 +17,24 @@ abstract class ShareVideo {
     filename ??= URLHelper.filenameFromURL(url, 'movie.mp4');
     var title = content['title'];
     var snapshot = content['snapshot'];
-    List traces = content['traces'] ?? [];
-    traces = [...traces, {
-      'ID': sender.toString(),
-      'time': content.getDouble('time', 0),
-    }];
+    shareVideo(ctx, url,
+      filename: filename, title: title,
+      snapshot: snapshot,
+    );
+  }
+
+  static void shareVideo(BuildContext ctx, Uri url, {
+    required String? filename,
+    required String? title,
+    required String? snapshot,
+  }) {
+    var content = FileContent.video(filename: filename, url: url, password: PlainKey.getInstance());
+    content['title'] = title;
+    content['snapshot'] = snapshot;
     PickChatPage.open(ctx, onPicked: (chat) => Alert.confirm(ctx, 'Confirm Forward',
       _forwardVideoPreview(content, chat),
       okAction: () => _sendVideo(chat.identifier,
-        url: url, filename: filename, title: title, snapshot: snapshot, traces: traces,
+        url: url, filename: filename, title: title, snapshot: snapshot,
       ).then((ok) {
         if (ok) {
           Alert.show(ctx, 'Forwarded',
@@ -72,12 +81,13 @@ Widget _forwardVideoPreview(VideoContent content, Conversation chat) {
   return body;
 }
 Future<bool> _sendVideo(ID receiver,
-    {required Uri url, String? filename, String? title, String? snapshot, required List traces}) async {
+    {required Uri url, String? filename, String? title, String? snapshot}) async {
   // send image content with traces
   GlobalVariable shared = GlobalVariable();
-  await shared.emitter.sendVideo(url, filename: filename, title: title, snapshot: snapshot, extra: {
-    'traces': traces,
-  }, receiver: receiver);
+  await shared.emitter.sendVideo(url,
+    filename: filename, title: title, snapshot: snapshot,
+    receiver: receiver,
+  );
   return true;
 }
 
