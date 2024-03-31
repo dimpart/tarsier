@@ -280,10 +280,16 @@ class _HistoryAdapter with SectionAdapterMixin {
       bool isMine = sender == ContentViewUtils.currentUser?.identifier;
       const radius = Radius.circular(12);
       const borderRadius = BorderRadius.all(radius);
+      BoxConstraints? constraints;
+      if (content is ImageContent) {
+        constraints = const BoxConstraints(maxHeight: 256);
+      } else if (content is VideoContent) {
+        constraints = const BoxConstraints(maxHeight: 256);
+      }
       // create content view
       contentView = Container(
         margin: Styles.messageContentMargin,
-        constraints: content is ImageContent ? const BoxConstraints(maxHeight: 256) : null,
+        constraints: constraints,
         child: ClipRRect(
           borderRadius: isMine
               ? borderRadius.subtract(
