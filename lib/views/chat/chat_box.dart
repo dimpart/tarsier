@@ -239,7 +239,7 @@ class _HistoryAdapter with SectionAdapterMixin {
       child: Row(
         // crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Icon(CupertinoIcons.padlock_solid,
+          const Icon(AppIcons.encryptedIcon,
             size: 24,
             color: CupertinoColors.systemGrey,
           ),
