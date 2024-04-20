@@ -1,5 +1,4 @@
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/services.dart';
 
 import 'package:dim_flutter/dim_flutter.dart';
 
@@ -22,15 +21,6 @@ void main() async {
     Log.colorful = true;
     Log.showTime = true;
     Log.showCaller = true;
-  }
-
-  bool released = Log.level == Log.kRelease;
-  if (released) {
-    // This app is designed only to work vertically, so we limit
-    // orientations to portrait up and down.
-    SystemChrome.setPreferredOrientations(
-        [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]
-    );
   }
 
   // Check Brightness & Language

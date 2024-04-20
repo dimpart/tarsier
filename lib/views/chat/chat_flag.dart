@@ -306,17 +306,17 @@ class _SendState extends State<ChatSendFlag> implements lnc.Observer {
         return 'Waiting to send'.tr;
       }
       case _MsgStatus.kSent: {
-        return 'Sent to relay station'.tr;
+        return 'Encrypted and sent to relay station'.tr;
       }
       case _MsgStatus.kBlocked: {
         return 'Message is rejected'.tr;
       }
       case _MsgStatus.kReceived: {
         if (_isPersonalChat()) {
-          return 'Your friend received'.tr;
+          return 'Safely delivered'.tr;
         } else {
           int count = _countOfResponded();
-          return '@count members received'.trParams({
+          return 'Safely delivered to @count members'.trParams({
             'count': '$count',
           });
         }
