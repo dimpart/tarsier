@@ -11,6 +11,7 @@ import 'setting/brightness.dart';
 import 'setting/burn_after_reading.dart';
 import 'setting/language.dart';
 import 'setting/network.dart';
+import 'setting/storage.dart';
 
 
 class SettingsPage extends StatefulWidget {
@@ -88,8 +89,13 @@ class _SettingsPageState extends State<SettingsPage> implements lnc.Observer {
     );
   }
 
-  Widget _table(BuildContext context, {required Color backgroundColor, required Color backgroundColorActivated, required Color dividerColor,
-    required Color primaryTextColor, required Color secondaryTextColor}) => Column(
+  Widget _table(BuildContext context, {
+    required Color backgroundColor,
+    required Color backgroundColorActivated,
+    required Color dividerColor,
+    required Color primaryTextColor,
+    required Color secondaryTextColor,
+  }) => Column(
     // mainAxisSize: MainAxisSize.min,
     children: [
       //
@@ -131,6 +137,19 @@ class _SettingsPageState extends State<SettingsPage> implements lnc.Observer {
             onTap: () => showPage(
               context: context,
               builder: (context) => const BurnAfterReadingPage(),
+            ),
+          ),
+          /// Storage Management
+          _listTile(
+            leading: AppIcons.storageIcon, title: 'Storage'.tr,
+            additional: 'Cache Files Management'.tr,
+            backgroundColor: backgroundColor,
+            backgroundColorActivated: backgroundColorActivated,
+            primaryTextColor: primaryTextColor,
+            secondaryTextColor: secondaryTextColor,
+            onTap: () => showPage(
+              context: context,
+              builder: (context) => const CacheFileManagePage(),
             ),
           ),
         ],
