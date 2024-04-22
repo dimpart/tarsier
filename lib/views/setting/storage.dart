@@ -103,6 +103,14 @@ class _CacheFileState extends State<CacheFileManagePage> implements lnc.Observer
             footer: _sectionFooter('CacheFiles::Description'.tr, secondaryTextColor,),
             children: [
               _listTile(
+                title: 'Database'.tr,
+                subtitle: man.dbSummary,
+                backgroundColor: backgroundColor,
+                backgroundColorActivated: backgroundColorActivated,
+                primaryTextColor: primaryTextColor,
+                secondaryTextColor: secondaryTextColor,
+              ),
+              _listTile(
                 title: 'Avatars'.tr,
                 subtitle: man.avatarSummary,
                 backgroundColor: backgroundColor,
