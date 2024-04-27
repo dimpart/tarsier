@@ -116,7 +116,8 @@ class _ChatListState extends State<ChatHistoryPage> implements lnc.Observer {
       middle: StatedTitleView.from(context, () => 'Secure Chat'.tr),
       trailing: plusButton(context),
     ),
-    body: SectionListView.builder(
+    body: buildSectionListView(
+      enableScrollbar: true,
       adapter: _adapter,
     ),
   );

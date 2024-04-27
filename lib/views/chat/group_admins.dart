@@ -86,7 +86,8 @@ class _AdministratorsState extends State<AdministratorsPage> implements lnc.Obse
       middle: StatedTitleView.from(context, () => 'Administrators'.tr),
       trailing: widget.info.isOwner ? _plusButton(context) : null,
     ),
-    body: SectionListView.builder(
+    body: buildSectionListView(
+      enableScrollbar: true,
       adapter: _adapter,
     ),
   );

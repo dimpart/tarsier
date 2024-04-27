@@ -70,7 +70,8 @@ class _PickChatState extends State<PickChatPage> with SectionAdapterMixin {
       backgroundColor: Styles.colors.appBardBackgroundColor,
       middle: StatedTitleView.from(context, () => 'Select a Chat'.tr),
     ),
-    body: SectionListView.builder(
+    body: buildSectionListView(
+      enableScrollbar: true,
       adapter: this,
     ),
   );

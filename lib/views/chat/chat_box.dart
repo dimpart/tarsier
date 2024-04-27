@@ -174,7 +174,8 @@ class _ChatBoxState extends State<ChatBox> implements lnc.Observer {
     children: [
       Expanded(
         flex: 1,
-        child: SectionListView.builder(
+        child: buildSectionListView(
+          enableScrollbar: true,
           reverse: true,
           adapter: _HistoryAdapter(widget.info,
             dataSource: _dataSource,

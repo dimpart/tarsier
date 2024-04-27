@@ -89,7 +89,8 @@ class _BlockListState extends State<BlockListPage> implements lnc.Observer {
       backgroundColor: Styles.colors.appBardBackgroundColor,
       middle: StatedTitleView.from(context, () => 'Blocked List'.tr),
     ),
-    body: SectionListView.builder(
+    body: buildSectionListView(
+      enableScrollbar: true,
       adapter: _adapter,
     ),
   );

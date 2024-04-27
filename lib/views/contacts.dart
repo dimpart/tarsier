@@ -148,7 +148,8 @@ class _ContactListState extends State<ContactListPage> implements lnc.Observer {
       middle: StatedTitleView.from(context, () => 'Contacts'.tr),
       trailing: SearchPage.searchButton(context),
     ),
-    body: SectionListView.builder(
+    body: buildSectionListView(
+      enableScrollbar: true,
       adapter: _adapter,
     ),
   );

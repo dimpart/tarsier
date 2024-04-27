@@ -24,7 +24,8 @@ class _BrightnessState extends State<BrightnessSettingPage> {
       backgroundColor: Styles.colors.appBardBackgroundColor,
       middle: Text('Brightness'.tr, style: Styles.titleTextStyle),
     ),
-    body: SectionListView.builder(
+    body: buildSectionListView(
+      enableScrollbar: false,
       adapter: _adapter,
     ),
   );

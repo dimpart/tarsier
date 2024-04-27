@@ -105,7 +105,8 @@ class _StrangerListState extends State<StrangerListPage> implements lnc.Observer
       backgroundColor: Styles.colors.appBardBackgroundColor,
       middle: StatedTitleView.from(context, () => 'New Friends'.tr),
     ),
-    body: SectionListView.builder(
+    body: buildSectionListView(
+      enableScrollbar: true,
       adapter: _adapter,
     ),
   );

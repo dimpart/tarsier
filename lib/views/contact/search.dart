@@ -107,7 +107,8 @@ class _SearchState extends State<SearchPage> implements lnc.Observer {
       // backgroundColor: Styles.themeBarBackgroundColor,
       middle: StatedTitleView.from(context, () => 'Search User'.tr),
     ),
-    child: SectionListView.builder(
+    child: buildSectionListView(
+      enableScrollbar: true,
       adapter: _adapter,
     ),
   );

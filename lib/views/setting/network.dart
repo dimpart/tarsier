@@ -51,7 +51,8 @@ class _NetworkState extends State<NetworkSettingPage> {
           icon: const Icon(AppIcons.refreshStationsIcon, size: 16),
           onPressed: _refreshing ? null : () => _confirmRefresh(context)),
     ),
-    body: SectionListView.builder(
+    body: buildSectionListView(
+      enableScrollbar: true,
       adapter: _adapter,
     ),
   );

@@ -50,7 +50,8 @@ class _BurnState extends State<BurnAfterReadingPage> implements lnc.Observer {
       backgroundColor: Styles.colors.appBardBackgroundColor,
       middle: Text('Burn After Reading'.tr, style: Styles.titleTextStyle),
     ),
-    body: SectionListView.builder(
+    body: buildSectionListView(
+      enableScrollbar: false,
       adapter: _adapter,
     ),
   );

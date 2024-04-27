@@ -107,7 +107,8 @@ class _ChatListState extends State<GroupChatsPage> implements lnc.Observer {
       middle: StatedTitleView.from(context, () => 'Group Chats'.tr),
       trailing: plusButton(context),
     ),
-    body: SectionListView.builder(
+    body: buildSectionListView(
+      enableScrollbar: true,
       adapter: _adapter,
     ),
   );

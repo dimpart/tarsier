@@ -89,7 +89,8 @@ class _MuteListState extends State<MuteListPage> implements lnc.Observer {
       backgroundColor: Styles.colors.appBardBackgroundColor,
       middle: StatedTitleView.from(context, () => 'Muted List'.tr),
     ),
-    body: SectionListView.builder(
+    body: buildSectionListView(
+      enableScrollbar: true,
       adapter: _adapter,
     ),
   );

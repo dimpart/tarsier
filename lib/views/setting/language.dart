@@ -24,7 +24,8 @@ class _LanguageState extends State<LanguageSettingPage> {
       backgroundColor: Styles.colors.appBardBackgroundColor,
       middle: Text('Language'.tr, style: Styles.titleTextStyle),
     ),
-    body: SectionListView.builder(
+    body: buildSectionListView(
+      enableScrollbar: true,
       adapter: _adapter,
     ),
   );

@@ -85,7 +85,8 @@ class _InvitationsState extends State<InvitationsPage> implements lnc.Observer {
       middle: StatedTitleView.from(context, () => 'Invitations'.tr),
       trailing: _confirmButton(context),
     ),
-    body: SectionListView.builder(
+    body: buildSectionListView(
+      enableScrollbar: true,
       adapter: _adapter,
     ),
   );
