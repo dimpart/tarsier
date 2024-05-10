@@ -78,9 +78,11 @@ class _MembersState extends State<MembersPage> implements lnc.Observer {
         'count': widget.info.members.length.toString(),
       }))
     ),
-    body: Container(
-      padding: const EdgeInsets.all(16),
-      child: ParticipantsWidget(widget.info, maxItems: -1),
+    body: SingleChildScrollView(
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        child: ParticipantsWidget(widget.info, maxItems: -1),
+      ),
     ),
   );
 

@@ -265,10 +265,25 @@ class _ChatTableCellState extends State<_ChatTableCell> implements lnc.Observer 
   }
 
   Widget _leading(Conversation info) {
+    int unread = info.unread;
+    int others = 0;
+    if (unread == 0 && info is GroupInfo) {
+      bool canReview = info.isOwner || info.isAdmin;
+      if (canReview) {
+        others = info.invitations.length;
+      }
+    }
     if (widget.info.isMuted) {
-      return IconView.fromSpot(info.getImage(width: 48, height: 48), info.unread);
+      // this conversation is muted,
+      // show spot when unread messages or invitations exist.
+      return IconView.fromSpot(info.getImage(width: 48, height: 48), unread + others);
+    } else if (unread == 0) {
+      // unread messages not exist,
+      // show spot when invitations exist.
+      return IconView.fromSpot(info.getImage(width: 48, height: 48), others);
     } else {
-      return IconView.fromNumber(info.getImage(width: 48, height: 48), info.unread);
+      // show unread number
+      return IconView.fromNumber(info.getImage(width: 48, height: 48), unread);
     }
   }
 
