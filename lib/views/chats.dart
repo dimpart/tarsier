@@ -29,11 +29,15 @@ class _ChatListState extends State<ChatHistoryPage> implements lnc.Observer {
     nc.addObserver(this, NotificationNames.kConversationUpdated);
     nc.addObserver(this, NotificationNames.kContactsUpdated);
     nc.addObserver(this, NotificationNames.kBlockListUpdated);
+    nc.addObserver(this, NotificationNames.kMembersUpdated);
+    nc.addObserver(this, NotificationNames.kGroupHistoryUpdated);
   }
 
   @override
   void dispose() {
     var nc = lnc.NotificationCenter();
+    nc.removeObserver(this, NotificationNames.kGroupHistoryUpdated);
+    nc.removeObserver(this, NotificationNames.kMembersUpdated);
     nc.removeObserver(this, NotificationNames.kBlockListUpdated);
     nc.removeObserver(this, NotificationNames.kContactsUpdated);
     nc.removeObserver(this, NotificationNames.kConversationUpdated);
@@ -61,6 +65,16 @@ class _ChatListState extends State<ChatHistoryPage> implements lnc.Observer {
       contact ??= userInfo?['unblocked'];
       Log.info('blocked contact updated: $contact');
       await _reload();
+    } else if (name == NotificationNames.kMembersUpdated) {
+      ID? gid = userInfo?['ID'];
+      assert(gid != null, 'notification error: $notification');
+      await _reload();
+    } else if (name == NotificationNames.kGroupHistoryUpdated) {
+      ID? chat = userInfo?['ID'];
+      Log.info('group history updated: $chat');
+      await _reload();
+    } else {
+      assert(false, 'notification error: $notification');
     }
   }
 
