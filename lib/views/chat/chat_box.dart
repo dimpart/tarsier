@@ -297,7 +297,7 @@ class _HistoryAdapter with SectionAdapterMixin {
               const BorderRadius.only(topRight: radius))
               : borderRadius.subtract(
               const BorderRadius.only(topLeft: radius)),
-          child: _getContentView(context, content, sender),
+          child: _getContentView(context, content, iMsg.envelope),
         ),
       );
       // create content frame
@@ -389,7 +389,8 @@ class _HistoryAdapter with SectionAdapterMixin {
     ],
   );
 
-  Widget _getContentView(BuildContext ctx, Content content, ID sender) {
+  Widget _getContentView(BuildContext ctx, Content content, Envelope envelope) {
+    ID sender = envelope.sender;
     if (content is ImageContent) {
       return ContentViewUtils.getImageContentView(ctx,
         content, sender, _dataSource.allMessages,
@@ -398,20 +399,27 @@ class _HistoryAdapter with SectionAdapterMixin {
               () => ShareImage.forwardImage(ctx, content, sender),
           Alert.action(AppIcons.saveFileIcon, 'Save to Album'),
               () => saveImageContent(ctx, content),
-          // 'Save Image', () { },
+          _canRecall(content) ? Alert.action(AppIcons.recallIcon, 'Recall Message') : null,
+              () => _recallImageMessage(ctx, content, envelope),
         ),
       );
-    } else if (content is AudioContent) {
-      return ContentViewUtils.getAudioContentView(ctx, content, sender);
     } else if (content is VideoContent) {
       return ContentViewUtils.getVideoContentView(ctx, content, sender,
         onLongPress: () => Alert.actionSheet(ctx, null, null,
           Alert.action(AppIcons.shareIcon, 'Forward Video'),
               () => ShareVideo.forwardVideo(ctx, content, sender),
-          // 'Save Image', () { },
+          _canRecall(content) ? Alert.action(AppIcons.recallIcon, 'Recall Message') : null,
+              () => _recallVideoMessage(ctx, content, envelope),
         ),
         onVideoShare: (url, {required title, required filename, required snapshot}) =>
             ShareVideo.forwardVideo(ctx, content, sender),
+      );
+    } else if (content is AudioContent) {
+      return ContentViewUtils.getAudioContentView(ctx, content, sender,
+        onLongPress: !_canRecall(content) ? null : () => Alert.actionSheet(ctx, null, null,
+          Alert.action(AppIcons.recallIcon, 'Recall Message'),
+              () => _recallAudioMessage(ctx, content, envelope),
+        ),
       );
     } else if (content is PageContent) {
       return ContentViewUtils.getPageContentView(ctx, content, sender,
@@ -520,4 +528,61 @@ void _onMentioned(ID uid) {
   nc.postNotification(NotificationNames.kAvatarLongPressed, null, {
     'user': uid,
   });
+}
+
+///
+///   Recall Messages
+///
+bool _canRecall(Content content) {
+  DateTime? when = content.time;
+  if (when == null) {
+    return true;
+  }
+  Duration elapsed = DateTime.now().difference(when);
+  return elapsed.inSeconds < 128;
+}
+void _recallImageMessage(BuildContext ctx, ImageContent content, Envelope envelope) {
+  Log.info('recalling image message: $content');
+  Alert.confirm(ctx, 'Confirm', 'Sure to recall this message?'.tr,
+    okAction: () {
+      GlobalVariable shared = GlobalVariable();
+      shared.emitter.recallImageMessage(content, envelope).then((pair) {
+        if (pair.first == null) {
+          Log.warning('failed to recall message.');
+        } else {
+          Log.info('message recalled.');
+        }
+      });
+    }
+  );
+}
+void _recallVideoMessage(BuildContext ctx, VideoContent content, Envelope envelope) {
+  Log.info('recalling video message: $content');
+  Alert.confirm(ctx, 'Confirm', 'Sure to recall this message?'.tr,
+      okAction: () {
+        GlobalVariable shared = GlobalVariable();
+        shared.emitter.recallVideoMessage(content, envelope).then((pair) {
+          if (pair.first == null) {
+            Log.warning('failed to recall message.');
+          } else {
+            Log.info('message recalled.');
+          }
+        });
+      }
+  );
+}
+void _recallAudioMessage(BuildContext ctx, AudioContent content, Envelope envelope) {
+  Log.info('recalling audio message: $content');
+  Alert.confirm(ctx, 'Confirm', 'Sure to recall this message?'.tr,
+      okAction: () {
+        GlobalVariable shared = GlobalVariable();
+        shared.emitter.recallAudioMessage(content, envelope).then((pair) {
+          if (pair.first == null) {
+            Log.warning('failed to recall message.');
+          } else {
+            Log.info('message recalled.');
+          }
+        });
+      }
+  );
 }
