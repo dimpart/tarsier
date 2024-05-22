@@ -12,6 +12,30 @@
     "0x9527983A58D48C2CA9016D84043D557981C2AC5a"
   ],
 
+  "services": [
+    {
+      "type": "ChatBot",
+      "ID": "ChatGPT@2yiWdbVHhUhN3uTScP9p3qi2V2zvGWbSxK",
+      "title": "Chat GPT",
+      "subtitle": "Open AI",
+      "icon": "https://uxwing.com/wp-content/themes/uxwing/download/brands-and-social-media/openai-icon.png"
+    },
+    {
+      "type": "ChatBot",
+      "ID": "Gemini@2iqbZy3zcETL19V3Sonaeqxfk4S49zpakG",
+      "title": "Gemini",
+      "subtitle": "Google AI",
+      "icon": "https://uxwing.com/wp-content/themes/uxwing/download/brands-and-social-media/google-gemini-icon.png"
+    },
+    {
+      "type": "ChatBot",
+      "ID": "SiteManager@2uhY6YNmtVJ6zvdJikVD8MkzVSMWUozqAa",
+      "title": "TV Movies",
+      "subtitle": "Search Engine",
+      "icon": "https://uxwing.com/wp-content/themes/uxwing/download/brands-and-social-media/youtube-tv-icon.png"
+    }
+  ],
+
   "stations": [
     {"host": "106.52.25.169", "port": 9394}
   ],

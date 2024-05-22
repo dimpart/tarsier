@@ -6,6 +6,7 @@ import 'views/chats.dart';
 import 'views/customizer.dart';
 import 'views/contacts.dart';
 import 'views/register.dart';
+import 'views/services.dart';
 
 
 void main() async {
@@ -98,6 +99,7 @@ class _MainPageState extends State<_MainPage> with WidgetsBindingObserver {
       items: [
         ChatHistoryPage.barItem(),
         ContactListPage.barItem(),
+        ServiceListPage.barItem(),
         SettingsPage.barItem(),
       ],
     ),
@@ -107,6 +109,8 @@ class _MainPageState extends State<_MainPage> with WidgetsBindingObserver {
         page = const ChatHistoryPage();
       } else if (index == 1) {
         page = const ContactListPage();
+      } else if (index == 2) {
+        page = const ServiceListPage();
       } else {
         page = const SettingsPage();
       }
