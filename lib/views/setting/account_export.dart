@@ -54,7 +54,8 @@ class _ExportState extends State<ExportPage> {
         SliverFillRemaining(
           hasScrollBody: false,
           fillOverscroll: true,
-          child: SingleChildScrollView(
+          child: buildScrollView(
+            enableScrollbar: true,
             child: _body(context),
           ),
         ),

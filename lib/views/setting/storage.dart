@@ -45,7 +45,8 @@ class _CacheFileState extends State<CacheFileManagePage> implements lnc.Observer
         backgroundColor: colors.appBardBackgroundColor,
         middle: Text('Cache Files Management'.tr, style: Styles.titleTextStyle),
       ),
-      body: SingleChildScrollView(
+      body: buildScrollView(
+        enableScrollbar: true,
         child: _table(context,
           backgroundColor: colors.sectionItemBackgroundColor,
           backgroundColorActivated: colors.sectionItemDividerColor,

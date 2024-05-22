@@ -111,7 +111,8 @@ class _ChatDetailState extends State<ChatDetailPage> implements lnc.Observer {
         backgroundColor: Styles.colors.appBardBackgroundColor,
         middle: Text('Chat Details'.tr, style: Styles.titleTextStyle),
       ),
-      body: SingleChildScrollView(
+      body: buildScrollView(
+        enableScrollbar: true,
         child: _body(context,
           backgroundColor: colors.sectionItemBackgroundColor,
           backgroundColorActivated: colors.sectionItemDividerColor,

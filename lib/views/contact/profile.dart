@@ -130,7 +130,8 @@ class _ProfileState extends State<ProfilePage> implements lnc.Observer {
           SliverFillRemaining(
             hasScrollBody: false,
             fillOverscroll: true,
-            child: SingleChildScrollView(
+            child: buildScrollView(
+              enableScrollbar: true,
               child: _body(context,
                 backgroundColor: colors.sectionItemBackgroundColor,
                 backgroundColorActivated: colors.sectionItemDividerColor,

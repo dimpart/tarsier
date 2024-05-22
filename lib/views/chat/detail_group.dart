@@ -120,7 +120,8 @@ class _ChatDetailState extends State<GroupChatDetailPage> implements lnc.Observe
           'count': widget.info.members.length.toString(),
         }), style: Styles.titleTextStyle),
       ),
-      body: SingleChildScrollView(
+      body: buildScrollView(
+        enableScrollbar: true,
         child: _body(context,
           backgroundColor: colors.sectionItemBackgroundColor,
           backgroundColorActivated: colors.sectionItemDividerColor,
