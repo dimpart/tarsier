@@ -411,7 +411,7 @@ class _HistoryAdapter with SectionAdapterMixin {
           _canRecall(content) ? Alert.action(AppIcons.recallIcon, 'Recall Message') : null,
               () => _recallVideoMessage(ctx, content, envelope),
         ),
-        onVideoShare: (url, {required title, required filename, required snapshot}) =>
+        onVideoShare: (playingItem) =>
             ShareVideo.forwardVideo(ctx, content, sender),
       );
     } else if (content is AudioContent) {
@@ -442,8 +442,7 @@ class _HistoryAdapter with SectionAdapterMixin {
       return ContentViewUtils.getTextContentView(ctx, content, sender,
         onWebShare: (url, {required title, required desc, required icon}) =>
             ShareWebPage.shareWebPage(ctx, url, title: title, desc: desc, icon: icon),
-        onVideoShare: (url, {required title, required filename, required snapshot}) =>
-            ShareVideo.shareVideo(ctx, url, filename: filename, title: title, snapshot: snapshot,)
+        onVideoShare: (playingItem) => ShareVideo.shareVideo(ctx, playingItem),
       );
     }
   }

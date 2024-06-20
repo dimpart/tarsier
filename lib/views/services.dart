@@ -5,6 +5,7 @@ import 'package:flutter_section_list/flutter_section_list.dart';
 import 'package:dim_flutter/dim_flutter.dart';
 
 import 'chat/chat_box.dart';
+import 'service/lives.dart';
 
 
 class ServiceListPage extends StatefulWidget {
@@ -69,7 +70,9 @@ class _BotListAdapter with SectionAdapterMixin, Logging {
     for (var item in array) {
       if (item is Map) {
         var st = item['type'];
-        if (st == 'ChatBot') {
+        if (st == 'ChatBox' || st == 'ChatBot') {
+          _services.add(item);
+        } else if (st == 'LiveSources') {
           _services.add(item);
         } else {
           logWarning('ignore service item: $item');
@@ -137,7 +140,7 @@ class _ServiceTableCellState extends State<_ServiceTableCell> {
     title: _title(widget.info),
     subtitle: _subtitle(widget.info),
     trailing: const CupertinoListTileChevron(),
-    onTap: () => _openChat(context, widget.info),
+    onTap: () => _openService(context, widget.info),
   );
 
   Widget _leading(Map info) {
@@ -175,18 +178,30 @@ class _ServiceTableCellState extends State<_ServiceTableCell> {
     return text == null ? null : Text(text);
   }
 
-  bool _openChat(BuildContext ctx, Map info) {
-    Log.warning('tap: $info');
-    ID? bot = ID.parse(info['ID']);
-    if (bot == null) {
-      return false;
-    }
-    ContactInfo? contact = ContactInfo.fromID(bot);
-    if (contact == null) {
-      return false;
-    }
+}
+
+bool _openService(BuildContext ctx, Map info) {
+  Log.warning('tap: $info');
+  // check service bot
+  ID? bot = ID.parse(info['ID']);
+  if (bot == null) {
+    return false;
+  }
+  ContactInfo? contact = ContactInfo.fromID(bot);
+  if (contact == null) {
+    return false;
+  }
+  // check service type
+  var st = info['type'];
+  if (st == 'ChatBox' || st == 'ChatBot') {
+    // chat box
     ChatBox.open(ctx, contact);
     return true;
+  } else if (st == 'LiveSources') {
+    // live source list
+    LiveSourceListPage.open(ctx, contact);
+    return true;
   }
-
+  Log.error('unknown service type: $st');
+  return false;
 }

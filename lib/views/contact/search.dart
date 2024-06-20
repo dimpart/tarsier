@@ -90,7 +90,6 @@ class _SearchState extends State<SearchPage> implements lnc.Observer {
   @override
   void initState() {
     super.initState();
-    _reload(null);
     // load editing text
     var shared = SharedEditingText();
     String? text = shared.getSearchingText();
@@ -123,8 +122,8 @@ class _SearchState extends State<SearchPage> implements lnc.Observer {
     }),
   );
 
-  Future<void> _search(BuildContext context, keywords) async {
-    Log.warning('TODO: search $keywords');
+  Future<void> _search(BuildContext context, String keywords) async {
+    Log.warning('search with keyword: $keywords');
     GlobalVariable shared = GlobalVariable();
     SharedMessenger? messenger = shared.messenger;
     if (messenger == null) {

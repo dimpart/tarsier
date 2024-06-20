@@ -15,22 +15,25 @@ abstract class ShareVideo {
     }
     var filename = content.filename;
     filename ??= URLHelper.filenameFromURL(url, 'movie.mp4');
-    var title = content['title'];
-    var snapshot = content['snapshot'];
-    shareVideo(ctx, url,
-      filename: filename, title: title,
-      snapshot: snapshot,
-    );
+    shareVideo(ctx, MediaItem(content.toMap()));
   }
 
-  static void shareVideo(BuildContext ctx, Uri url, {
-    required String? filename,
-    required String? title,
-    required String? snapshot,
-  }) {
+  static void shareVideo(BuildContext ctx, MediaItem playingItem) {
+    // get playing info
+    Uri? url = playingItem.url;
+    String? title = playingItem.title;
+    String? filename = playingItem.filename;
+    Uri? cover = playingItem.cover;
+    String? snapshot = cover?.toString();
+    if (url == null) {
+      assert(false, 'playing url not found: $playingItem');
+      return;
+    }
+    // build video content
     var content = FileContent.video(filename: filename, url: url, password: PlainKey.getInstance());
     content['title'] = title;
     content['snapshot'] = snapshot;
+    // confirm
     PickChatPage.open(ctx, onPicked: (chat) => Alert.confirm(ctx, 'Confirm Forward',
       _forwardVideoPreview(content, chat),
       okAction: () => _sendVideo(chat.identifier,

@@ -19,9 +19,6 @@ cd ~/Documents/
 mkdir github.com; cd github.com/
 
 # requirements
-mkdir moky; cd moky/
-git clone https://github.com/moky/StarGate.git
-cd ..
 mkdir dimchat; cd dimchat/
 git clone https://github.com/dimchat/demo-flutter.git
 cd ..
@@ -39,7 +36,7 @@ Just open ```tarsier``` project by **Android Studio** and run it in a simulator.
 
 After android peoject run, the **Android Studio** will also generate Podfile for iOS too.
 
-2.1. Edit ```tarsier/ios/Podfile```, add permissions setting:
+2.1. Edit ```dimpart/tarsier/ios/Podfile```, add permissions setting:
 
 ```
 platform :ios, '12.0'
@@ -68,7 +65,7 @@ end
 ```
 then try to build iOS in **Android Studio** (click menu ```Build -> Flutter -> Build iOS```), this step will install pods and initialize project configs;
 
-2.2. Open ```tarsier/ios/Runner.xcworkspace``` by Xcode
+2.2. Open ```dimpart/tarsier/ios/Runner.xcworkspace``` by Xcode
 
 A) Set your team in ```TARGETS -> Runner -> Signing & Capabilities```;
 
@@ -134,6 +131,86 @@ C) If error occurred with C++, search "Linker", check ```Other Linker Flags```, 
 
 If nothing unexpected happens, your iOS app should be able to run now!
 
+### 3. Test Windows
+
+3.1. Edit ```dimchat/demo-flutter/dim_flutter/pubspec.yaml```
+
+```
+dependencies:
+
+  ...
+
+  sqflite: ^2.2.6
+  sqflite_common_ffi: ^2.3.3
+#  sqflite_common_ffi_web: ^0.4.2
+
+  fvp: ^0.16.1
+  video_player: ^2.8.3
+  chewie: ^1.8.1
+  castscreen: ^1.0.2
+```
+
+3.2. Edit ```dimchat/demo-flutter/dim_flutter/lib/src/common/platform.dart```
+
+```
+import 'dart:io' show Platform;
+
+import 'package:flutter/foundation.dart';
+import 'package:sqflite_common_ffi/sqflite_ffi.dart';
+// import 'package:sqflite_common_ffi_web/sqflite_ffi_web.dart';
+import 'package:fvp/fvp.dart';
+
+import 'package:lnc/log.dart';
+
+class DevicePlatform {
+
+  ...
+
+  /// patch for SQLite
+  static void patchSQLite() {
+    if (_sqlitePatched) {
+      return;
+    }
+    if (isWeb) {
+      // TODO: open for Web
+      // // Change default factory on the web
+      // databaseFactory = databaseFactoryFfiWeb;
+    } else if (isWindows || isLinux) {
+      // Initialize FFI
+      sqfliteFfiInit();
+      // Change the default factory
+      databaseFactory = databaseFactoryFfi;
+    }
+    _sqlitePatched = true;
+  }
+  static bool _sqlitePatched = false;
+
+  /// patch for Video Player
+  static void patchVideoPlayer() {
+    if (_videoPlayerPatched) {
+      return;
+    }
+    if (isAndroid || isIOS || isMacOS || isWeb) {
+      // Video Player support:
+      // - Android SDK 16+
+      // - iOS 12.0+
+      // - macOS 10.14+
+      // - Web Any*
+    } else {
+      // - Windows
+      // - Linux
+      // ...
+      Log.info('register video player for Windows, Linux, ...');
+      registerWith();
+    }
+    _videoPlayerPatched = true;
+  }
+  static bool _videoPlayerPatched = false;
+
+}
+```
+
+If nothing unexpected happens, your desktop app should be able to run now!
 
 ----
-Copyright &copy; 2023 Albert Moky
+Copyright &copy; 2024 Albert Moky
