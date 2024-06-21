@@ -131,9 +131,9 @@ class _SearchState extends State<SearchPage> implements lnc.Observer {
       Alert.show(context, 'Error', 'Failed to send command'.tr);
       return;
     } else {
+      _dataSource.refresh([]);
       if (mounted) {
         setState(() {
-          _dataSource.refresh([]);
           _adapter.notifyDataChange();
         });
       }
@@ -183,7 +183,7 @@ class _SearchResultAdapter with SectionAdapterMixin {
 
   @override
   Widget getItem(BuildContext context, IndexPath indexPath) {
-    ContactInfo info = _dataSource.getItem(indexPath.section - 1, indexPath.item);
+    ContactInfo info = _dataSource.getItem(indexPath.section, indexPath.item);
     return ProfilePage.cell(info);
   }
 
