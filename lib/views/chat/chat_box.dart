@@ -493,12 +493,19 @@ class _HistoryDataSource {
 
   void refresh(List<InstantMessage> history) {
     Log.debug('sort and refreshing ${history.length} message(s)');
-    history.sort((a, b) {
+    List<InstantMessage> array = [];
+    for (var his in history) {
+      if (his.content.getBool('hidden', false) == true) {
+        continue;
+      }
+      array.add(his);
+    }
+    array.sort((a, b) {
       int ams = a.time?.millisecondsSinceEpoch ?? 0;
       int bms = b.time?.millisecondsSinceEpoch ?? 0;
       return bms - ams;
     });
-    _messages = history;
+    _messages = array;
   }
 
   int getItemCount() => _messages.length;

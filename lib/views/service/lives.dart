@@ -35,8 +35,9 @@ class _LiveSourceListState extends State<LiveSourceListPage> implements lnc.Obse
   late final _LiveSourceAdapter _adapter;
 
   int _searchTag = 9527;  // show CupertinoActivityIndicator
+  String? _description;
 
-  static const Duration kQueryExpires = Duration(hours: 24);
+  static const Duration kLiveQueryExpires = Duration(minutes: 32);
 
   @override
   void dispose() {
@@ -60,22 +61,28 @@ class _LiveSourceListState extends State<LiveSourceListPage> implements lnc.Obse
 
   Future<void> _refreshLives(Content content, {required bool isRefresh}) async {
     List? lives = content['lives'];
-    if (lives == null) {
-      Log.error('lives not found in live stream response');
-      return;
-    }
     int? tag = content['tag'];
-    if (tag == _searchTag) {
-      Log.info('respond with search tag: $tag');
+    String? desc = content['description'];
+    if (!isRefresh) {
+      // update from local
+      Log.info('refresh lives from old record: ${lives?.length}, $desc');
+      assert(lives != null, 'old record error: $context');
       _searchTag = 0;
-    } else if (isRefresh) {
+      _description = desc;
+    } else if (tag == _searchTag) {
+      // update from remote
+      Log.info('respond with search tag: $tag, ${lives?.length}, $desc');
+      _searchTag = 0;
+      _description = desc;
+    } else {
+      // expired response
       Log.warning('search tag not match, ignore this response: $tag <> $_searchTag');
       return;
-    } else {
-      Log.info('refresh lives from old record: $lives');
-      _searchTag = 0;
     }
-    await _dataSource.refresh(lives, forceQuery: isRefresh);
+    // refresh if not empty
+    if (lives != null && lives.isNotEmpty) {
+      await _dataSource.refresh(lives);
+    }
     if (mounted) {
       setState(() {
         _adapter.notifyDataChange();
@@ -86,13 +93,14 @@ class _LiveSourceListState extends State<LiveSourceListPage> implements lnc.Obse
   Future<Content?> _loadLives() async {
     GlobalVariable shared = GlobalVariable();
     var pair = await shared.database.getInstantMessages(widget.info.identifier,
-        limit: 1024);
-    var messages = pair.first;
+        limit: 32);
+    List<InstantMessage> messages = pair.first;
     Log.info('checking lives from ${messages.length} messages');
     for (var msg in messages) {
       var content = msg.content;
+      var mod = content['mod'];
       var lives = content['lives'];
-      if (lives is List) {
+      if (mod == 'lives' && lives is List && lives.isNotEmpty) {
         // got last one
         return content;
       }
@@ -109,10 +117,10 @@ class _LiveSourceListState extends State<LiveSourceListPage> implements lnc.Obse
       await _refreshLives(content, isRefresh: false);
       var time = content.time;
       if (time != null) {
-        var expired = time.millisecondsSinceEpoch + kQueryExpires.inMilliseconds;
+        var expired = time.millisecondsSinceEpoch + kLiveQueryExpires.inMilliseconds;
         var now = DateTime.now().millisecondsSinceEpoch;
         if (now < expired) {
-          Log.info('last message not expired yet: $content');
+          Log.info('last message not expired yet');
           return;
         }
       }
@@ -131,6 +139,7 @@ class _LiveSourceListState extends State<LiveSourceListPage> implements lnc.Obse
     content = TextContent.create('Live Stream Sources');
     _searchTag = content.sn;
     content['tag'] = _searchTag;
+    content['hidden'] = true;
     // check visa.key
     ID bot = widget.info.identifier;
     Log.info('query lives with tag: $_searchTag');
@@ -177,12 +186,32 @@ class _LiveSourceAdapter with SectionAdapterMixin {
   bool shouldExistSectionHeader(int section) => state._searchTag > 0;
 
   @override
+  bool shouldExistSectionFooter(int section) => state._description != null;
+
+  @override
   Widget getSectionHeader(BuildContext context, int section) => Center(
     child: Container(
       padding: const EdgeInsets.all(8),
       child: const CupertinoActivityIndicator(),
     ),
   );
+
+  @override
+  Widget getSectionFooter(BuildContext context, int section) {
+    String prompt = state._description ?? '';
+    return Container(
+      color: Styles.colors.appBardBackgroundColor,
+      padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+      child: Row(
+        // crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Expanded(child: Text(prompt,
+            style: Styles.sectionFooterTextStyle,
+          )),
+        ],
+      ),
+    );
+  }
 
   @override
   int numberOfItems(int section) => _dataSource.getItemCount(section);
@@ -199,27 +228,35 @@ class _LiveDataSource {
 
   List<TVBox>? _sources;
 
-  Future<void> refresh(Iterable array, {required bool forceQuery}) async {
+  Future<void> refresh(Iterable array) async {
     List<TVBox> lives = [];
-    TVBox box;
+    Map info;
     Uri? url;
     for (var item in array) {
       // get live url
       if (item is Uri) {
         url = item;
+        info = {
+          'url': url.toString(),
+        };
       } else if (item is String) {
         url = HtmlUri.parseUri(item);
+        info = {
+          'url': item,
+        };
+      } else if (item is Map) {
+        url = HtmlUri.parseUri(item['url']);
+        info = item;
+      } else {
+        Log.error('live item error: $item');
+        continue;
       }
       if (url == null) {
         Log.error('live url error: $item');
         continue;
       }
       // create tv box
-      box = TVBox(url);
-      if (forceQuery) {
-        await box.refresh();
-      }
-      lives.add(box);
+      lives.add(TVBox(url, info));
     }
     _sources = lives;
   }
@@ -249,50 +286,72 @@ class _LiveSourceItem extends StatefulWidget {
 
 class _LiveSourceState extends State<_LiveSourceItem> {
 
-  @override
-  void initState() {
-    super.initState();
-    _loadLives();
-  }
-
-  Future<void> _loadLives() async {
-    await widget.tvBox.refresh();
-    if (mounted) {
-      setState(() {});
-    }
-  }
+  Uri get livesUrl => widget.tvBox.livesUrl;
 
   String get title {
-    int count = 0;
-    List<ChannelGroup> groups = widget.tvBox.lives ?? [];
-    for (var grp in groups) {
-      count += grp.sources.length;
+    TVBox tvBox = widget.tvBox;
+    // get "title"
+    String? text = tvBox.getString('title', null);
+    if (text != null && text.isNotEmpty) {
+      return text;
     }
-    if (count == 0) {
-      TVBox tvBox = widget.tvBox;
-      return 'Querying "${tvBox.livesUrl.host}"';
-    } else if (count == 1) {
-      return 'Only 1 channel';
-    } else {
+    // get "name (count/total)"
+    String? name = tvBox.getString('name', null);
+    String count = _counter(tvBox);
+    if (name == null || name.isEmpty) {
       return '$count channels';
+    } else {
+      return '$name ($count)';
     }
   }
 
-  String get subtitle => widget.tvBox.livesUrl.toString();
+  String _counter(TVBox tvBox) {
+    int? total = tvBox['origin']?['channel_total_count'];
+    int? count = tvBox['available_channel_count'];
+    if (count == null) {
+      int cnt = 0;
+      List<ChannelGroup> groups = widget.tvBox.lives ?? [];
+      for (var grp in groups) {
+        cnt += grp.sources.length;
+      }
+      count = cnt;
+    }
+    if (total == null) {
+      return '$count';
+    } else {
+      return '$count/$total';
+    }
+  }
+
+  String get subtitle {
+    TVBox tvBox = widget.tvBox;
+    // get "subtitle"
+    String? text = tvBox.getString('subtitle', null);
+    if (text != null && text.isNotEmpty) {
+      return text;
+    }
+    // get "url"
+    String? src = tvBox['origin']?['source'];
+    if (src != null && src.isNotEmpty) {
+      return src;
+    }
+    String? url = tvBox['origin']?['url'];
+    if (url != null && url.isNotEmpty) {
+      return url;
+    }
+    return widget.tvBox.livesUrl.toString();
+  }
 
   @override
-  Widget build(BuildContext context) {
-    Uri url = widget.tvBox.livesUrl;
-    return CupertinoTableCell(
-      leading: _leading(),
-      title: Text(title),
-      subtitle: Text(subtitle),
-      trailing: const CupertinoListTileChevron(),
-      onTap: () => VideoPlayerPage.openLivePlayer(context, url,
-        onShare: (playingItem) => ShareVideo.shareVideo(context, playingItem),
-      ),
-    );
-  }
+  Widget build(BuildContext context) => CupertinoTableCell(
+    leading: _leading(),
+    title: Text(title),
+    subtitle: Text(subtitle),
+    trailing: const CupertinoListTileChevron(),
+    onTap: () => VideoPlayerPage.openLivePlayer(context, livesUrl,
+      onShare: (playingItem) => ShareVideo.shareVideo(context, playingItem),
+    ),
+  );
 
   Widget _leading() {
     Widget view = Container(
