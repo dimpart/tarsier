@@ -22,10 +22,18 @@
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
 	<key>LSMinimumSystemVersion</key>
 	<string>$(MACOSX_DEPLOYMENT_TARGET)</string>
+	<key>NSCameraUsageDescription</key>
+	<string>Allow to use the camera.</string>
 	<key>NSHumanReadableCopyright</key>
 	<string>$(PRODUCT_COPYRIGHT)</string>
 	<key>NSMainNibFile</key>
 	<string>MainMenu</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Allow to use the microphone.</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>Allow to save photos to the album.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Allow to access photo album.</string>
 	<key>NSPrincipalClass</key>
 	<string>NSApplication</string>
 </dict>
