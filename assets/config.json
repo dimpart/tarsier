@@ -7,9 +7,7 @@
   "owner": "anyone@anywhere",
 
   "contacts": [
-    "0x952718A18C6b21abb593D84203282fe1c21773D6",
-    "0x952778bf7cc494c714cBA0DDa7823B18ff8a4DB2",
-    "0x9527983A58D48C2CA9016D84043D557981C2AC5a"
+
   ],
 
   "services": [
@@ -32,6 +30,19 @@
       "enigma": "123456"
     }
   ],
+
+  "newest": {
+    "android": {
+      "version": "1.0.0",
+      "build": 10001,
+      "url": "http://tarsier.dim.chat/downloads#android"
+    },
+    "windows": {
+      "version": "1.0.0",
+      "build": 10001,
+      "url": "http://tarsier.dim.chat/downloads#windows"
+    }
+  },
 
   "terms": "https://wallet.dim.chat/dimchat/sechat/privacy.html",
   "about": "https://dim.chat/"

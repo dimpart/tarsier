@@ -1,6 +1,5 @@
-import 'dart:typed_data';
-
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/services.dart';
 
 import 'package:lnc/notification.dart' as lnc;
 
@@ -68,6 +67,7 @@ class _InputState extends State<ChatInputTray> implements lnc.Observer {
   @override
   void initState() {
     super.initState();
+    _focusNode.requestFocus();
     // load editing text
     var shared = SharedEditingText();
     String? text = shared.getConversationEditingText(widget.info);
@@ -97,22 +97,19 @@ class _InputState extends State<ChatInputTray> implements lnc.Observer {
       if (!_isVoice)
         Expanded(
           flex: 1,
-          child: CupertinoTextField(
-            minLines: 1,
-            maxLines: 8,
-            controller: _controller,
-            placeholder: 'Input text message'.tr,
-            decoration: Styles.textFieldDecoration,
-            style: Styles.textFieldStyle,
-            keyboardType: TextInputType.multiline,
-            textInputAction: TextInputAction.newline,
+          child: DevicePlatform.isMobile ? _inputTextField(context) : Focus(
             focusNode: _focusNode,
-            onTapOutside: (event) => _focusNode.unfocus(),
-            onSubmitted: (value) => _sendText(context, _controller, widget.info),
-            onChanged: (value) => setState(() {
-              Log.warning('onChanged: $value');
-              _typing(_controller, widget.info);
-            }),
+            child: _inputTextField(context),
+            onKeyEvent: (FocusNode focusNode, KeyEvent event) {
+              Log.error('focus node: $focusNode, key event: $event');
+              if (event is KeyDownEvent) {
+                if (event.logicalKey == LogicalKeyboardKey.enter) {
+                  _sendText(context, _controller, widget.info);
+                  return KeyEventResult.handled;
+                }
+              }
+              return KeyEventResult.ignored;
+            },
           ),
         ),
       if (_isVoice)
@@ -133,6 +130,24 @@ class _InputState extends State<ChatInputTray> implements lnc.Observer {
           onPressed: () => _sendText(context, _controller, widget.info),
         ),
     ],
+  );
+
+  Widget _inputTextField(BuildContext context) => CupertinoTextField(
+    minLines: 1,
+    maxLines: 8,
+    controller: _controller,
+    placeholder: 'Input text message'.tr,
+    decoration: Styles.textFieldDecoration,
+    style: Styles.textFieldStyle,
+    keyboardType: TextInputType.multiline,
+    textInputAction: TextInputAction.newline,
+    focusNode: DevicePlatform.isMobile ? _focusNode : null,
+    onTapOutside: (event) => _focusNode.unfocus(),
+    onSubmitted: (value) => _sendText(context, _controller, widget.info),
+    onChanged: (value) => setState(() {
+      Log.warning('onChanged: $value');
+      _typing(_controller, widget.info);
+    }),
   );
 
 }

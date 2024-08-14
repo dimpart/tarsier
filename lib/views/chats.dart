@@ -13,7 +13,7 @@ class ChatHistoryPage extends StatefulWidget {
   const ChatHistoryPage({super.key});
 
   static BottomNavigationBarItem barItem() => BottomNavigationBarItem(
-    icon: const Icon(AppIcons.chatsTabIcon),
+    icon: const _ChatsIconView(icon: Icon(AppIcons.chatsTabIcon)),
     label: 'Chats'.tr,
   );
 
@@ -343,3 +343,107 @@ Widget? _richMessage(String head, String body) => RichText(
     TextSpan(text: body, style: const TextStyle(color: CupertinoColors.systemGrey),),
   ]),
 );
+
+
+///
+///   Chats Tab Item
+///
+class _ChatsIconView extends StatefulWidget {
+  const _ChatsIconView({required this.icon});
+
+  final Widget icon;
+
+  @override
+  State<StatefulWidget> createState() => _ChatsIconState();
+
+}
+
+class _ChatsIconState extends State<_ChatsIconView> implements lnc.Observer {
+  _ChatsIconState() {
+    var nc = lnc.NotificationCenter();
+    nc.addObserver(this, NotificationNames.kConversationUpdated);
+    nc.addObserver(this, NotificationNames.kContactsUpdated);
+    nc.addObserver(this, NotificationNames.kBlockListUpdated);
+    nc.addObserver(this, NotificationNames.kMuteListUpdated);
+  }
+
+  @override
+  void dispose() {
+    var nc = lnc.NotificationCenter();
+    nc.removeObserver(this, NotificationNames.kMuteListUpdated);
+    nc.removeObserver(this, NotificationNames.kBlockListUpdated);
+    nc.removeObserver(this, NotificationNames.kContactsUpdated);
+    nc.removeObserver(this, NotificationNames.kConversationUpdated);
+    super.dispose();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _reload();
+  }
+
+  Future<void> _reload() async {
+    await UnreadCounter().load();
+    if (mounted) {
+      setState(() {
+      });
+    }
+  }
+
+  @override
+  Future<void> onReceiveNotification(lnc.Notification notification) async {
+    await _reload();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    int count = UnreadCounter().count;
+    Log.warning('new message count: $count');
+    // checking for upgrade
+    Future.delayed(const Duration(seconds: 5)).then((_) {
+      NewestManager().checkUpdate(context);
+    });
+    return IconView.fromNumber(widget.icon, count);
+  }
+
+}
+
+
+class UnreadCounter {
+  factory UnreadCounter() => _instance;
+  static final UnreadCounter _instance = UnreadCounter._internal();
+  UnreadCounter._internal();
+
+  late final Amanuensis _clerk = Amanuensis();
+
+  int _count = 0;
+
+  int get count => _count;
+
+  Future<int> load() async {
+    List<Conversation> all = await _clerk.loadConversations();
+    for (Conversation item in all) {
+      await item.reloadData();
+    }
+    int count = 0;
+    for (Conversation chat in all) {
+      if (chat is ContactInfo) {
+        if (chat.isMuted) {
+          Log.warning('skip muted chat: $chat');
+          continue;
+        } else if (chat.isBlocked) {
+          Log.warning('skip blocked chat: $chat');
+          continue;
+        } else if (chat.isNotFriend) {
+          Log.warning('skip stranger chat: $chat');
+          continue;
+        }
+      }
+      Log.warning('chat: $chat');
+      count += chat.unread;
+    }
+    return _count = count;
+  }
+
+}

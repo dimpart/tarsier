@@ -17,7 +17,7 @@ class BurnAfterReadingPage extends StatefulWidget {
 class _BurnState extends State<BurnAfterReadingPage> implements lnc.Observer {
   _BurnState() {
     var nc = lnc.NotificationCenter();
-    nc.addObserver(this, NotificationNames.kSettingUpdated);
+    nc.addObserver(this, NotificationNames.kBurnTimeUpdated);
   }
 
   late final _BurnListAdapter _adapter = _BurnListAdapter();
@@ -25,7 +25,7 @@ class _BurnState extends State<BurnAfterReadingPage> implements lnc.Observer {
   @override
   void dispose() {
     var nc = lnc.NotificationCenter();
-    nc.removeObserver(this, NotificationNames.kSettingUpdated);
+    nc.removeObserver(this, NotificationNames.kBurnTimeUpdated);
     super.dispose();
   }
 
@@ -33,7 +33,7 @@ class _BurnState extends State<BurnAfterReadingPage> implements lnc.Observer {
   Future<void> onReceiveNotification(lnc.Notification notification) async {
     String name = notification.name;
     Map? userInfo = notification.userInfo;
-    if (name == NotificationNames.kSettingUpdated) {
+    if (name == NotificationNames.kBurnTimeUpdated) {
       int? duration = userInfo?['duration'];
       Log.info('setting updated, duration: $duration');
       if (mounted) {
@@ -141,10 +141,6 @@ class _BurnCellState extends State<_BurnCell> {
     int duration = widget.duration;
     _dataSource.setBurnAfterReading(duration);
     // closePage();
-    var nc = lnc.NotificationCenter();
-    nc.postNotification(NotificationNames.kSettingUpdated, this, {
-      'duration': duration,
-    });
   }
 
 }

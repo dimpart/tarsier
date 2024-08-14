@@ -19,7 +19,7 @@ class _RegisterInfo {
 
   bool importing = false;
 
-  bool agreed = false;
+  bool agreed = true;
 
   String nickname = '';
   String avatarURL = '';
@@ -394,7 +394,9 @@ class _RegisterState extends State<RegisterPage> {
             ),
             borderRadius: const BorderRadius.all(Radius.circular(5)),
           ),
-          child: Icon(AppIcons.agreeIcon,
+          child: Icon(widget._info.agreed
+              ? AppIcons.agreeIcon
+              : AppIcons.disagreeIcon,
             size: 16,
             color: widget._info.agreed
                 ? CupertinoColors.white

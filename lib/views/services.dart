@@ -61,9 +61,9 @@ class _BotListAdapter with SectionAdapterMixin, Logging {
   final List<Map> _services = [];
 
   Future<bool> loadData() async {
-    var array = await Config().services;
-    logInfo('loaded ${array?.length} services: $array');
-    if (array == null) {
+    List array = await Config().services;
+    logInfo('loaded ${array.length} services: $array');
+    if (array.isEmpty) {
       return false;
     }
     _services.clear();

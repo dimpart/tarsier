@@ -315,12 +315,6 @@ abstract class _GreetingState<T extends StatefulWidget> extends State<T> impleme
     nc.addObserver(this, NotificationNames.kMuteListUpdated);
   }
 
-  late final Amanuensis _clerk = Amanuensis();
-
-  int _count = 0;
-
-  int get count => _count;
-
   @override
   void dispose() {
     var nc = lnc.NotificationCenter();
@@ -357,25 +351,9 @@ abstract class _GreetingState<T extends StatefulWidget> extends State<T> impleme
   }
 
   Future<void> _reload() async {
-    List<Conversation> chats = await _clerk.loadConversations();
-    for (Conversation item in chats) {
-      await item.reloadData();
-    }
-    List<Conversation> strangers = _clerk.strangers;
-    int count = 0;
-    for (Conversation item in strangers) {
-      if (item.isMuted) {
-        Log.warning('muted stranger: $item');
-        continue;
-      }
-      Log.warning('stranger: $item');
-      if (item.unread > 0) {
-        count += 1;
-      }
-    }
+    await GreetingCounter().load();
     if (mounted) {
       setState(() {
-        _count = count;
       });
     }
   }
@@ -402,6 +380,7 @@ class _NewFriendState extends _GreetingState<_NewFriendCounter> {
 
   @override
   Widget build(BuildContext context) {
+    int count = GreetingCounter().count;
     Log.warning('greeting count: $count');
     Widget? bubble = NumberBubble.fromInt(count);
     return bubble ?? Container();
@@ -426,8 +405,43 @@ class _ContactsIconState extends _GreetingState<_ContactsIconView> {
 
   @override
   Widget build(BuildContext context) {
+    int count = GreetingCounter().count;
     Log.warning('greeting count: $count');
-    return IconView.fromSpot(widget.icon, count);
+    return IconView.fromNumber(widget.icon, count);
+  }
+
+}
+
+
+class GreetingCounter {
+  factory GreetingCounter() => _instance;
+  static final GreetingCounter _instance = GreetingCounter._internal();
+  GreetingCounter._internal();
+
+  late final Amanuensis _clerk = Amanuensis();
+
+  int _count = 0;
+
+  int get count => _count;
+
+  Future<int> load() async {
+    List<Conversation> all = await _clerk.loadConversations();
+    for (Conversation item in all) {
+      await item.reloadData();
+    }
+    List<Conversation> strangers = _clerk.strangers;
+    int count = 0;
+    for (Conversation chat in strangers) {
+      if (chat.isMuted) {
+        Log.warning('skip muted chat: $chat');
+        continue;
+      }
+      Log.warning('stranger: $chat');
+      if (chat.unread > 0) {
+        count += 1;
+      }
+    }
+    return _count = count;
   }
 
 }

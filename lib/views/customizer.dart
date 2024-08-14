@@ -18,7 +18,7 @@ class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
 
   static BottomNavigationBarItem barItem() => BottomNavigationBarItem(
-    icon: const Icon(AppIcons.settingsTabIcon),
+    icon: const _SettingsIconView(icon: Icon(AppIcons.settingsTabIcon)),
     label: 'Settings'.tr,
   );
 
@@ -44,8 +44,7 @@ class _SettingsPageState extends State<SettingsPage> implements lnc.Observer {
     String name = notification.name;
     Map? userInfo = notification.userInfo;
     if (name == NotificationNames.kSettingUpdated) {
-      int? duration = userInfo?['duration'];
-      Log.info('setting updated, duration: $duration');
+      Log.info('setting updated: $userInfo');
       if (mounted) {
         setState(() {
         });
@@ -258,10 +257,17 @@ class _SettingsPageState extends State<SettingsPage> implements lnc.Observer {
         required Color primaryTextColor, required Color secondaryTextColor}) {
     GlobalVariable shared = GlobalVariable();
     Client client = shared.terminal;
+    Newest? newest = Config().newest;
+    bool canUpgrade = newest != null && newest.canUpgrade(client);
     return _listTile(
         leading: AppIcons.setAboutIcon, title: 'About'.tr,
         additional: 'Tarsier (v${client.versionName})',
-        trailing: false,
+        trailing: canUpgrade ? Text('NEW'.tr, style: const TextStyle(
+          color: CupertinoColors.systemRed,
+          decoration: TextDecoration.none,
+          fontSize: 12,
+          fontWeight: FontWeight.bold,
+        ),) : Container(),
         backgroundColor: backgroundColor,
         backgroundColorActivated: backgroundColorActivated,
         primaryTextColor: primaryTextColor,
@@ -270,40 +276,68 @@ class _SettingsPageState extends State<SettingsPage> implements lnc.Observer {
     );
   }
 
-  void _showAbout(BuildContext context, String url, Client client) =>
-      FrostedGlassPage.show(context, title: 'About Tarsier', body: RichText(
-        text: TextSpan(
-          text: 'Secure chat application powered by DIM,'
-              ' E2EE (End-to-End Encrypted) technology.\n'
-              '\n'
-              'Author: Albert Moky\n'
-              'Version: ${client.versionName} (build ${client.buildNumber})\n'
-              'Website: ',
-          style: TextStyle(
-            fontSize: 12,
-            fontWeight: FontWeight.normal,
-            color: Styles.colors.secondaryTextColor,
-            decoration: TextDecoration.none,
-          ),
-          children: [
-            TextSpan(
-              text: url,
-              style: const TextStyle(
-                color: CupertinoColors.activeBlue,
-                decoration: TextDecoration.underline,
-              ),
-              recognizer: TapGestureRecognizer()..onTap = () => Browser.open(context,
-                url: url,
-              ),
-            ),
-          ],
+  void _showAbout(BuildContext context, String url, Client client) {
+    Newest? newest = Config().newest;
+    return FrostedGlassPage.show(context, title: 'About Tarsier', body: RichText(
+      text: TextSpan(
+        text: 'Secure chat application powered by DIM,'
+            ' E2EE (End-to-End Encrypted) technology.\n'
+            '\n'
+            'Author: Albert Moky\n'
+            'Version: ${client.versionName} (build ${client.buildNumber})   ',
+        style: TextStyle(
+          fontSize: 12,
+          fontWeight: FontWeight.normal,
+          color: Styles.colors.secondaryTextColor,
+          decoration: TextDecoration.none,
         ),
-      ));
+        children: [
+          if (newest != null && newest.canUpgrade(client))
+          _updateButton(context, newest),
+          _homepage(context, url),
+        ],
+      ),
+    ));
+  }
+
+  TextSpan _updateButton(BuildContext context, Newest newest) => TextSpan(
+    text: 'UPGRADE'.tr,
+    style: const TextStyle(
+      color: CupertinoColors.systemRed,
+      decoration: TextDecoration.none,
+      fontWeight: FontWeight.bold,
+    ),
+    recognizer: TapGestureRecognizer()..onTap = () => Browser.launch(context,
+      url: newest.url,
+    ),
+  );
+
+  TextSpan _homepage(BuildContext context, String url) => TextSpan(
+    text: '\nWebsite: ',
+    style: TextStyle(
+      fontSize: 12,
+      fontWeight: FontWeight.normal,
+      color: Styles.colors.secondaryTextColor,
+      decoration: TextDecoration.none,
+    ),
+    children: [
+      TextSpan(
+        text: url,
+        style: const TextStyle(
+          color: CupertinoColors.activeBlue,
+          decoration: TextDecoration.underline,
+        ),
+        recognizer: TapGestureRecognizer()..onTap = () => Browser.open(context,
+          url: url,
+        ),
+      ),
+    ],
+  );
 
 }
 
 Widget _listTile({required IconData leading,
-  required String title, required String additional, bool trailing = true,
+  required String title, required String additional, Widget? trailing,
   required Color backgroundColor, required Color backgroundColorActivated,
   required Color primaryTextColor, required Color secondaryTextColor,
   required VoidCallback onTap}) =>
@@ -314,7 +348,7 @@ Widget _listTile({required IconData leading,
       leading: Icon(leading, color: primaryTextColor),
       title: Text(title, style: TextStyle(color: primaryTextColor)),
       additionalInfo: Text(additional, style: TextStyle(color: secondaryTextColor)),
-      trailing: trailing ? const CupertinoListTileChevron() : null,
+      trailing: trailing ?? const CupertinoListTileChevron(),
       onTap: onTap,
     );
 
@@ -403,5 +437,55 @@ class _MyAccountState extends State<_MyAccountSection> implements lnc.Observer {
     trailing: const CupertinoListTileChevron(),
     onTap: () => AccountPage.open(context),
   );
+
+}
+
+
+///
+///   Settings Tab Item
+///
+class _SettingsIconView extends StatefulWidget {
+  const _SettingsIconView({required this.icon});
+
+  final Widget icon;
+
+  @override
+  State<StatefulWidget> createState() => _SettingsIconState();
+
+}
+
+class _SettingsIconState extends State<_SettingsIconView> implements lnc.Observer {
+  _SettingsIconState() {
+    var nc = lnc.NotificationCenter();
+    nc.addObserver(this, NotificationNames.kConfigUpdated);
+  }
+
+  @override
+  void dispose() {
+    var nc = lnc.NotificationCenter();
+    nc.removeObserver(this, NotificationNames.kConfigUpdated);
+    super.dispose();
+  }
+
+  @override
+  Future<void> onReceiveNotification(lnc.Notification notification) async {
+    String name = notification.name;
+    if (name == NotificationNames.kConfigUpdated) {
+      if (mounted) {
+        setState(() {
+        });
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    GlobalVariable shared = GlobalVariable();
+    Client client = shared.terminal;
+    Newest? newest = Config().newest;
+    int count = newest != null && newest.canUpgrade(client) ? 1 : 0;
+    Log.warning('greeting count: $count');
+    return IconView.fromSpot(widget.icon, count);
+  }
 
 }
