@@ -101,12 +101,12 @@ class _InputState extends State<ChatInputTray> implements lnc.Observer {
             focusNode: _focusNode,
             child: _inputTextField(context),
             onKeyEvent: (FocusNode focusNode, KeyEvent event) {
-              Log.error('focus node: $focusNode, key event: $event');
-              if (event is KeyDownEvent) {
-                if (event.logicalKey == LogicalKeyboardKey.enter) {
-                  _sendText(context, _controller, widget.info);
-                  return KeyEventResult.handled;
-                }
+              Log.info('focus node: $focusNode, key event: $event');
+              var checker = RawKeyboardChecker();
+              var key = checker.checkKeyEvent(event);
+              if (key != null && key.isModified && key == RawKeyboardKey.enter) {
+                _sendText(context, _controller, widget.info);
+                return KeyEventResult.handled;
               }
               return KeyEventResult.ignored;
             },

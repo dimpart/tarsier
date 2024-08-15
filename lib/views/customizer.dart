@@ -263,7 +263,8 @@ class _SettingsPageState extends State<SettingsPage> implements lnc.Observer {
         leading: AppIcons.setAboutIcon, title: 'About'.tr,
         additional: 'Tarsier (v${client.versionName})',
         trailing: canUpgrade ? Text('NEW'.tr, style: const TextStyle(
-          color: CupertinoColors.systemRed,
+          color: CupertinoColors.white,
+          backgroundColor: CupertinoColors.systemRed,
           decoration: TextDecoration.none,
           fontSize: 12,
           fontWeight: FontWeight.bold,
@@ -284,7 +285,7 @@ class _SettingsPageState extends State<SettingsPage> implements lnc.Observer {
             ' E2EE (End-to-End Encrypted) technology.\n'
             '\n'
             'Author: Albert Moky\n'
-            'Version: ${client.versionName} (build ${client.buildNumber})   ',
+            'Version: ${client.versionName} (build ${client.buildNumber})    ',
         style: TextStyle(
           fontSize: 12,
           fontWeight: FontWeight.normal,
@@ -301,10 +302,11 @@ class _SettingsPageState extends State<SettingsPage> implements lnc.Observer {
   }
 
   TextSpan _updateButton(BuildContext context, Newest newest) => TextSpan(
-    text: 'UPGRADE'.tr,
+    text: 'UPDATE'.tr,
     style: const TextStyle(
       color: CupertinoColors.systemRed,
-      decoration: TextDecoration.none,
+      decoration: TextDecoration.underline,
+      decorationStyle: TextDecorationStyle.double,
       fontWeight: FontWeight.bold,
     ),
     recognizer: TapGestureRecognizer()..onTap = () => Browser.launch(context,

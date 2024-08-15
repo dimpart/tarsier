@@ -16,7 +16,6 @@ import io.flutter.embedding.engine.FlutterEngine;
 
 import chat.dim.channels.ChannelManager;
 import chat.dim.filesys.LocalCache;
-import chat.dim.http.UpdateManager;
 
 public class MainActivity extends FlutterActivity {
 
@@ -73,9 +72,6 @@ public class MainActivity extends FlutterActivity {
             Log.w("INIT", "Application in RELEASE mode");
         }
         super.onCreate(savedInstanceState);
-
-        UpdateManager manager = new UpdateManager(MainActivity.this);
-        manager.checkUpdateInfo();
     }
 
     public static boolean isApkInDebug(Context context) {
