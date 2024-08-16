@@ -1,20 +1,21 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_section_list/flutter_section_list.dart';
 
 import 'package:dim_flutter/dim_flutter.dart';
-import 'package:flutter_section_list/flutter_section_list.dart';
 import 'package:lnc/notification.dart' as lnc;
 
 import '../chat/share_video.dart';
 
 
 class LiveSourceListPage extends StatefulWidget {
-  const LiveSourceListPage(this.info, {super.key});
+  const LiveSourceListPage(this.chat, this.title, {super.key});
 
-  final Conversation info;
+  final Conversation chat;
+  final String title;
 
-  static void open(BuildContext context, Conversation info) => showPage(
+  static void open(BuildContext context, Conversation chat, String title) => showPage(
     context: context,
-    builder: (context) => LiveSourceListPage(info),
+    builder: (context) => LiveSourceListPage(chat, title),
   );
 
   @override
@@ -92,7 +93,7 @@ class _LiveSourceListState extends State<LiveSourceListPage> implements lnc.Obse
 
   Future<Content?> _loadLives() async {
     GlobalVariable shared = GlobalVariable();
-    var pair = await shared.database.getInstantMessages(widget.info.identifier,
+    var pair = await shared.database.getInstantMessages(widget.chat.identifier,
         limit: 32);
     List<InstantMessage> messages = pair.first;
     Log.info('checking lives from ${messages.length} messages');
@@ -128,7 +129,7 @@ class _LiveSourceListState extends State<LiveSourceListPage> implements lnc.Obse
     //
     //  query for new records
     //
-    Log.warning('query for "Live Stream Sources"');
+    Log.warning('query for "${widget.title}"');
     GlobalVariable shared = GlobalVariable();
     SharedMessenger? messenger = shared.messenger;
     if (messenger == null) {
@@ -136,12 +137,12 @@ class _LiveSourceListState extends State<LiveSourceListPage> implements lnc.Obse
       return;
     }
     // build command
-    content = TextContent.create('Live Stream Sources');
+    content = TextContent.create(widget.title);
     _searchTag = content.sn;
     content['tag'] = _searchTag;
     content['hidden'] = true;
     // check visa.key
-    ID bot = widget.info.identifier;
+    ID bot = widget.chat.identifier;
     Log.info('query lives with tag: $_searchTag');
     await messenger.sendContent(content, sender: null, receiver: bot);
   }
@@ -158,7 +159,7 @@ class _LiveSourceListState extends State<LiveSourceListPage> implements lnc.Obse
     navigationBar: CupertinoNavigationBar(
       backgroundColor: Styles.colors.appBardBackgroundColor,
       // backgroundColor: Styles.themeBarBackgroundColor,
-      middle: Text('Live Stream Sources'.tr,
+      middle: Text(widget.title,
         style: Styles.titleTextStyle,
       ),
     ),

@@ -6,6 +6,7 @@ import 'package:dim_flutter/dim_flutter.dart';
 
 import 'chat/chat_box.dart';
 import 'service/lives.dart';
+import 'service/sites.dart';
 
 
 class ServiceListPage extends StatefulWidget {
@@ -73,6 +74,8 @@ class _BotListAdapter with SectionAdapterMixin, Logging {
         if (st == 'ChatBox' || st == 'ChatBot') {
           _services.add(item);
         } else if (st == 'LiveSources') {
+          _services.add(item);
+        } else if (st == 'WebSites') {
           _services.add(item);
         } else {
           logWarning('ignore service item: $item');
@@ -199,7 +202,19 @@ bool _openService(BuildContext ctx, Map info) {
     return true;
   } else if (st == 'LiveSources') {
     // live source list
-    LiveSourceListPage.open(ctx, contact);
+    String? title = info['title'];
+    if (title == null || title.isEmpty) {
+      title = 'Live Stream Sources';
+    }
+    LiveSourceListPage.open(ctx, contact, title);
+    return true;
+  } else if (st == 'WebSites') {
+    // live source list
+    String? title = info['title'];
+    if (title == null || title.isEmpty) {
+      title = 'Homepage';
+    }
+    WebSitePage.open(ctx, contact, title);
     return true;
   }
   Log.error('unknown service type: $st');
