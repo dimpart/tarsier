@@ -412,9 +412,7 @@ class _RegisterState extends State<RegisterPage> {
         child: const Text('DIM Privacy Policy',
           style: TextStyle(color: buttonColor),
         ),
-        onPressed: () => Config().termsURL.then((url) => Browser.open(context,
-          url: url,
-        )),
+        onPressed: () => Config().termsURL.then((url) => Browser.open(context, url)),
       ),
     ],
   );

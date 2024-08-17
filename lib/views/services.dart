@@ -212,7 +212,7 @@ bool _openService(BuildContext ctx, Map info) {
     // live source list
     String? title = info['title'];
     if (title == null || title.isEmpty) {
-      title = 'Homepage';
+      title = 'Index Page';
     }
     WebSitePage.open(ctx, contact, title);
     return true;

@@ -228,9 +228,7 @@ class _SettingsPageState extends State<SettingsPage> implements lnc.Observer {
             backgroundColorActivated: backgroundColorActivated,
             primaryTextColor: primaryTextColor,
             secondaryTextColor: secondaryTextColor,
-            onTap: () => Config().termsURL.then((url) => Browser.open(context,
-              url: 'https://github.com/dimpart/tarsier',
-            )),
+            onTap: () => Config().sourceURL.then((url) => Browser.open(context, url)),
           ),
           /// Privacy Policy
           _listTile(
@@ -240,9 +238,7 @@ class _SettingsPageState extends State<SettingsPage> implements lnc.Observer {
             backgroundColorActivated: backgroundColorActivated,
             primaryTextColor: primaryTextColor,
             secondaryTextColor: secondaryTextColor,
-            onTap: () => Config().termsURL.then((url) => Browser.open(context,
-              url: url,
-            )),
+            onTap: () => Config().termsURL.then((url) => Browser.open(context, url)),
           ),
           /// About Tarsier
           _about(context, backgroundColor: backgroundColor, backgroundColorActivated: backgroundColorActivated,
@@ -309,9 +305,7 @@ class _SettingsPageState extends State<SettingsPage> implements lnc.Observer {
       decorationStyle: TextDecorationStyle.double,
       fontWeight: FontWeight.bold,
     ),
-    recognizer: TapGestureRecognizer()..onTap = () => Browser.launch(context,
-      url: newest.url,
-    ),
+    recognizer: TapGestureRecognizer()..onTap = () => Browser.launch(context, newest.url),
   );
 
   TextSpan _homepage(BuildContext context, String url) => TextSpan(
@@ -329,9 +323,7 @@ class _SettingsPageState extends State<SettingsPage> implements lnc.Observer {
           color: CupertinoColors.activeBlue,
           decoration: TextDecoration.underline,
         ),
-        recognizer: TapGestureRecognizer()..onTap = () => Browser.open(context,
-          url: url,
-        ),
+        recognizer: TapGestureRecognizer()..onTap = () => Browser.open(context, url),
       ),
     ],
   );

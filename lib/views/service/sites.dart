@@ -83,9 +83,11 @@ class _WebSiteState extends State<WebSitePage> implements lnc.Observer {
       var content = msg.content;
       var mod = content['mod'];
       var format = content['format'];
-      if (mod == 'homepage' && format == 'markdown') {
+      if (mod == 'homepage') {
         // got last one
-        return content;
+        if (format == 'markdown' || format == 'html') {
+          return content;
+        }
       }
     }
     return null;
@@ -95,7 +97,19 @@ class _WebSiteState extends State<WebSitePage> implements lnc.Observer {
 
   @override
   Widget build(BuildContext context) {
-    var home = _content;
+    Widget body;
+    var page = _content;
+    if (page == null) {
+      // loading
+      body = const CupertinoActivityIndicator();
+    } else if (page['format'] == 'html') {
+      // web page
+      var sender = widget.chat.identifier;
+      String text = DefaultMessageBuilder().getText(page, sender);
+      return Browser.view(context, HtmlUri.blank, html: text);
+    } else {
+      body = _body(context, page);
+    }
     var colors = Styles.colors;
     return Scaffold(
       backgroundColor: colors.scaffoldBackgroundColor,
@@ -117,28 +131,34 @@ class _WebSiteState extends State<WebSitePage> implements lnc.Observer {
           SliverFillRemaining(
             hasScrollBody: false,
             fillOverscroll: true,
-            child: home == null ? _loading() : buildScrollView(
-              enableScrollbar: true,
-              child: _body(context, home),
-            ),
+            child: body,
           ),
         ],
       ),
     );
   }
 
-  Widget _loading() => const CupertinoActivityIndicator();
-
   Widget _body(BuildContext ctx, Content content) {
     var sender = widget.chat.identifier;
+    var format = content['format'];
     String text = DefaultMessageBuilder().getText(content, sender);
-    Widget view = RichTextView(sender: sender, text: text,
-      onWebShare: (url, {required title, required desc, required icon}) =>
-          ShareWebPage.shareWebPage(ctx, url, title: title, desc: desc, icon: icon),
-      onVideoShare: (playingItem) => ShareVideo.shareVideo(ctx, playingItem),
-    );
-    return Container(
+    Widget? view;
+    if (format == 'markdown') {
+      // show RichText
+      view = RichTextView(sender: sender, text: text,
+        onWebShare: (url, {required title, required desc, required icon}) =>
+            ShareWebPage.shareWebPage(ctx, url, title: title, desc: desc, icon: icon),
+        onVideoShare: (playingItem) => ShareVideo.shareVideo(ctx, playingItem),
+      );
+    } else {
+      view = Text(text,);
+    }
+    view = Container(
       padding: Styles.textMessagePadding,
+      child: view,
+    );
+    return buildScrollView(
+      enableScrollbar: true,
       child: view,
     );
   }

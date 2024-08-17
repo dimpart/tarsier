@@ -101,9 +101,11 @@ class _LiveSourceListState extends State<LiveSourceListPage> implements lnc.Obse
       var content = msg.content;
       var mod = content['mod'];
       var lives = content['lives'];
-      if (mod == 'lives' && lives is List && lives.isNotEmpty) {
+      if (mod == 'lives') {
         // got last one
-        return content;
+        if (lives is List && lives.isNotEmpty) {
+          return content;
+        }
       }
     }
     return null;
