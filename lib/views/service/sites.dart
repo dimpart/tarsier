@@ -24,16 +24,21 @@ class WebSitePage extends StatefulWidget {
 
 }
 
-class _WebSiteState extends State<WebSitePage> implements lnc.Observer {
+class _WebSiteState extends State<WebSitePage> with Logging implements lnc.Observer {
   _WebSiteState() {
     var nc = lnc.NotificationCenter();
-    nc.addObserver(this, NotificationNames.kMessageUpdated);
+    nc.addObserver(this, NotificationNames.kWebSitesUpdated);
   }
+
+  int _queryTag = 9527;
+  Content? _content;
+
+  static const Duration kHomepageQueryExpires = Duration(minutes: 32);
 
   @override
   void dispose() {
     var nc = lnc.NotificationCenter();
-    nc.removeObserver(this, NotificationNames.kMessageUpdated);
+    nc.removeObserver(this, NotificationNames.kWebSitesUpdated);
     super.dispose();
   }
 
@@ -47,38 +52,53 @@ class _WebSiteState extends State<WebSitePage> implements lnc.Observer {
   Future<void> onReceiveNotification(lnc.Notification notification) async {
     String name = notification.name;
     Map? userInfo = notification.userInfo;
-    if (name == NotificationNames.kMessageUpdated) {
-      ID? cid = userInfo?['ID'];
-      assert(cid != null, 'notification error: $notification');
-      if (cid == widget.chat.identifier) {
-        // reload
-        _content = null;
-        await _load();
+    if (name == NotificationNames.kWebSitesUpdated) {
+      logInfo('web sites updated: $name, $userInfo');
+      var content = userInfo?['cmd'];
+      if (content is Content) {
+        await _refreshHomepage(content, isRefresh: true);
       }
     }
   }
 
-  Future<void> _load() async {
-    var home = _content;
-    if (home != null) {
+  Future<void> _refreshHomepage(Content content, {required bool isRefresh}) async {
+    // check customized info
+    String? app = content['app'];
+    String? mod = content['mod'];
+    String? act = content['act'];
+    if (app == 'chat.dim.sites' && mod == 'homepage') {
+      assert(act == 'respond', 'content error: $content');
+    } else {
+      assert(false, 'content error: $content');
       return;
     }
-    home = await _loadHomePage();
-    if (home != null) {
-      _content = home;
-      if (mounted) {
-        setState(() {
-        });
-      }
+    // check tag
+    int? tag = content['tag'];
+    if (!isRefresh) {
+      // update from local
+      _queryTag = 0;
+    } else if (tag == _queryTag) {
+      // update from remote
+      _queryTag = 0;
+    } else {
+      logWarning('query tag not match, ignore this response: $tag <> $_queryTag');
+      return;
+    }
+    // refresh
+    if (mounted) {
+      setState(() {
+        _content = content;
+      });
     }
   }
 
-  Future<Content?> _loadHomePage() async {
+  /// load from local storage
+  Future<Content?> _loadHomepage() async {
     GlobalVariable shared = GlobalVariable();
     var pair = await shared.database.getInstantMessages(widget.chat.identifier,
         limit: 32);
     List<InstantMessage> messages = pair.first;
-    Log.info('checking home page from ${messages.length} messages');
+    logInfo('checking home page from ${messages.length} messages');
     for (var msg in messages) {
       var content = msg.content;
       var mod = content['mod'];
@@ -93,7 +113,54 @@ class _WebSiteState extends State<WebSitePage> implements lnc.Observer {
     return null;
   }
 
-  Content? _content;
+  Future<void> _load() async {
+    // check old records
+    var content = await _loadHomepage();
+    if (content == null) {
+      // query for new records
+      logInfo('query sites first');
+      await _query();
+      return;
+    }
+    // check record time
+    var time = content.time;
+    if (time == null) {
+      logError('sites content error: $content');
+      await _query();
+    } else {
+      int? expires = content.getInt('expires', null);
+      if (expires == null || expires <= 8) {
+        expires = kHomepageQueryExpires.inSeconds;
+      }
+      int later = time.millisecondsSinceEpoch + expires * 1000;
+      var now = DateTime.now().millisecondsSinceEpoch;
+      if (now > later) {
+        logInfo('query sites again');
+        await _query();
+      }
+    }
+    // refresh with content loaded
+    await _refreshHomepage(content, isRefresh: false);
+  }
+  // query for new records
+  Future<void> _query() async {
+    logWarning('query sites with title: "${widget.title}"');
+    GlobalVariable shared = GlobalVariable();
+    SharedMessenger? messenger = shared.messenger;
+    if (messenger == null) {
+      logError('messenger not set, not connect yet?');
+      return;
+    }
+    // build command
+    var content = TextContent.create(widget.title);
+    _queryTag = content.sn;
+    content['tag'] = _queryTag;
+    content['hidden'] = true;
+    // TODO: check visa.key
+    ID bot = widget.chat.identifier;
+    logInfo('query homepage with tag: $_queryTag');
+    await messenger.sendContent(content, sender: null, receiver: bot);
+  }
 
   @override
   Widget build(BuildContext context) {

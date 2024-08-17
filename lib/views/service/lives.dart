@@ -23,7 +23,7 @@ class LiveSourceListPage extends StatefulWidget {
 
 }
 
-class _LiveSourceListState extends State<LiveSourceListPage> implements lnc.Observer {
+class _LiveSourceListState extends State<LiveSourceListPage> with Logging implements lnc.Observer {
   _LiveSourceListState() {
     _dataSource = _LiveDataSource();
     _adapter = _LiveSourceAdapter(this, dataSource: _dataSource);
@@ -50,10 +50,10 @@ class _LiveSourceListState extends State<LiveSourceListPage> implements lnc.Obse
   @override
   Future<void> onReceiveNotification(lnc.Notification notification) async {
     String name = notification.name;
-    Map? info = notification.userInfo;
+    Map? userInfo = notification.userInfo;
     if (name == NotificationNames.kLiveSourceUpdated) {
-      Log.info('live source updated: $name, $info');
-      var content = info?['cmd'];
+      logInfo('live source updated: $name, $userInfo');
+      var content = userInfo?['cmd'];
       if (content is Content) {
         await _refreshLives(content, isRefresh: true);
       }
@@ -61,42 +61,52 @@ class _LiveSourceListState extends State<LiveSourceListPage> implements lnc.Obse
   }
 
   Future<void> _refreshLives(Content content, {required bool isRefresh}) async {
-    List? lives = content['lives'];
-    int? tag = content['tag'];
+    // check customized info
+    String? app = content['app'];
+    String? mod = content['mod'];
+    String? act = content['act'];
+    if (app == 'chat.dim.tvbox' && mod == 'lives') {
+      assert(act == 'respond', 'content error: $content');
+    } else {
+      assert(false, 'content error: $content');
+      return;
+    }
+    List lives = content['lives'] ?? [];
     String? desc = content['description'];
+    // check tag
+    int? tag = content['tag'];
     if (!isRefresh) {
       // update from local
-      Log.info('refresh lives from old record: ${lives?.length}, $desc');
-      assert(lives != null, 'old record error: $context');
+      logInfo('refresh lives from old record: ${lives.length}, $desc');
       _searchTag = 0;
-      _description = desc;
     } else if (tag == _searchTag) {
       // update from remote
-      Log.info('respond with search tag: $tag, ${lives?.length}, $desc');
+      logInfo('respond with search tag: $tag, ${lives.length}, $desc');
       _searchTag = 0;
-      _description = desc;
     } else {
       // expired response
-      Log.warning('search tag not match, ignore this response: $tag <> $_searchTag');
+      logWarning('search tag not match, ignore this response: $tag <> $_searchTag');
       return;
     }
     // refresh if not empty
-    if (lives != null && lives.isNotEmpty) {
+    if (lives.isNotEmpty) {
       await _dataSource.refresh(lives);
     }
     if (mounted) {
       setState(() {
+        _description = desc;
         _adapter.notifyDataChange();
       });
     }
   }
 
+  /// load from local storage
   Future<Content?> _loadLives() async {
     GlobalVariable shared = GlobalVariable();
     var pair = await shared.database.getInstantMessages(widget.chat.identifier,
         limit: 32);
     List<InstantMessage> messages = pair.first;
-    Log.info('checking lives from ${messages.length} messages');
+    logInfo('checking lives from ${messages.length} messages');
     for (var msg in messages) {
       var content = msg.content;
       var mod = content['mod'];
@@ -112,40 +122,51 @@ class _LiveSourceListState extends State<LiveSourceListPage> implements lnc.Obse
   }
 
   Future<void> _load() async {
-    //
-    //  check old records
-    //
+    // check old records
     var content = await _loadLives();
-    if (content != null) {
-      await _refreshLives(content, isRefresh: false);
-      var time = content.time;
-      if (time != null) {
-        var expired = time.millisecondsSinceEpoch + kLiveQueryExpires.inMilliseconds;
-        var now = DateTime.now().millisecondsSinceEpoch;
-        if (now < expired) {
-          Log.info('last message not expired yet');
-          return;
-        }
+    if (content == null) {
+      // query for new records
+      logInfo('query lives first');
+      await _query();
+      return;
+    }
+    // check record time
+    var time = content.time;
+    if (time == null) {
+      logError('lives content error: $content');
+      await _query();
+    } else {
+      int? expires = content.getInt('expires', null);
+      if (expires == null || expires <= 8) {
+        expires = kLiveQueryExpires.inSeconds;
+      }
+      int later = time.millisecondsSinceEpoch + expires * 1000;
+      var now = DateTime.now().millisecondsSinceEpoch;
+      if (now > later) {
+        logInfo('query lives again');
+        await _query();
       }
     }
-    //
-    //  query for new records
-    //
-    Log.warning('query for "${widget.title}"');
+    // refresh with content loaded
+    await _refreshLives(content, isRefresh: false);
+  }
+  // query for new records
+  Future<void> _query() async {
+    logWarning('query lives with title: "${widget.title}"');
     GlobalVariable shared = GlobalVariable();
     SharedMessenger? messenger = shared.messenger;
     if (messenger == null) {
-      Log.error('messenger not set, not connect yet?');
+      logError('messenger not set, not connect yet?');
       return;
     }
     // build command
-    content = TextContent.create(widget.title);
+    var content = TextContent.create(widget.title);
     _searchTag = content.sn;
     content['tag'] = _searchTag;
     content['hidden'] = true;
-    // check visa.key
+    // TODO: check visa.key
     ID bot = widget.chat.identifier;
-    Log.info('query lives with tag: $_searchTag');
+    logInfo('query lives with tag: $_searchTag');
     await messenger.sendContent(content, sender: null, receiver: bot);
   }
 
@@ -227,7 +248,7 @@ class _LiveSourceAdapter with SectionAdapterMixin {
 
 }
 
-class _LiveDataSource {
+class _LiveDataSource with Logging {
 
   List<TVBox>? _sources;
 
@@ -251,11 +272,11 @@ class _LiveDataSource {
         url = HtmlUri.parseUri(item['url']);
         info = item;
       } else {
-        Log.error('live item error: $item');
+        logError('live item error: $item');
         continue;
       }
       if (url == null) {
-        Log.error('live url error: $item');
+        logError('live url error: $item');
         continue;
       }
       // create tv box
