@@ -63,12 +63,7 @@ class _WebSiteState extends State<WebSitePage> with Logging implements lnc.Obser
 
   Future<void> _refreshHomepage(Content content, {required bool isRefresh}) async {
     // check customized info
-    String? app = content['app'];
-    String? mod = content['mod'];
-    String? act = content['act'];
-    if (app == 'chat.dim.sites' && mod == 'homepage') {
-      assert(act == 'respond', 'content error: $content');
-    } else {
+    if (!_checkHomepage(content)) {
       assert(false, 'content error: $content');
       return;
     }
@@ -92,6 +87,18 @@ class _WebSiteState extends State<WebSitePage> with Logging implements lnc.Obser
     }
   }
 
+  bool _checkHomepage(Content content) {
+    if (content['app'] != 'chat.dim.sites' || content['mod'] != 'homepage') {
+      return false;
+    } else if (content['title'] != widget.title) {
+      // not for this view
+      return false;
+    } else {
+      assert(content['act'] == 'respond', 'content error: $content');
+      return true;
+    }
+  }
+
   /// load from local storage
   Future<Content?> _loadHomepage() async {
     GlobalVariable shared = GlobalVariable();
@@ -101,10 +108,13 @@ class _WebSiteState extends State<WebSitePage> with Logging implements lnc.Obser
     logInfo('checking home page from ${messages.length} messages');
     for (var msg in messages) {
       var content = msg.content;
-      var mod = content['mod'];
-      var format = content['format'];
-      if (mod == 'homepage') {
+      // check customized info
+      if (_checkHomepage(content)) {
         // got last one
+        var format = content['format'];
+        if (format is String) {
+          format = format.toLowerCase();
+        }
         if (format == 'markdown' || format == 'html') {
           return content;
         }
@@ -155,6 +165,7 @@ class _WebSiteState extends State<WebSitePage> with Logging implements lnc.Obser
     var content = TextContent.create(widget.title);
     _queryTag = content.sn;
     content['tag'] = _queryTag;
+    content['title'] = widget.title;
     content['hidden'] = true;
     // TODO: check visa.key
     ID bot = widget.chat.identifier;
@@ -208,6 +219,9 @@ class _WebSiteState extends State<WebSitePage> with Logging implements lnc.Obser
   Widget _body(BuildContext ctx, Content content) {
     var sender = widget.chat.identifier;
     var format = content['format'];
+    if (format is String) {
+      format = format.toLowerCase();
+    }
     String text = DefaultMessageBuilder().getText(content, sender);
     Widget? view;
     if (format == 'markdown') {

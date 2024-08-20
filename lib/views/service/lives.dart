@@ -62,12 +62,7 @@ class _LiveSourceListState extends State<LiveSourceListPage> with Logging implem
 
   Future<void> _refreshLives(Content content, {required bool isRefresh}) async {
     // check customized info
-    String? app = content['app'];
-    String? mod = content['mod'];
-    String? act = content['act'];
-    if (app == 'chat.dim.tvbox' && mod == 'lives') {
-      assert(act == 'respond', 'content error: $content');
-    } else {
+    if (!_checkLives(content)) {
       assert(false, 'content error: $content');
       return;
     }
@@ -100,6 +95,18 @@ class _LiveSourceListState extends State<LiveSourceListPage> with Logging implem
     }
   }
 
+  bool _checkLives(Content content) {
+    if (content['app'] != 'chat.dim.tvbox' || content['mod'] != 'lives') {
+      return false;
+    } else if (content['title'] != widget.title) {
+      // not for this view
+      return false;
+    } else {
+      assert(content['act'] == 'respond', 'content error: $content');
+      return true;
+    }
+  }
+
   /// load from local storage
   Future<Content?> _loadLives() async {
     GlobalVariable shared = GlobalVariable();
@@ -109,10 +116,10 @@ class _LiveSourceListState extends State<LiveSourceListPage> with Logging implem
     logInfo('checking lives from ${messages.length} messages');
     for (var msg in messages) {
       var content = msg.content;
-      var mod = content['mod'];
-      var lives = content['lives'];
-      if (mod == 'lives') {
+      // check customized info
+      if (_checkLives(content)) {
         // got last one
+        var lives = content['lives'];
         if (lives is List && lives.isNotEmpty) {
           return content;
         }
@@ -163,6 +170,7 @@ class _LiveSourceListState extends State<LiveSourceListPage> with Logging implem
     var content = TextContent.create(widget.title);
     _searchTag = content.sn;
     content['tag'] = _searchTag;
+    content['title'] = widget.title;
     content['hidden'] = true;
     // TODO: check visa.key
     ID bot = widget.chat.identifier;
