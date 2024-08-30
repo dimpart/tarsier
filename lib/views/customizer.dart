@@ -17,9 +17,19 @@ import 'setting/storage.dart';
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
 
+  static final String title = 'Settings'.tr;
+  static const IconData icon = AppIcons.settingsTabIcon;
+
   static BottomNavigationBarItem barItem() => BottomNavigationBarItem(
-    icon: const _SettingsIconView(icon: Icon(AppIcons.settingsTabIcon)),
-    label: 'Settings'.tr,
+    icon: const _SettingsIconView(icon: Icon(icon)),
+    label: title,
+  );
+
+  static Tab tab() => Tab(
+    icon: const _SettingsIconView(icon: Icon(icon, size: 32)),
+    text: title,
+    // height: 64,
+    iconMargin: EdgeInsets.zero,
   );
 
   @override

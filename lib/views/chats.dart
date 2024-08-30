@@ -12,9 +12,19 @@ import 'chat/chat_box.dart';
 class ChatHistoryPage extends StatefulWidget {
   const ChatHistoryPage({super.key});
 
+  static final String title = 'Chats'.tr;
+  static const IconData icon = AppIcons.chatsTabIcon;
+
   static BottomNavigationBarItem barItem() => BottomNavigationBarItem(
-    icon: const _ChatsIconView(icon: Icon(AppIcons.chatsTabIcon)),
-    label: 'Chats'.tr,
+    icon: const _ChatsIconView(icon: Icon(icon)),
+    label: title,
+  );
+
+  static Tab tab() => Tab(
+    icon: const _ChatsIconView(icon: Icon(icon, size: 32)),
+    text: title,
+    // height: 64,
+    iconMargin: EdgeInsets.zero,
   );
 
   @override

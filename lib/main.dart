@@ -1,4 +1,4 @@
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 
 import 'package:dim_flutter/dim_flutter.dart';
 
@@ -92,33 +92,60 @@ class _MainPageState extends State<_MainPage> with WidgetsBindingObserver {
   }
 
   @override
-  Widget build(BuildContext context) => CupertinoTabScaffold(
-    backgroundColor: Styles.colors.scaffoldBackgroundColor,
-    tabBar: CupertinoTabBar(
-      backgroundColor: Styles.colors.appBardBackgroundColor,
-      items: [
-        ChatHistoryPage.barItem(),
-        ContactListPage.barItem(),
-        ServiceListPage.barItem(),
-        SettingsPage.barItem(),
-      ],
+  Widget build(BuildContext context) => DefaultTabController(
+    length: 4,
+    initialIndex: 2,
+    child: Scaffold(
+      body: const TabBarView(
+        children: [
+          ChatHistoryPage(),
+          ContactListPage(),
+          ServiceListPage(),
+          SettingsPage(),
+        ],
+      ),
+      bottomNavigationBar: TabBar(
+        labelColor: Styles.colors.normalButtonColor,
+        tabs: [
+          ChatHistoryPage.tab(),
+          ContactListPage.tab(),
+          ServiceListPage.tab(),
+          SettingsPage.tab(),
+        ],
+      ),
     ),
-    tabBuilder: (context, index) {
-      Widget page;
-      if (index == 0) {
-        page = const ChatHistoryPage();
-      } else if (index == 1) {
-        page = const ContactListPage();
-      } else if (index == 2) {
-        page = const ServiceListPage();
-      } else {
-        page = const SettingsPage();
-      }
-      return CupertinoTabView(
-        builder: (context) {
-          return page;
-        },
-      );
-    },
   );
+
+  // @override
+  // Widget build(BuildContext context) => CupertinoTabScaffold(
+  //   backgroundColor: Styles.colors.scaffoldBackgroundColor,
+  //   tabBar: CupertinoTabBar(
+  //     backgroundColor: Styles.colors.appBardBackgroundColor,
+  //     items: [
+  //       ChatHistoryPage.barItem(),
+  //       ContactListPage.barItem(),
+  //       ServiceListPage.barItem(),
+  //       SettingsPage.barItem(),
+  //     ],
+  //   ),
+  //   tabBuilder: (context, index) {
+  //     Widget page;
+  //     if (index == 0) {
+  //       page = const ChatHistoryPage();
+  //     } else if (index == 1) {
+  //       page = const ContactListPage();
+  //     } else if (index == 2) {
+  //       page = const ServiceListPage();
+  //     } else {
+  //       page = const SettingsPage();
+  //     }
+  //     return CupertinoTabView(
+  //       builder: (context) {
+  //         return page;
+  //       },
+  //     );
+  //   },
+  //   controller: CupertinoTabController(initialIndex: 2),
+  // );
+
 }

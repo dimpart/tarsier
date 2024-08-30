@@ -17,9 +17,19 @@ import 'contact/mute_list.dart';
 class ContactListPage extends StatefulWidget {
   const ContactListPage({super.key});
 
+  static final String title = 'Contacts'.tr;
+  static const IconData icon = AppIcons.contactsTabIcon;
+
   static BottomNavigationBarItem barItem() => BottomNavigationBarItem(
-    icon: const _ContactsIconView(icon: Icon(AppIcons.contactsTabIcon)),
-    label: 'Contacts'.tr,
+    icon: const _ContactsIconView(icon: Icon(icon)),
+    label: title,
+  );
+
+  static Tab tab() => Tab(
+    icon: const _ContactsIconView(icon: Icon(icon, size: 32)),
+    text: title,
+    // height: 64,
+    iconMargin: EdgeInsets.zero,
   );
 
   @override
