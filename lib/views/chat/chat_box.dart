@@ -7,15 +7,12 @@ import 'package:lnc/notification.dart' as lnc;
 
 import '../contact/profile.dart';
 
+import 'chat_content.dart';
 import 'chat_flag.dart';
 import 'chat_title.dart';
 import 'chat_tray.dart';
 import 'detail.dart';
 import 'detail_group.dart';
-import 'share_image.dart';
-import 'share_contact.dart';
-import 'share_page.dart';
-import 'share_video.dart';
 
 
 ///
@@ -390,61 +387,20 @@ class _HistoryAdapter with SectionAdapterMixin {
   );
 
   Widget _getContentView(BuildContext ctx, Content content, Envelope envelope) {
-    ID sender = envelope.sender;
-    if (content is ImageContent) {
-      return ContentViewUtils.getImageContentView(ctx,
-        content, sender, _dataSource.allMessages,
-        onLongPress: () => Alert.actionSheet(ctx, null, null,
-          Alert.action(AppIcons.shareIcon, 'Forward Image'),
-              () => ShareImage.forwardImage(ctx, content, sender),
-          Alert.action(AppIcons.saveFileIcon, 'Save to Album'),
-              () => saveImageContent(ctx, content),
-          _canRecall(content) ? Alert.action(AppIcons.recallIcon, 'Recall Message') : null,
-              () => _recallImageMessage(ctx, content, envelope),
-        ),
-      );
-    } else if (content is VideoContent) {
-      return ContentViewUtils.getVideoContentView(ctx, content, sender,
-        onLongPress: () => Alert.actionSheet(ctx, null, null,
-          Alert.action(AppIcons.shareIcon, 'Forward Video'),
-              () => ShareVideo.forwardVideo(ctx, content, sender),
-          _canRecall(content) ? Alert.action(AppIcons.recallIcon, 'Recall Message') : null,
-              () => _recallVideoMessage(ctx, content, envelope),
-        ),
-        onVideoShare: (playingItem) =>
-            ShareVideo.forwardVideo(ctx, content, sender),
-      );
-    } else if (content is AudioContent) {
-      return ContentViewUtils.getAudioContentView(ctx, content, sender,
-        onLongPress: !_canRecall(content) ? null : () => Alert.actionSheet(ctx, null, null,
-          Alert.action(AppIcons.recallIcon, 'Recall Message'),
-              () => _recallAudioMessage(ctx, content, envelope),
-        ),
-      );
+    if (content is NameCard) {
+      return ContentViewHelper.getNameCardView(ctx, content, envelope);
     } else if (content is PageContent) {
-      return ContentViewUtils.getPageContentView(ctx, content, sender,
-        onLongPress: () => Alert.actionSheet(ctx, null, null,
-          Alert.action(AppIcons.shareIcon, 'Forward Web Page'),
-              () => ShareWebPage.forwardWebPage(ctx, content, sender),
-          // 'Save Image', () { },
-        ),
-        onWebShare: (url, {required title, required desc, required icon}) =>
-            ShareWebPage.shareWebPage(ctx, url, title: title, desc: desc, icon: icon),);
-    } else if (content is NameCard) {
-      return ContentViewUtils.getNameCardView(ctx, content,
-        onTap: () => ProfilePage.open(ctx, content.identifier),
-        onLongPress: () => Alert.actionSheet(ctx, null, null,
-          Alert.action(AppIcons.shareIcon, 'Forward Name Card'),
-              () => ShareNameCard.forwardNameCard(ctx, content, sender),
-        ),
-      );
-    } else {
-      return ContentViewUtils.getTextContentView(ctx, content, sender,
-        onWebShare: (url, {required title, required desc, required icon}) =>
-            ShareWebPage.shareWebPage(ctx, url, title: title, desc: desc, icon: icon),
-        onVideoShare: (playingItem) => ShareVideo.shareVideo(ctx, playingItem),
-      );
+      return ContentViewHelper.getPageContentView(ctx, content, envelope);
+    } else if (content is ImageContent) {
+      var messages = _dataSource.allMessages;
+      return ContentViewHelper.getImageContentView(ctx, content, envelope, messages);
+    } else if (content is VideoContent) {
+      return ContentViewHelper.getVideoContentView(ctx, content, envelope);
+    } else if (content is AudioContent) {
+      return ContentViewHelper.getAudioContentView(ctx, content, envelope);
     }
+    // other message content
+    return ContentViewHelper.getTextContentView(ctx, content, envelope);
   }
 
   Widget _getContentFrame(BuildContext context, ID sender, int mainFlex, bool isMine,
@@ -534,61 +490,4 @@ void _onMentioned(ID uid) {
   nc.postNotification(NotificationNames.kAvatarLongPressed, null, {
     'user': uid,
   });
-}
-
-///
-///   Recall Messages
-///
-bool _canRecall(Content content) {
-  DateTime? when = content.time;
-  if (when == null) {
-    return true;
-  }
-  Duration elapsed = DateTime.now().difference(when);
-  return elapsed.inSeconds < 128;
-}
-void _recallImageMessage(BuildContext ctx, ImageContent content, Envelope envelope) {
-  Log.info('recalling image message: $content');
-  Alert.confirm(ctx, 'Confirm', 'Sure to recall this message?'.tr,
-    okAction: () {
-      GlobalVariable shared = GlobalVariable();
-      shared.emitter.recallImageMessage(content, envelope).then((pair) {
-        if (pair.first == null) {
-          Log.warning('failed to recall message.');
-        } else {
-          Log.info('message recalled.');
-        }
-      });
-    }
-  );
-}
-void _recallVideoMessage(BuildContext ctx, VideoContent content, Envelope envelope) {
-  Log.info('recalling video message: $content');
-  Alert.confirm(ctx, 'Confirm', 'Sure to recall this message?'.tr,
-      okAction: () {
-        GlobalVariable shared = GlobalVariable();
-        shared.emitter.recallVideoMessage(content, envelope).then((pair) {
-          if (pair.first == null) {
-            Log.warning('failed to recall message.');
-          } else {
-            Log.info('message recalled.');
-          }
-        });
-      }
-  );
-}
-void _recallAudioMessage(BuildContext ctx, AudioContent content, Envelope envelope) {
-  Log.info('recalling audio message: $content');
-  Alert.confirm(ctx, 'Confirm', 'Sure to recall this message?'.tr,
-      okAction: () {
-        GlobalVariable shared = GlobalVariable();
-        shared.emitter.recallAudioMessage(content, envelope).then((pair) {
-          if (pair.first == null) {
-            Log.warning('failed to recall message.');
-          } else {
-            Log.info('message recalled.');
-          }
-        });
-      }
-  );
 }
