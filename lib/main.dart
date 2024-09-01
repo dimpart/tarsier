@@ -70,6 +70,8 @@ class _MainPageState extends State<_MainPage> with WidgetsBindingObserver {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+    // system check
+    _SystemChecker().check(context);
   }
 
   @override
@@ -105,7 +107,8 @@ class _MainPageState extends State<_MainPage> with WidgetsBindingObserver {
         ],
       ),
       bottomNavigationBar: TabBar(
-        labelColor: Styles.colors.normalButtonColor,
+        labelColor: Styles.colors.activeTabColor,
+        // unselectedLabelColor: Styles.colors.tabColor,
         tabs: [
           ChatHistoryPage.tab(),
           ContactListPage.tab(),
@@ -147,5 +150,44 @@ class _MainPageState extends State<_MainPage> with WidgetsBindingObserver {
   //   },
   //   controller: CupertinoTabController(initialIndex: 2),
   // );
+
+}
+
+
+class _SystemChecker with Logging {
+  factory _SystemChecker() => _instance;
+  static final _SystemChecker _instance = _SystemChecker._internal();
+  _SystemChecker._internal();
+
+  bool _checked = false;
+
+  void check(BuildContext context) {
+    if (_checked) {
+      logWarning('system checked');
+      return;
+    } else {
+      _checked = true;
+    }
+    // wait a while
+    Future.delayed(const Duration(seconds: 5)).then((_) {
+      logWarning('system checking');
+      // checking for upgrade
+      _checkAppUpdate(context);
+      // test speeds for all stations
+      _checkStationSpeeds();
+    });
+  }
+
+  void _checkAppUpdate(BuildContext context) {
+    logWarning('check app update');
+    NewestManager().checkUpdate(context);
+  }
+
+  void _checkStationSpeeds() async {
+    logWarning('check station speeds');
+    StationSpeeder speeder = StationSpeeder();
+    await speeder.reload();
+    await speeder.testAll();
+  }
 
 }

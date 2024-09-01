@@ -17,8 +17,8 @@ import 'setting/storage.dart';
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
 
-  static final String title = 'Settings'.tr;
-  static const IconData icon = AppIcons.settingsTabIcon;
+  static final String title = 'Me'.tr;
+  static const IconData icon = AppIcons.meTabIcon;
 
   static BottomNavigationBarItem barItem() => BottomNavigationBarItem(
     icon: const _SettingsIconView(icon: Icon(icon)),
@@ -312,7 +312,7 @@ class _SettingsPageState extends State<SettingsPage> implements lnc.Observer {
     style: const TextStyle(
       color: CupertinoColors.systemRed,
       decoration: TextDecoration.underline,
-      decorationStyle: TextDecorationStyle.double,
+      // decorationStyle: TextDecorationStyle.double,
       fontWeight: FontWeight.bold,
     ),
     recognizer: TapGestureRecognizer()..onTap = () => Browser.launch(context, newest.url),

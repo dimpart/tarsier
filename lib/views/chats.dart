@@ -119,11 +119,6 @@ class _ChatListState extends State<ChatHistoryPage> implements lnc.Observer {
         _adapter.notifyDataChange();
       });
     }
-    // wait a while to test speeds for all stations
-    await Future.delayed(const Duration(seconds: 5));
-    StationSpeeder speeder = StationSpeeder();
-    await speeder.reload();
-    await speeder.testAll();
   }
 
   @override
@@ -278,9 +273,7 @@ class _ChatTableCellState extends State<_ChatTableCell> implements lnc.Observer 
   void _removeConversation(BuildContext context, ID chat) {
     Log.warning('removing $chat');
     Amanuensis clerk = Amanuensis();
-    String msg = 'Sure to remove this conversation?\n'
-        'This action is not recoverable.';
-    Alert.confirm(context, 'Confirm Delete', msg,
+    Alert.confirm(context, 'Confirm Delete', 'Sure to remove this conversation?'.tr,
       okAction: () => clerk.removeConversation(chat).onError((error, stackTrace) {
         Alert.show(context, 'Error', 'Failed to remove conversation'.tr);
         return false;
@@ -410,10 +403,6 @@ class _ChatsIconState extends State<_ChatsIconView> implements lnc.Observer {
   Widget build(BuildContext context) {
     int count = UnreadCounter().count;
     Log.warning('new message count: $count');
-    // checking for upgrade
-    Future.delayed(const Duration(seconds: 5)).then((_) {
-      NewestManager().checkUpdate(context);
-    });
     return IconView.fromNumber(widget.icon, count);
   }
 
