@@ -12,17 +12,17 @@ import 'service/sites.dart';
 class ServiceListPage extends StatefulWidget {
   const ServiceListPage({super.key});
 
-  static final String title = 'Services'.tr;
+  static const String title = 'Services';
   static const IconData icon = AppIcons.servicesTabIcon;
 
   static BottomNavigationBarItem barItem() => BottomNavigationBarItem(
     icon: const Icon(icon),
-    label: title,
+    label: title.tr,
   );
 
   static Tab tab() => Tab(
     icon: const Icon(icon, size: 32),
-    text: title,
+    text: title.tr,
     // height: 64,
     iconMargin: EdgeInsets.zero,
   );
