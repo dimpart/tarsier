@@ -342,9 +342,9 @@ class _LiveSourceState extends State<_LiveSourceItem> {
     int? count = tvBox['available_channel_count'];
     if (count == null) {
       int cnt = 0;
-      List<ChannelGroup> groups = widget.tvBox.lives ?? [];
+      var groups = widget.tvBox.lives ?? [];
       for (var grp in groups) {
-        cnt += grp.sources.length;
+        cnt += grp.count;
       }
       count = cnt;
     }

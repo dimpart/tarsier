@@ -48,13 +48,18 @@ void main() async {
 }
 
 void changeToMainPage(BuildContext context) {
-  // Navigator.pop(...)
-  closePage(context);
-  // showCupertinoDialog(...)
-  showPage(
-    context: context,
-    builder: (context) => const _MainPage(),
+  // prevent returning to the register page
+  Navigator.of(context).pushAndRemoveUntil(
+    MaterialPageRoute(builder: (builder) => const _MainPage()),
+    (route) => false,
   );
+  // // Navigator.pop(...)
+  // closePage(context);
+  // // showCupertinoDialog(...)
+  // showPage(
+  //   context: context,
+  //   builder: (context) => const _MainPage(),
+  // );
 }
 
 class _MainPage extends StatefulWidget {
