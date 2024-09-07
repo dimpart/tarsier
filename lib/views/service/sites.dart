@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:dim_flutter/dim_flutter.dart';
 import 'package:lnc/notification.dart' as lnc;
 
+import '../chat/pick_chat.dart';
 import '../chat/share_page.dart';
 import '../chat/share_video.dart';
 
@@ -188,41 +189,88 @@ class _WebSiteState extends State<WebSitePage> with Logging implements lnc.Obser
     } else {
       body = _body(context, page);
     }
-    var colors = Styles.colors;
     return Scaffold(
-      backgroundColor: colors.scaffoldBackgroundColor,
-      // A ScrollView that creates custom scroll effects using slivers.
-      body: CustomScrollView(
-        // A list of sliver widgets.
-        slivers: <Widget>[
-          CupertinoSliverNavigationBar(
-            backgroundColor: colors.appBardBackgroundColor,
-            // This title is visible in both collapsed and expanded states.
-            // When the "middle" parameter is omitted, the widget provided
-            // in the "largeTitle" parameter is used instead in the collapsed state.
-            largeTitle: Text(widget.title,
-              style: Styles.titleTextStyle,
-            ),
+      backgroundColor: Styles.colors.scaffoldBackgroundColor,
+      appBar: CupertinoNavigationBar(
+        backgroundColor: Styles.colors.appBardBackgroundColor,
+        // backgroundColor: Styles.themeBarBackgroundColor,
+        middle: Text(widget.title,
+          style: Styles.titleTextStyle,
+        ),
+        trailing: _shareBtn(context, page),
+      ),
+      body: buildScrollView(
+        enableScrollbar: true,
+        child: body,
+      ),
+    );
+    // var colors = Styles.colors;
+    // return Scaffold(
+    //   backgroundColor: colors.scaffoldBackgroundColor,
+    //   // A ScrollView that creates custom scroll effects using slivers.
+    //   body: CustomScrollView(
+    //     // A list of sliver widgets.
+    //     slivers: <Widget>[
+    //       CupertinoSliverNavigationBar(
+    //         backgroundColor: colors.appBardBackgroundColor,
+    //         // This title is visible in both collapsed and expanded states.
+    //         // When the "middle" parameter is omitted, the widget provided
+    //         // in the "largeTitle" parameter is used instead in the collapsed state.
+    //         largeTitle: Text(widget.title,
+    //           style: Styles.titleTextStyle,
+    //         ),
+    //         trailing: _shareBtn(context, page),
+    //       ),
+    //       // This widget fills the remaining space in the viewport.
+    //       // Drag the scrollable area to collapse the CupertinoSliverNavigationBar.
+    //       SliverFillRemaining(
+    //         hasScrollBody: false,
+    //         fillOverscroll: true,
+    //         child: body,
+    //       ),
+    //     ],
+    //   ),
+    // );
+  }
+
+  Widget? _shareBtn(BuildContext ctx, Content? page) {
+    String? text = page?['text'];
+    if (text == null || text.isEmpty) {
+      return null;
+    }
+    String title = widget.title;
+    String? format = page?['format'];
+    format = format?.trim().toLowerCase();
+    if (format == 'markdown') {
+      // forward as text
+    } else {
+      assert(false, 'unknown page format: $format');
+      return null;
+    }
+    return IconButton(
+      icon: const Icon(
+        AppIcons.shareIcon,
+        size: Styles.navigationBarIconSize,
+        // color: Styles.avatarColor,
+      ),
+      onPressed: () => PickChatPage.open(ctx,
+        onPicked: (chat) => Alert.confirm(ctx, 'Confirm Forward',
+          _sharePreview(title, chat),
+          okAction: () => _shareMarkdown(chat.identifier,
+            title: title, body: text,
           ),
-          // This widget fills the remaining space in the viewport.
-          // Drag the scrollable area to collapse the CupertinoSliverNavigationBar.
-          SliverFillRemaining(
-            hasScrollBody: false,
-            fillOverscroll: true,
-            child: body,
-          ),
-        ],
+        ),
       ),
     );
   }
 
-  Widget _body(BuildContext ctx, Content content) {
+  Widget _body(BuildContext ctx, Content page) {
     var sender = widget.chat.identifier;
-    var format = content['format'];
+    var format = page['format'];
     if (format is String) {
       format = format.toLowerCase();
     }
-    String text = DefaultMessageBuilder().getText(content, sender);
+    String text = DefaultMessageBuilder().getText(page, sender);
     Widget? view;
     if (format == 'markdown') {
       // show RichText
@@ -245,3 +293,37 @@ class _WebSiteState extends State<WebSitePage> with Logging implements lnc.Obser
   }
 
 }
+
+Future<bool> _shareMarkdown(ID receiver, {required String title, required String body}) async {
+  var content = TextContent.create(body);
+  content['format'] = 'markdown';
+  // if (receiver.isGroup) {
+  //   content.group = receiver;
+  // }
+  GlobalVariable shared = GlobalVariable();
+  await shared.emitter.sendContent(content, receiver);
+  return true;
+}
+
+Widget _sharePreview(String title, Conversation chat) {
+  Widget to = previewEntity(chat);
+  Widget from = _previewText(title);
+  Widget body = Row(
+    mainAxisAlignment: MainAxisAlignment.center,
+    children: [
+      from,
+      const SizedBox(width: 32,),
+      const Text('~>'),
+      const SizedBox(width: 32,),
+      to,
+    ],
+  );
+  return body;
+}
+Widget _previewText(String text) => SizedBox(
+  width: 64,
+  child: Text(text,
+    maxLines: 3,
+    overflow: TextOverflow.ellipsis,
+  ),
+);
