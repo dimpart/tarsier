@@ -20,8 +20,10 @@ abstract class ContentViewHelper {
     // action - onLongPress
     bool canRecall = _canRecall(content, sender);
     actionSheet() => Alert.actionSheet(ctx, null, null,
+      // forward
       Alert.action(AppIcons.shareIcon, 'Forward Name Card'),
       forwardNameCard,
+      // recall
       !canRecall ? null : Alert.action(AppIcons.recallIcon, 'Recall Message'),
       recallNameCard,
     );
@@ -46,8 +48,10 @@ abstract class ContentViewHelper {
     // action - onLongPress
     bool canRecall = _canRecall(content, sender);
     actionSheet() => Alert.actionSheet(ctx, null, null,
+      // forward
       Alert.action(AppIcons.shareIcon, 'Forward Web Page'),
       forwardWebPage,
+      // recall
       !canRecall ? null : Alert.action(AppIcons.recallIcon, 'Recall Message'),
       recallWebPage,
     );
@@ -73,10 +77,13 @@ abstract class ContentViewHelper {
     // action - onLongPress
     bool canRecall = _canRecall(content, sender);
     actionSheet() => Alert.actionSheet(ctx, null, null,
+      // forward
       Alert.action(AppIcons.shareIcon, 'Forward Image'),
       forwardImage,
+      // save
       Alert.action(AppIcons.saveFileIcon, 'Save to Album'),
       saveImage,
+      // recall
       !canRecall ? null : Alert.action(AppIcons.recallIcon, 'Recall Message'),
       recallImage,
     );
@@ -98,8 +105,10 @@ abstract class ContentViewHelper {
     // action - onLongPress
     bool canRecall = _canRecall(content, sender);
     actionSheet() => Alert.actionSheet(ctx, null, null,
+      // forward
       Alert.action(AppIcons.shareIcon, 'Forward Video'),
-          () => onVideoShare,
+          () => ShareVideo.forwardVideo(ctx, content, sender),
+      // recall
       !canRecall ? null : Alert.action(AppIcons.recallIcon, 'Recall Message'),
       recallVideo,
     );
@@ -119,6 +128,7 @@ abstract class ContentViewHelper {
     // OK
     return ContentViewUtils.getAudioContentView(content, sender,
       onLongPress: !canRecall ? null : () => Alert.actionSheet(ctx, null, null,
+        // recall
         Alert.action(AppIcons.recallIcon, 'Recall Message'),
         recallAudio,
       ),
@@ -149,6 +159,7 @@ abstract class ContentViewHelper {
     return ContentViewUtils.getTextContentView(content, sender,
       onDoubleTap: openText,
       onLongPress: !canRecall ? null : () => Alert.actionSheet(ctx, null, null,
+        // recall
         Alert.action(AppIcons.recallIcon, 'Recall Message'),
             () => _recallTextMessage(ctx, content, envelope),
       ),
