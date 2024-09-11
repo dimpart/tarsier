@@ -12,6 +12,13 @@ import 'views/services.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
+  var newest = NewestManager();
+  // newest.store = 'AppStore';    // appstoreconnect.apple.com
+  // newest.store = 'GooglePlay';  // play.google.com
+  // newest.store = 'Amazon';      // developer.amazon.com
+  newest.store = 'Demo';        // tarsier.dim.chat
+  /// TODO: set distribution channel name
+
   // Set log level
   Log.level = Log.kDevelop;
   if (DevicePlatform.isIOS) {
