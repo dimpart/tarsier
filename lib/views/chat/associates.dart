@@ -10,9 +10,11 @@ import '../contact/profile.dart';
 import 'chat_box.dart';
 
 
-Widget contactCard(BuildContext context, ContactInfo info, {double width = 64, double height = 64}) => GestureDetector(
+Widget contactCard(BuildContext context, ContactInfo info, {
+  double width = 64, double height = 64, BoxFit? fit,
+}) => GestureDetector(
   onTap: () => ProfilePage.open(context, info.identifier,),
-  child: previewEntity(info, width: width, height: height, textStyle: Styles.titleTextStyle),
+  child: previewEntity(info, width: width, height: height, fit: fit, textStyle: Styles.titleTextStyle),
 );
 
 Widget plusButton(BuildContext context) => IconButton(

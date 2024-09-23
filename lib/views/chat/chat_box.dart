@@ -379,7 +379,7 @@ class _HistoryAdapter with SectionAdapterMixin {
     mainAxisAlignment: MainAxisAlignment.center,
     children: [
       Expanded(flex: 1, child: Container()),
-      Expanded(flex: 2,
+      Expanded(flex: 6,
         child: ContentViewUtils.getCommandLabel(context, text),
       ),
       Expanded(flex: 1, child: Container()),

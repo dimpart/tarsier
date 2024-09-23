@@ -8,14 +8,17 @@ import '../chat/share_video.dart';
 
 
 class LiveSourceListPage extends StatefulWidget {
-  const LiveSourceListPage(this.chat, this.title, {super.key});
+  const LiveSourceListPage(this.chat, this.info, {super.key});
 
   final Conversation chat;
-  final String title;
+  final Map info;
 
-  static void open(BuildContext context, Conversation chat, String title) => showPage(
+  String get title => info['title'] ?? 'Live Stream Sources';
+  String? get keywords => info['keywords'];
+
+  static void open(BuildContext context, Conversation chat, Map info) => showPage(
     context: context,
-    builder: (context) => LiveSourceListPage(chat, title),
+    builder: (context) => LiveSourceListPage(chat, info),
   );
 
   @override
@@ -37,6 +40,8 @@ class _LiveSourceListState extends State<LiveSourceListPage> with Logging implem
 
   int _searchTag = 9527;  // show CupertinoActivityIndicator
   String? _description;
+
+  String get description => _description ?? '';
 
   static const Duration kLiveQueryExpires = Duration(minutes: 32);
 
@@ -159,22 +164,24 @@ class _LiveSourceListState extends State<LiveSourceListPage> with Logging implem
   }
   // query for new records
   Future<void> _query() async {
-    logWarning('query lives with title: "${widget.title}"');
     GlobalVariable shared = GlobalVariable();
     SharedMessenger? messenger = shared.messenger;
     if (messenger == null) {
       logError('messenger not set, not connect yet?');
       return;
     }
+    String title = widget.title;
+    String? keywords = widget.keywords;
     // build command
-    var content = TextContent.create(widget.title);
+    var content = TextContent.create(keywords ?? title);
     _searchTag = content.sn;
     content['tag'] = _searchTag;
-    content['title'] = widget.title;
+    content['title'] = title;
+    content['keywords'] = keywords;
     content['hidden'] = true;
     // TODO: check visa.key
     ID bot = widget.chat.identifier;
-    logInfo('query lives with tag: $_searchTag');
+    logInfo('query lives with tag: $_searchTag, keywords: $keywords, title: "$title"');
     await messenger.sendContent(content, sender: null, receiver: bot);
   }
 
@@ -190,9 +197,7 @@ class _LiveSourceListState extends State<LiveSourceListPage> with Logging implem
     navigationBar: CupertinoNavigationBar(
       backgroundColor: Styles.colors.appBardBackgroundColor,
       // backgroundColor: Styles.themeBarBackgroundColor,
-      middle: Text(widget.title,
-        style: Styles.titleTextStyle,
-      ),
+      middle: StatedTitleView.from(context, () => widget.title),
     ),
     child: buildSectionListView(
       enableScrollbar: true,
@@ -218,7 +223,7 @@ class _LiveSourceAdapter with SectionAdapterMixin {
   bool shouldExistSectionHeader(int section) => state._searchTag > 0;
 
   @override
-  bool shouldExistSectionFooter(int section) => state._description != null;
+  bool shouldExistSectionFooter(int section) => state.description.isNotEmpty;
 
   @override
   Widget getSectionHeader(BuildContext context, int section) => Center(
@@ -230,7 +235,7 @@ class _LiveSourceAdapter with SectionAdapterMixin {
 
   @override
   Widget getSectionFooter(BuildContext context, int section) {
-    String prompt = state._description ?? '';
+    String prompt = state.description;
     return Container(
       color: Styles.colors.appBardBackgroundColor,
       padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),

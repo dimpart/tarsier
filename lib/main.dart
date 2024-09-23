@@ -16,11 +16,11 @@ void main() async {
   // newest.store = 'AppStore';    // appstoreconnect.apple.com
   // newest.store = 'GooglePlay';  // play.google.com
   // newest.store = 'Amazon';      // developer.amazon.com
-  newest.store = 'Demo';        // tarsier.dim.chat
+  newest.store = 'GSP';         // tarsier.dim.chat
   /// TODO: set distribution channel name
 
   // Set log level
-  Log.level = Log.kDevelop;
+  Log.level = Log.kRelease;
   if (DevicePlatform.isIOS) {
     Log.colorful = false;
     Log.showTime = true;

@@ -10,14 +10,17 @@ import '../chat/share_video.dart';
 
 
 class WebSitePage extends StatefulWidget {
-  const WebSitePage(this.chat, this.title, {super.key});
+  const WebSitePage(this.chat, this.info, {super.key});
 
   final Conversation chat;
-  final String title;
+  final Map info;
 
-  static void open(BuildContext context, Conversation chat, String title) => showPage(
+  String get title => info['title'] ?? 'Index Page';
+  String? get keywords => info['keywords'];
+
+  static void open(BuildContext context, Conversation chat, Map info) => showPage(
     context: context,
-    builder: (context) => WebSitePage(chat, title),
+    builder: (context) => WebSitePage(chat, info),
   );
 
   @override
@@ -155,22 +158,24 @@ class _WebSiteState extends State<WebSitePage> with Logging implements lnc.Obser
   }
   // query for new records
   Future<void> _query() async {
-    logWarning('query sites with title: "${widget.title}"');
     GlobalVariable shared = GlobalVariable();
     SharedMessenger? messenger = shared.messenger;
     if (messenger == null) {
       logError('messenger not set, not connect yet?');
       return;
     }
+    String title = widget.title;
+    String? keywords = widget.keywords;
     // build command
-    var content = TextContent.create(widget.title);
+    var content = TextContent.create(keywords ?? title);
     _queryTag = content.sn;
     content['tag'] = _queryTag;
-    content['title'] = widget.title;
+    content['title'] = title;
+    content['keywords'] = keywords;
     content['hidden'] = true;
     // TODO: check visa.key
     ID bot = widget.chat.identifier;
-    logInfo('query homepage with tag: $_queryTag');
+    logInfo('query homepage with tag: $_queryTag, keywords: $keywords, title: "$title"');
     await messenger.sendContent(content, sender: null, receiver: bot);
   }
 
@@ -180,7 +185,9 @@ class _WebSiteState extends State<WebSitePage> with Logging implements lnc.Obser
     var page = _content;
     if (page == null) {
       // loading
-      body = const CupertinoActivityIndicator();
+      body = const Center(
+        child: CupertinoActivityIndicator(),
+      );
     } else if (page['format'] == 'html') {
       // web page
       var sender = widget.chat.identifier;
@@ -194,9 +201,7 @@ class _WebSiteState extends State<WebSitePage> with Logging implements lnc.Obser
       appBar: CupertinoNavigationBar(
         backgroundColor: Styles.colors.appBardBackgroundColor,
         // backgroundColor: Styles.themeBarBackgroundColor,
-        middle: Text(widget.title,
-          style: Styles.titleTextStyle,
-        ),
+        middle: StatedTitleView.from(context, () => widget.title),
         trailing: _shareBtn(context, page),
       ),
       body: buildScrollView(

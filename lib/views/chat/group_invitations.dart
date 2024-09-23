@@ -327,12 +327,13 @@ class _InvitationCellState extends State<_InvitationCell> implements lnc.Observe
     );
   }
 
-  Widget _avatar(BuildContext context, ContactInfo info,
-      {double width = 48, double height = 48}) => GestureDetector(
+  Widget _avatar(BuildContext context, ContactInfo info, {
+    double width = 48, double height = 48, BoxFit? fit,
+  }) => GestureDetector(
     onTap: () => ProfilePage.open(context, info.identifier,),
     child: Container(
       padding: const EdgeInsets.fromLTRB(4, 2, 8, 2),
-      child: info.getImage(width: width, height: height,),
+      child: info.getImage(width: width, height: height, fit: fit),
     ),
   );
 

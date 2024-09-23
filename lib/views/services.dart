@@ -7,6 +7,7 @@ import 'package:dim_flutter/dim_flutter.dart';
 import 'chat/chat_box.dart';
 import 'service/lives.dart';
 import 'service/sites.dart';
+import 'service/users.dart';
 
 
 class ServiceListPage extends StatefulWidget {
@@ -82,6 +83,8 @@ class _BotListAdapter with SectionAdapterMixin, Logging {
       if (item is Map) {
         var st = item['type'];
         if (st == 'ChatBox' || st == 'ChatBot') {
+          _services.add(item);
+        } else if (st == 'UserList') {
           _services.add(item);
         } else if (st == 'LiveSources') {
           _services.add(item);
@@ -164,12 +167,15 @@ class _ServiceTableCellState extends State<_ServiceTableCell> {
     Widget? view;
     if (pnf != null) {
       view = NetworkImageFactory().getImageView(pnf);
+      // view = NetworkImageFactory().getImageView(pnf, fit: BoxFit.cover);
+      // view = SizedBox.expand(child: view,);
     }
     view = Container(
       width: 48,
       height: 48,
       color: CupertinoColors.white,
       padding: const EdgeInsets.all(4),
+      alignment: Alignment.center,
       child: view,
     );
     return ClipRRect(
@@ -210,21 +216,17 @@ bool _openService(BuildContext ctx, Map info) {
     // chat box
     ChatBox.open(ctx, contact);
     return true;
+  } else if (st == 'UserList') {
+    // active users
+    UserListPage.open(ctx, contact, info);
+    return true;
   } else if (st == 'LiveSources') {
     // live source list
-    String? title = info['title'];
-    if (title == null || title.isEmpty) {
-      title = 'Live Stream Sources';
-    }
-    LiveSourceListPage.open(ctx, contact, title);
+    LiveSourceListPage.open(ctx, contact, info);
     return true;
   } else if (st == 'WebSites') {
-    // live source list
-    String? title = info['title'];
-    if (title == null || title.isEmpty) {
-      title = 'Index Page';
-    }
-    WebSitePage.open(ctx, contact, title);
+    // index page
+    WebSitePage.open(ctx, contact, info);
     return true;
   }
   Log.error('unknown service type: $st');
