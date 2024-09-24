@@ -23,17 +23,17 @@
 	<key>LSMinimumSystemVersion</key>
 	<string>$(MACOSX_DEPLOYMENT_TARGET)</string>
 	<key>NSCameraUsageDescription</key>
-	<string>Allow to use the camera.</string>
+	<string>Please allow to take photos and send them to friends, or to change your profile picture.</string>
 	<key>NSHumanReadableCopyright</key>
 	<string>$(PRODUCT_COPYRIGHT)</string>
 	<key>NSMainNibFile</key>
 	<string>MainMenu</string>
 	<key>NSMicrophoneUsageDescription</key>
-	<string>Allow to use the microphone.</string>
+	<string>Please allow to record a voice message and send it to your friend.</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
-	<string>Allow to save photos to the album.</string>
+	<string>Please allow to save the image to your album.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Allow to access photo album.</string>
+	<string>Please allow to send photos from the album to your friends or to change your profile picture.</string>
 	<key>NSPrincipalClass</key>
 	<string>NSApplication</string>
 </dict>

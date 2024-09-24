@@ -34,13 +34,13 @@
 		<true/>
 	</dict>
 	<key>NSCameraUsageDescription</key>
-	<string>Allow to use the camera.</string>
+	<string>Please allow to take photos and send them to friends, or to change your profile picture.</string>
 	<key>NSMicrophoneUsageDescription</key>
-	<string>Allow to use the microphone.</string>
+	<string>Please allow to record a voice message and send it to your friend.</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
-	<string>Allow to save photos to the album.</string>
+	<string>Please allow to save the image to your album.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Allow to access photo album.</string>
+	<string>Please allow to send photos from the album to your friends or to change your profile picture.</string>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	<key>UIBackgroundModes</key>
