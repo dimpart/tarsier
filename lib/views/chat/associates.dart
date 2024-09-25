@@ -164,7 +164,7 @@ void _newChat(BuildContext context, List<ID> members) {
     if (info == null) {
       assert(false, 'failed to get contact info: $members');
     } else {
-      ChatBox.open(context, info);
+      ChatBox.open(context, info, null);
     }
   } else {
     SharedGroupManager man = SharedGroupManager();
@@ -175,7 +175,7 @@ void _newChat(BuildContext context, List<ID> members) {
       }
       Log.warning('new group: $group');
       Conversation? chat = Conversation.fromID(group);
-      chat?.reloadData().then((nothing) => ChatBox.open(context, chat));
+      chat?.reloadData().then((nothing) => ChatBox.open(context, chat, null));
     });
   }
 }

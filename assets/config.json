@@ -6,7 +6,13 @@
   "founder": "moky@anywhere",
   "owner": "anyone@anywhere",
 
+  "webmaster": "0x952718A18C6b21abb593D84203282fe1c21773D6",
+
   "contacts": [
+
+  ],
+
+  "assistants": [
 
   ],
 
@@ -44,6 +50,7 @@
     }
   },
 
-  "terms": "https://wallet.dim.chat/dimchat/sechat/privacy.html",
+  "terms": "http://tarsier.dim.chat/v1/docs/terms.html",
+  "privacy": "http://tarsier.dim.chat/v1/docs/privacy.html",
   "about": "https://dim.chat/"
 }

@@ -19,15 +19,18 @@ import 'detail_group.dart';
 ///  Chat Box
 ///
 class ChatBox extends StatefulWidget {
-  const ChatBox(this.info, {super.key});
+  const ChatBox(this.info, this.extra, {super.key});
 
   final Conversation info;
+  final Map? extra;
+
+  String get title => extra?['title'] ?? '';
 
   static int maxCountOfMessages = 2048;
 
-  static void open(BuildContext context, Conversation info) => showPage(
+  static void open(BuildContext context, Conversation info, Map? extra) => showPage(
     context: context,
-    builder: (context) => ChatBox(info),
+    builder: (context) => ChatBox(info, extra),
   );
 
   @override
@@ -138,11 +141,20 @@ class _ChatBoxState extends State<ChatBox> implements lnc.Observer {
     backgroundColor: Styles.colors.scaffoldBackgroundColor,
     appBar: CupertinoNavigationBar(
       backgroundColor: Styles.colors.appBardBackgroundColor,
-      middle: ChatTitleView.from(context, widget.info),
+      middle: _title(context),
       trailing: _detailButton(context, widget.info),
     ),
     body: _body(context),
   );
+
+  Widget _title(BuildContext context) {
+    String title = widget.title;
+    if (title.isEmpty) {
+      return ChatTitleView.from(context, widget.info);
+    } else {
+      return StatedTitleView.from(context, () => title);
+    }
+  }
 
   Widget? _detailButton(BuildContext context, Conversation info) {
     if (info is GroupInfo && info.isNotMember) {
@@ -213,7 +225,7 @@ class _ChatBoxState extends State<ChatBox> implements lnc.Observer {
       );
     }
     // normally
-    return ChatInputTray(info);
+    return ChatInputTray(info, widget.extra);
   }
 
 }
@@ -229,26 +241,41 @@ class _HistoryAdapter with SectionAdapterMixin {
   bool shouldExistSectionFooter(int section) => true;
 
   @override
-  Widget getSectionFooter(BuildContext context, int section) {
-    String prompt = 'ChatBox::Description'.tr;
-    return Container(
-      color: Styles.colors.appBardBackgroundColor,
-      padding: const EdgeInsets.all(16),
-      child: Row(
-        // crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Icon(AppIcons.encryptedIcon,
-            size: 24,
-            color: CupertinoColors.systemGrey,
-          ),
-          const SizedBox(width: 8,),
-          Expanded(child: Text(prompt,
-            style: Styles.sectionFooterTextStyle,
-          )),
-        ],
-      ),
-    );
-  }
+  Widget getSectionFooter(BuildContext context, int section) => Container(
+    color: Styles.colors.appBardBackgroundColor,
+    padding: const EdgeInsets.all(16),
+    child: Column(
+      children: [
+        Row(
+          // crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Icon(AppIcons.encryptedIcon,
+              size: 24,
+              color: CupertinoColors.systemGrey,
+            ),
+            const SizedBox(width: 8,),
+            Expanded(child: Text('ChatBox::Description'.tr,
+              style: Styles.sectionFooterTextStyle,
+            )),
+          ],
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            TextButton(
+              child: Text('Terms'.tr,
+                style: const TextStyle(
+                  fontSize: 10,
+                  color: CupertinoColors.link,
+                ),
+              ),
+              onPressed: () => Config().termsURL.then((url) => Browser.open(context, url)),
+            ),
+          ],
+        ),
+      ],
+    )
+  );
 
   @override
   int numberOfItems(int section) {

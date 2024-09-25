@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:dim_flutter/dim_flutter.dart';
 import 'package:lnc/notification.dart' as lnc;
 
+import '../service/report.dart';
 import 'associates.dart';
 
 
@@ -176,7 +177,10 @@ class _ChatDetailState extends State<ChatDetailPage> implements lnc.Observer {
         additionalDividerMargin: 0,
         children: [
           /// clear history
-          _clearButton(context, backgroundColor: backgroundColor, textColor: dangerousTextColor),
+          _clearButton(context, textColor: dangerousTextColor, backgroundColor: backgroundColor),
+          /// report
+          if (widget.info != CustomerService.webmaster)
+          _reportButton(context, textColor: dangerousTextColor, backgroundColor: backgroundColor)
         ],
       ),
 
@@ -197,6 +201,11 @@ class _ChatDetailState extends State<ChatDetailPage> implements lnc.Observer {
   Widget _clearButton(BuildContext context, {required Color textColor, required Color backgroundColor}) =>
       _button('Clear History'.tr, AppIcons.clearChatIcon, textColor: textColor, backgroundColor: backgroundColor,
         onPressed: () => _clearHistory(context, widget.info),
+      );
+
+  Widget _reportButton(BuildContext context, {required Color textColor, required Color backgroundColor}) =>
+      _button('Report'.tr, AppIcons.reportIcon, textColor: textColor, backgroundColor: backgroundColor,
+        onPressed: () => _reportContact(context, widget.info),
       );
 
   Widget _button(String title, IconData icon, {required Color textColor, required Color backgroundColor,
@@ -221,6 +230,19 @@ class _ChatDetailState extends State<ChatDetailPage> implements lnc.Observer {
     ],
   );
 
+}
+
+void _reportContact(BuildContext context, ContactInfo info) {
+  String text = 'Report Object: "@title"\n'
+      'ID: @id\n'
+      '\n'
+      'Reason: ...\n'
+      '(Screenshots will be attached below)'.trParams({
+    'title': info.title,
+    'id': info.identifier.toString(),
+  });
+  // open chat box to report
+  CustomerService.report(context, text);
 }
 
 void _clearHistory(BuildContext ctx, ContactInfo info) {

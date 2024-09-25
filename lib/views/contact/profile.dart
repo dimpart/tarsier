@@ -269,16 +269,16 @@ class _ProfileState extends State<ProfilePage> implements lnc.Observer {
         children: [
           /// add friend
           if (widget.info.isNotFriend)
-            _addButton(context, backgroundColor: backgroundColor, textColor: primaryTextColor),
+            _addButton(context, textColor: primaryTextColor, backgroundColor: backgroundColor),
           /// send message
           if (widget.info.isFriend/* && !widget.info.isBlocked*/)
-            _sendButton(context, backgroundColor: backgroundColor, textColor: primaryTextColor),
+            _sendButton(context, textColor: primaryTextColor, backgroundColor: backgroundColor),
           /// share contact
           if (widget.info.isFriend)
-            _shareButton(context, backgroundColor: backgroundColor, textColor: primaryTextColor),
+            _shareButton(context, textColor: primaryTextColor, backgroundColor: backgroundColor),
           /// delete contact
           if (widget.info.isFriend && widget.fromChat == null)
-            _deleteButton(context, backgroundColor: backgroundColor, textColor: dangerousTextColor),
+            _deleteButton(context, textColor: dangerousTextColor, backgroundColor: backgroundColor),
         ],
       ),
 
@@ -389,7 +389,7 @@ void _sendMessage(BuildContext ctx, ContactInfo info, ID? fromChat) {
     // this page is open from a chat box
     closePage(ctx);
   } else {
-    ChatBox.open(ctx, info);
+    ChatBox.open(ctx, info, null);
   }
 }
 

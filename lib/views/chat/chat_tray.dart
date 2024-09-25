@@ -7,9 +7,12 @@ import 'package:dim_flutter/dim_flutter.dart';
 
 
 class ChatInputTray extends StatefulWidget {
-  const ChatInputTray(this.info, {super.key});
+  const ChatInputTray(this.info, this.extra, {super.key});
 
   final Conversation info;
+  final Map? extra;
+
+  String? get text => extra?['text'];
 
   @override
   State<StatefulWidget> createState() => _InputState();
@@ -70,7 +73,8 @@ class _InputState extends State<ChatInputTray> implements lnc.Observer {
     _focusNode.requestFocus();
     // load editing text
     var shared = SharedEditingText();
-    String? text = shared.getConversationEditingText(widget.info);
+    String? text = widget.text;
+    text ??= shared.getConversationEditingText(widget.info);
     if (text != null) {
       _controller.text = text;
     }

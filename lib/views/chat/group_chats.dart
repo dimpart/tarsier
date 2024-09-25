@@ -241,7 +241,7 @@ class _ChatTableCellState extends State<_ChatTableCell> implements lnc.Observer 
     // trailing: const CupertinoListTileChevron(),
     onTap: () {
       Log.warning('tap: ${widget.info}');
-      ChatBox.open(context, widget.info);
+      ChatBox.open(context, widget.info, null);
     },
     onLongPress: () {
       Log.warning('long press: ${widget.info}');
@@ -262,7 +262,7 @@ class _ChatTableCellState extends State<_ChatTableCell> implements lnc.Observer 
   }
 
   Widget _leading(Conversation info) {
-    if (widget.info.isMuted) {
+    if (info.isMuted) {
       return IconView.fromSpot(info.getImage(width: 48, height: 48), info.unread);
     } else {
       return IconView.fromNumber(info.getImage(width: 48, height: 48), info.unread);

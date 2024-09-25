@@ -248,7 +248,7 @@ class _SettingsPageState extends State<SettingsPage> implements lnc.Observer {
             backgroundColorActivated: backgroundColorActivated,
             primaryTextColor: primaryTextColor,
             secondaryTextColor: secondaryTextColor,
-            onTap: () => Config().termsURL.then((url) => Browser.open(context, url)),
+            onTap: () => Config().privacyURL.then((url) => Browser.open(context, url)),
           ),
           /// About Tarsier
           _about(context, backgroundColor: backgroundColor, backgroundColorActivated: backgroundColorActivated,

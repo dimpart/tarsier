@@ -5,6 +5,7 @@ import 'package:dim_flutter/dim_flutter.dart';
 import 'package:lnc/notification.dart' as lnc;
 
 import '../chat/share_video.dart';
+import 'report.dart';
 
 
 class LiveSourceListPage extends StatefulWidget {
@@ -198,6 +199,7 @@ class _LiveSourceListState extends State<LiveSourceListPage> with Logging implem
       backgroundColor: Styles.colors.appBardBackgroundColor,
       // backgroundColor: Styles.themeBarBackgroundColor,
       middle: StatedTitleView.from(context, () => widget.title),
+      trailing: _reportButton(context, widget.title),
     ),
     child: buildSectionListView(
       enableScrollbar: true,
@@ -205,6 +207,16 @@ class _LiveSourceListState extends State<LiveSourceListPage> with Logging implem
     ),
   );
 
+}
+
+Widget _reportButton(BuildContext context, String title) {
+  String text = 'Report Object: "@title"\n'
+      '\n'
+      'Reason: ...\n'
+      '(Screenshots will be attached below)'.trParams({
+    'title': title,
+  });
+  return CustomerService.reportButton(context, text);
 }
 
 

@@ -259,7 +259,7 @@ class _ChatTableCellState extends State<_ChatTableCell> implements lnc.Observer 
     // trailing: const CupertinoListTileChevron(),
     onTap: () {
       Log.warning('tap: ${widget.info}');
-      ChatBox.open(context, widget.info);
+      ChatBox.open(context, widget.info, null);
       },
     onLongPress: () {
       Log.warning('long press: ${widget.info}');
@@ -290,7 +290,7 @@ class _ChatTableCellState extends State<_ChatTableCell> implements lnc.Observer 
         others = info.invitations.length;
       }
     }
-    if (widget.info.isMuted) {
+    if (info.isMuted) {
       // this conversation is muted,
       // show spot when unread messages or invitations exist.
       return IconView.fromSpot(info.getImage(width: 48, height: 48), unread + others);

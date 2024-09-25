@@ -6,6 +6,7 @@ import 'package:dim_flutter/dim_flutter.dart';
 
 import 'chat/chat_box.dart';
 import 'service/lives.dart';
+import 'service/report.dart';
 import 'service/sites.dart';
 import 'service/users.dart';
 
@@ -60,13 +61,30 @@ class _BotListState extends State<ServiceListPage> {
     appBar: CupertinoNavigationBar(
       backgroundColor: Styles.colors.appBardBackgroundColor,
       middle: StatedTitleView.from(context, () => 'Service Bots'.tr),
+      trailing: _reportButton(context, 'Service Bots'.tr),
     ),
     body: buildSectionListView(
       enableScrollbar: true,
       adapter: _adapter,
     ),
   );
+
 }
+
+Widget _reportButton(BuildContext context, String title) {
+  String text = 'Report Object: "@title"\n'
+      '\n'
+      'Reason: ...\n'
+      '(Screenshots will be attached below)'.trParams({
+    'title': title,
+  });
+  return CustomerService.reportButton(context, text);
+}
+
+
+//
+//  Section Adapter
+//
 
 class _BotListAdapter with SectionAdapterMixin, Logging {
 
@@ -214,7 +232,7 @@ bool _openService(BuildContext ctx, Map info) {
   var st = info['type'];
   if (st == 'ChatBox' || st == 'ChatBot') {
     // chat box
-    ChatBox.open(ctx, contact);
+    ChatBox.open(ctx, contact, info);
     return true;
   } else if (st == 'UserList') {
     // active users
