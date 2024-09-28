@@ -247,7 +247,7 @@ class _HistoryAdapter with SectionAdapterMixin {
     child: Column(
       children: [
         Row(
-          // crossAxisAlignment: CrossAxisAlignment.start,
+          // crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             const Icon(AppIcons.encryptedIcon,
               size: 24,
@@ -260,18 +260,23 @@ class _HistoryAdapter with SectionAdapterMixin {
           ],
         ),
         Row(
-          mainAxisAlignment: MainAxisAlignment.center,
+          // crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            TextButton(
-              child: Text('Terms'.tr,
-                style: const TextStyle(
-                  fontSize: 10,
-                  color: CupertinoColors.link,
-                ),
-              ),
-              onPressed: () => Config().termsURL.then((url) => Browser.open(context, url)),
-            ),
+            Expanded(child: Text('ChatBox::Remind'.tr,
+              style: Styles.sectionFooterTextStyle,
+            )),
           ],
+        ),
+        Center(
+          child: TextButton(
+            child: Text('Terms'.tr,
+              style: const TextStyle(
+                fontSize: 10,
+                color: CupertinoColors.link,
+              ),
+            ),
+            onPressed: () => Config().termsURL.then((url) => Browser.open(context, url)),
+          ),
         ),
       ],
     )

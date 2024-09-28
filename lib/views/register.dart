@@ -154,6 +154,7 @@ class _RegisterState extends State<RegisterPage> {
 
   Widget _form(BuildContext context) => Column(
     // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+    crossAxisAlignment: CrossAxisAlignment.center,
     children: <Widget>[
       const SizedBox(
         height: 32,
@@ -192,11 +193,8 @@ class _RegisterState extends State<RegisterPage> {
         height: 32,
       ),
       _okButton(context),
-      Container(
-        width: 320,
-        alignment: Alignment.center,
-        child: _privacyPolicy(context),
-      ),
+      _terms(context),
+      _privacyPolicy(context),
       const SizedBox(
         height: 128,
       ),
@@ -379,7 +377,9 @@ class _RegisterState extends State<RegisterPage> {
     ),
   );
 
-  Widget _privacyPolicy(BuildContext context) => Row(
+  Widget _terms(BuildContext context) => Row(
+    mainAxisAlignment: MainAxisAlignment.center,
+    mainAxisSize: MainAxisSize.min,
     children: [
       CupertinoButton(
         child: Container(
@@ -407,14 +407,23 @@ class _RegisterState extends State<RegisterPage> {
           widget._info.agreed = !widget._info.agreed;
         }),
       ),
-      const Text('Agreed with the', style: TextStyle(color: CupertinoColors.black)),
+      Text('Agreed with the'.tr,
+        style: const TextStyle(color: CupertinoColors.black),
+      ),
       TextButton(
-        child: const Text('DIM Privacy Policy',
-          style: TextStyle(color: buttonColor),
+        child: Text('Terms'.tr,
+          style: const TextStyle(color: buttonColor),
         ),
-        onPressed: () => Config().privacyURL.then((url) => Browser.open(context, url)),
+        onPressed: () => Config().termsURL.then((url) => Browser.open(context, url)),
       ),
     ],
+  );
+
+  Widget _privacyPolicy(BuildContext context) => TextButton(
+    child: Text('Privacy Policy'.tr,
+      style: const TextStyle(color: buttonColor),
+    ),
+    onPressed: () => Config().privacyURL.then((url) => Browser.open(context, url)),
   );
 
 }
@@ -424,7 +433,7 @@ void _submit(BuildContext context, _RegisterInfo info) =>
       if (info.nickname.isEmpty) {
         Alert.show(context, 'Input Name', 'Please input your nickname'.tr);
       } else if (!info.agreed) {
-        Alert.show(context, 'Privacy Policy', 'Please agree the privacy policy'.tr);
+        Alert.show(context, 'Terms', 'Please agree the privacy policy'.tr);
       } else {
         (info.importing ? _importAccount(context, info) : _createAccount(context, info))
             .then((identifier) => {

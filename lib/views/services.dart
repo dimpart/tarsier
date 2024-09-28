@@ -173,6 +173,7 @@ class _ServiceTableCellState extends State<_ServiceTableCell> {
     leading: _leading(widget.info),
     title: _title(widget.info),
     subtitle: _subtitle(widget.info),
+    additionalInfo: _additional(widget.info),
     trailing: const CupertinoListTileChevron(),
     onTap: () => _openService(context, widget.info),
   );
@@ -205,14 +206,19 @@ class _ServiceTableCellState extends State<_ServiceTableCell> {
   }
 
   Widget _title(Map info) {
-    String? title = info['title'];
-    title ??= info['name'];
-    return Text('$title');
+    var text = info['title'];
+    text ??= info['name'];
+    return Text('$text');
   }
 
   Widget? _subtitle(Map info) {
-    String? text = info['subtitle'];
-    return text == null ? null : Text(text);
+    var text = info['subtitle'];
+    return text == null ? null : Text('$text');
+  }
+
+  Widget? _additional(Map info) {
+    var text = info['provider'];
+    return text == null ? null : Text('$text');
   }
 
 }

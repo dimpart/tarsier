@@ -30,6 +30,7 @@ void main() async {
     Log.showTime = true;
     Log.showCaller = true;
   }
+  bool debug = Log.level != Log.kRelease;
 
   // Check Brightness & Language
   await initFacade();
@@ -39,7 +40,7 @@ void main() async {
   if (!permitted) {
     // not granted for photos/storage, first run?
     Log.warning('not granted for photos/storage, first run?');
-    launchApp(RegisterPage());
+    launchApp(RegisterPage(), debug: debug);
   } else {
     // check current user
     Log.debug('check current user');
@@ -47,9 +48,9 @@ void main() async {
     User? user = await shared.facebook.currentUser;
     Log.info('current user: $user');
     if (user == null) {
-      launchApp(RegisterPage());
+      launchApp(RegisterPage(), debug: debug);
     } else {
-      launchApp(const _MainPage());
+      launchApp(const _MainPage(), debug: debug);
     }
   }
 }
