@@ -34,6 +34,8 @@ class _WebSiteState extends State<WebSitePage> with Logging implements lnc.Obser
     nc.addObserver(this, NotificationNames.kWebSitesUpdated);
   }
 
+  bool _refreshing = false;
+
   int _queryTag = 9527;
   Content? _content;
 
@@ -168,7 +170,11 @@ class _WebSiteState extends State<WebSitePage> with Logging implements lnc.Obser
     String? keywords = widget.keywords;
     // build command
     var content = TextContent.create(keywords ?? title);
-    _queryTag = content.sn;
+    if (mounted) {
+      setState(() {
+        _queryTag = content.sn;
+      });
+    }
     content['tag'] = _queryTag;
     content['title'] = title;
     content['keywords'] = keywords;
@@ -183,7 +189,7 @@ class _WebSiteState extends State<WebSitePage> with Logging implements lnc.Obser
   Widget build(BuildContext context) {
     Widget body;
     var page = _content;
-    if (page == null) {
+    if (page == null || _queryTag > 0) {
       // loading
       body = const Center(
         child: CupertinoActivityIndicator(),
@@ -202,7 +208,7 @@ class _WebSiteState extends State<WebSitePage> with Logging implements lnc.Obser
         backgroundColor: Styles.colors.appBardBackgroundColor,
         // backgroundColor: Styles.themeBarBackgroundColor,
         middle: StatedTitleView.from(context, () => widget.title),
-        trailing: _shareBtn(context, page),
+        trailing: _trailing(_refreshBtn(), _shareBtn(context, page)),
       ),
       body: buildScrollView(
         enableScrollbar: true,
@@ -238,7 +244,47 @@ class _WebSiteState extends State<WebSitePage> with Logging implements lnc.Obser
     // );
   }
 
+  Widget _trailing(Widget btn1, Widget? btn2) {
+    if (btn2 == null) {
+      return btn1;
+    }
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        btn2,
+        btn1,
+      ],
+    );
+  }
+
+  Widget _refreshBtn() => IconButton(
+    icon: const Icon(AppIcons.refreshIcon, size: 16),
+    onPressed: _refreshing || _queryTag > 0 ? null : () => _refreshList(),
+  );
+
+  void _refreshList() {
+    // disable the refresh button to avoid refresh frequently
+    if (mounted) {
+      setState(() {
+        _refreshing = true;
+      });
+    }
+    // enable the refresh button after 5 seconds
+    Future.delayed(const Duration(seconds: 5)).then((value) {
+      if (mounted) {
+        setState(() {
+          _refreshing = false;
+        });
+      }
+    });
+    // query
+    _query();
+  }
+
   Widget? _shareBtn(BuildContext ctx, Content? page) {
+    if (_queryTag > 0) {
+      return null;
+    }
     String? text = page?['text'];
     if (text == null || text.isEmpty) {
       return null;

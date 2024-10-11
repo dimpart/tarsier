@@ -1,11 +1,11 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_section_list/flutter_section_list.dart';
 
 import 'package:dim_flutter/dim_flutter.dart';
 import 'package:lnc/notification.dart' as lnc;
 
 import '../chat/share_video.dart';
-import 'report.dart';
 
 
 class LiveSourceListPage extends StatefulWidget {
@@ -38,6 +38,8 @@ class _LiveSourceListState extends State<LiveSourceListPage> with Logging implem
 
   late final _LiveDataSource _dataSource;
   late final _LiveSourceAdapter _adapter;
+
+  bool _refreshing = false;
 
   int _searchTag = 9527;  // show CupertinoActivityIndicator
   String? _description;
@@ -92,6 +94,7 @@ class _LiveSourceListState extends State<LiveSourceListPage> with Logging implem
     // refresh if not empty
     if (lives.isNotEmpty) {
       await _dataSource.refresh(lives);
+      logInfo('${lives.length} live sources refreshed');
     }
     if (mounted) {
       setState(() {
@@ -175,7 +178,11 @@ class _LiveSourceListState extends State<LiveSourceListPage> with Logging implem
     String? keywords = widget.keywords;
     // build command
     var content = TextContent.create(keywords ?? title);
-    _searchTag = content.sn;
+    if (mounted) {
+      setState(() {
+        _searchTag = content.sn;
+      });
+    }
     content['tag'] = _searchTag;
     content['title'] = title;
     content['keywords'] = keywords;
@@ -199,7 +206,7 @@ class _LiveSourceListState extends State<LiveSourceListPage> with Logging implem
       backgroundColor: Styles.colors.appBardBackgroundColor,
       // backgroundColor: Styles.themeBarBackgroundColor,
       middle: StatedTitleView.from(context, () => widget.title),
-      trailing: _reportButton(context, widget.title),
+      trailing: _refreshBtn(),
     ),
     child: buildSectionListView(
       enableScrollbar: true,
@@ -207,16 +214,30 @@ class _LiveSourceListState extends State<LiveSourceListPage> with Logging implem
     ),
   );
 
-}
+  Widget _refreshBtn() => IconButton(
+    icon: const Icon(AppIcons.refreshIcon, size: 16),
+    onPressed: _refreshing || _searchTag > 0 ? null : () => _refreshList(),
+  );
 
-Widget _reportButton(BuildContext context, String title) {
-  String text = 'Report Object: "@title"\n'
-      '\n'
-      'Reason: ...\n'
-      '(Screenshots will be attached below)'.trParams({
-    'title': title,
-  });
-  return CustomerService.reportButton(context, text);
+  void _refreshList() {
+    // disable the refresh button to avoid refresh frequently
+    if (mounted) {
+      setState(() {
+        _refreshing = true;
+      });
+    }
+    // enable the refresh button after 5 seconds
+    Future.delayed(const Duration(seconds: 5)).then((value) {
+      if (mounted) {
+        setState(() {
+          _refreshing = false;
+        });
+      }
+    });
+    // query
+    _query();
+  }
+
 }
 
 

@@ -9,7 +9,7 @@
   "webmaster": "0x952718A18C6b21abb593D84203282fe1c21773D6",
 
   "contacts": [
-
+    "0x952718A18C6b21abb593D84203282fe1c21773D6"
   ],
 
   "assistants": [
@@ -18,16 +18,17 @@
 
   "services": [
     {
-      "type": "ChatBot",
-      "ID": "ChatGPT@2yiWdbVHhUhN3uTScP9p3qi2V2zvGWbSxK",
-      "title": "Chat GPT",
-      "subtitle": "Open AI",
-      "icon": "https://uxwing.com/wp-content/themes/uxwing/download/brands-and-social-media/openai-icon.png"
+      "type": "UserList",
+      "ID": "usher@2wtScvzSouByJm8v7Whbuui1YLZPBHT6wv",
+      "keywords": "active users",
+      "title": "Call Me Maybe",
+      "subtitle": "Don't be shy",
+      "icon": "https://uxwing.com/wp-content/themes/uxwing/download/arts-graphic-shapes/stars-color-icon.png"
     }
   ],
 
   "stations": [
-    {"host": "129.226.12.4", "port": 9394}
+    {"host": "129.226.12.4", "port": 9394, "desc": "HK"}
   ],
 
   "uploads": [
@@ -47,6 +48,11 @@
       "version": "1.0.0",
       "build": 10001,
       "url": "http://tarsier.dim.chat/downloads#windows"
+    },
+    "macos": {
+      "version": "1.0.0",
+      "build": 10001,
+      "url": "http://tarsier.dim.chat/downloads#macos"
     }
   },
 

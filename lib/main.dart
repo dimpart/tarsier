@@ -13,10 +13,11 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   var newest = NewestManager();
-  // newest.store = 'AppStore';    // appstoreconnect.apple.com
-  // newest.store = 'GooglePlay';  // play.google.com
+  newest.store = 'Demo';
+  // newest.store = 'Apple';       // appstoreconnect.apple.com
+  // newest.store = 'Google';      // play.google.com
   // newest.store = 'Amazon';      // developer.amazon.com
-  newest.store = 'Demo';        // tarsier.dim.chat
+  // newest.store = 'GSP';         // tarsier.dim.chat
   /// TODO: set distribution channel name
 
   // Set log level

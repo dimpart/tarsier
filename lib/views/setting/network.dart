@@ -48,7 +48,7 @@ class _NetworkState extends State<NetworkSettingPage> {
       backgroundColor: Styles.colors.appBardBackgroundColor,
       middle: Text('Relay Stations'.tr, style: Styles.titleTextStyle),
       trailing: IconButton(
-          icon: const Icon(AppIcons.refreshStationsIcon, size: 16),
+          icon: const Icon(AppIcons.refreshIcon, size: 16),
           onPressed: _refreshing ? null : () => _confirmRefresh(context)),
     ),
     body: buildSectionListView(

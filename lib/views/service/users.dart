@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_section_list/flutter_section_list.dart';
 
 import 'package:dim_flutter/dim_flutter.dart';
@@ -36,6 +37,8 @@ class _SearchState extends State<UserListPage> with Logging implements lnc.Obser
 
   late final _SearchDataSource _dataSource;
   late final _SearchResultAdapter _adapter;
+
+  bool _refreshing = false;
 
   int _searchTag = 9394;  // show CupertinoActivityIndicator
   String? _description;
@@ -94,6 +97,7 @@ class _SearchState extends State<UserListPage> with Logging implements lnc.Obser
         await item.reloadData();
       }
       await _dataSource.refresh(array);
+      logInfo('${array.length} contacts refreshed');
     }
     if (mounted) {
       setState(() {
@@ -177,7 +181,11 @@ class _SearchState extends State<UserListPage> with Logging implements lnc.Obser
     String? keywords = widget.keywords;
     // build command
     var content = TextContent.create(keywords ?? title);
-    _searchTag = content.sn;
+    if (mounted) {
+      setState(() {
+        _searchTag = content.sn;
+      });
+    }
     content['tag'] = _searchTag;
     content['title'] = title;
     content['keywords'] = keywords;
@@ -201,12 +209,37 @@ class _SearchState extends State<UserListPage> with Logging implements lnc.Obser
       backgroundColor: Styles.colors.appBardBackgroundColor,
       // backgroundColor: Styles.themeBarBackgroundColor,
       middle: StatedTitleView.from(context, () => widget.title),
+      trailing: _refreshBtn(),
     ),
     child: buildSectionListView(
       enableScrollbar: true,
       adapter: _adapter,
     ),
   );
+
+  Widget _refreshBtn() => IconButton(
+      icon: const Icon(AppIcons.refreshIcon, size: 16),
+      onPressed: _refreshing || _searchTag > 0 ? null : () => _refreshList(),
+  );
+
+  void _refreshList() {
+    // disable the refresh button to avoid refresh frequently
+    if (mounted) {
+      setState(() {
+        _refreshing = true;
+      });
+    }
+    // enable the refresh button after 5 seconds
+    Future.delayed(const Duration(seconds: 5)).then((value) {
+      if (mounted) {
+        setState(() {
+          _refreshing = false;
+        });
+      }
+    });
+    // query
+    _query();
+  }
 
 }
 
