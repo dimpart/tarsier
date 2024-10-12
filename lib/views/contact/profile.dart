@@ -34,7 +34,7 @@ class ProfilePage extends StatefulWidget {
 
 }
 
-class _ProfileState extends State<ProfilePage> implements lnc.Observer {
+class _ProfileState extends State<ProfilePage> with Logging implements lnc.Observer {
   _ProfileState() {
     var nc = lnc.NotificationCenter();
     nc.addObserver(this, NotificationNames.kDocumentUpdated);
@@ -65,31 +65,31 @@ class _ProfileState extends State<ProfilePage> implements lnc.Observer {
       ID? identifier = userInfo?['ID'];
       assert(identifier != null, 'notification error: $notification');
       if (identifier == widget.info.identifier) {
-        Log.info('document updated: $identifier');
+        logInfo('document updated: $identifier');
         await _reload();
       }
     } else if (name == NotificationNames.kContactsUpdated) {
       ID? contact = userInfo?['contact'];
-      Log.info('contact updated: $contact');
+      logInfo('contact updated: $contact');
       if (contact == widget.info.identifier) {
         await _reload();
       }
     } else if (name == NotificationNames.kBlockListUpdated) {
       ID? contact = userInfo?['blocked'];
       contact ??= userInfo?['unblocked'];
-      Log.info('blocked contact updated: $contact');
+      logInfo('blocked contact updated: $contact');
       if (contact == widget.info.identifier) {
         await _reload();
       }
     } else if (name == NotificationNames.kMuteListUpdated) {
       ID? contact = userInfo?['muted'];
       contact ??= userInfo?['unmuted'];
-      Log.info('muted contact updated: $contact');
+      logInfo('muted contact updated: $contact');
       if (contact == widget.info.identifier) {
         await _reload();
       }
     } else {
-      Log.error('notification error: $notification');
+      logError('notification error: $notification');
     }
   }
 
@@ -292,8 +292,9 @@ class _ProfileState extends State<ProfilePage> implements lnc.Observer {
       GlobalVariable shared = GlobalVariable();
       shared.facebook.getAvatar(widget.info.identifier).then((pnf) {
         if (pnf == null) {
-          Log.error('avatar image not found: ${widget.info.identifier}');
+          logError('avatar image not found: ${widget.info.identifier}');
         } else {
+          logInfo('preview avatar: $pnf');
           previewAvatar(context, widget.info.identifier, pnf);
         }
       });
@@ -332,7 +333,7 @@ class _ProfileState extends State<ProfilePage> implements lnc.Observer {
       // nothing input
       return;
     } else if (remark.alias == text) {
-      Log.warning('alias not change: $remark');
+      logWarning('alias not change: $remark');
       return;
     }
     setState(() {

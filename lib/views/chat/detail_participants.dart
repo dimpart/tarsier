@@ -17,7 +17,7 @@ class ParticipantsWidget extends StatefulWidget {
 
 }
 
-class _ParticipantsState extends State<ParticipantsWidget> implements lnc.Observer {
+class _ParticipantsState extends State<ParticipantsWidget> with Logging implements lnc.Observer {
   _ParticipantsState() {
     var nc = lnc.NotificationCenter();
     nc.addObserver(this, NotificationNames.kDocumentUpdated);
@@ -44,7 +44,7 @@ class _ParticipantsState extends State<ParticipantsWidget> implements lnc.Observ
       ID? identifier = userInfo?['ID'];
       assert(identifier != null, 'notification error: $notification');
       if (identifier == widget.info.identifier) {
-        Log.info('document updated: $identifier');
+        logInfo('document updated: $identifier');
         await _reload();
       }
     } else if (name == NotificationNames.kParticipantsUpdated) {
@@ -52,7 +52,7 @@ class _ParticipantsState extends State<ParticipantsWidget> implements lnc.Observ
       List<ID>? members = userInfo?['members'];
       assert(identifier != null, 'notification error: $notification');
       if (identifier == widget.info.identifier) {
-        Log.info('participants updated: $identifier, $members');
+        logInfo('participants updated: $identifier, $members');
         if (mounted) {
           setState(() {
             // update name in title
@@ -64,18 +64,18 @@ class _ParticipantsState extends State<ParticipantsWidget> implements lnc.Observ
       List<ID>? members = userInfo?['members'];
       assert(identifier != null, 'notification error: $notification');
       if (identifier == widget.info.identifier) {
-        Log.info('members updated: $identifier, $members');
+        logInfo('members updated: $identifier, $members');
         await _reload();
       }
     } else if (name == NotificationNames.kAdministratorsUpdated) {
       ID? identifier = userInfo?['ID'];
       assert(identifier != null, 'notification error: $notification');
       if (identifier == widget.info.identifier) {
-        Log.info('group history updated: $identifier');
+        logInfo('group history updated: $identifier');
         await _reload();
       }
     } else {
-      Log.error('notification error: $notification');
+      logError('notification error: $notification');
     }
   }
 
@@ -129,18 +129,19 @@ class _ParticipantsState extends State<ParticipantsWidget> implements lnc.Observ
       GroupInfo info = widget.info;
       if (index == plusIndex) {
         bool canReview = info.isOwner || info.isAdmin;
-        return plusCard(context, widget.info,
+        return plusCard(context, info,
           onTap: canReview && info.invitations.isNotEmpty ? onTap : null,
-          onPicked: (members) => _addMembers(context, widget.info, members),
+          onPicked: (members) => _addMembers(context, info, members),
         );
       } else if (index == minusIndex) {
         bool canReview = info.isOwner || info.isAdmin;
-        return minusCard(context, widget.info,
+        return minusCard(context, info,
           onTap: canReview && info.invitations.isNotEmpty ? onTap : null,
-          onPicked: (members) => _removeMembers(context, widget.info, members),
+          onPicked: (members) => _removeMembers(context, info, members),
         );
       }
-      List<ContactInfo> members = ContactInfo.fromList(widget.info.members);
+      List<ContactInfo> members = ContactInfo.fromList(info.members);
+      logInfo('show group members: ${info.identifier}, ${members.length}');
       return contactCard(ctx, members[index]);
     },
   );

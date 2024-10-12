@@ -7,6 +7,7 @@ import 'views/customizer.dart';
 import 'views/contacts.dart';
 import 'views/register.dart';
 import 'views/services.dart';
+import 'views/setting/account.dart';
 
 
 void main() async {
@@ -185,16 +186,13 @@ class _SystemChecker with Logging {
     // wait a while
     Future.delayed(const Duration(seconds: 5)).then((_) {
       logWarning('system checking');
-      // checking for upgrade
-      _checkAppUpdate(context);
       // test speeds for all stations
       _checkStationSpeeds();
+      // checking for upgrade
+      _checkAppUpdate(context);
+      // checking for avatar
+      _checkAvatar(context);
     });
-  }
-
-  void _checkAppUpdate(BuildContext context) {
-    logWarning('check app update');
-    NewestManager().checkUpdate(context);
   }
 
   void _checkStationSpeeds() async {
@@ -204,4 +202,38 @@ class _SystemChecker with Logging {
     await speeder.testAll();
   }
 
+  void _checkAppUpdate(BuildContext context) {
+    logWarning('check app update');
+    NewestManager().checkUpdate(context);
+  }
+
+  void _checkAvatar(BuildContext context) {
+    _getAvatar().then((pnf) {
+      if (pnf == null) {
+        Alert.confirm(context, 'Pick Image',
+          'Please choose your avatar'.tr,
+          okAction: () => AccountPage.open(context),
+        );
+      } else {
+        Log.info('current user avatar: $pnf');
+      }
+    });
+  }
+
+}
+
+Future<PortableNetworkFile?> _getAvatar() async {
+  GlobalVariable shared = GlobalVariable();
+  SharedFacebook facebook = shared.facebook;
+  User? user = await facebook.currentUser;
+  if (user == null) {
+    Log.error('current user not found');
+    return null;
+  }
+  Visa? visa = await user.visa;
+  if (visa == null) {
+    Log.error('visa not found: $user');
+    return null;
+  }
+  return visa.avatar;
 }
