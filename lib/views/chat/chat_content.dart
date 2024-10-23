@@ -11,11 +11,15 @@ import 'share_video.dart';
 
 abstract class ContentViewHelper {
 
+  static Widget _deleteAction() => Alert.action(AppIcons.deleteIcon, 'Delete Message');
+  static Widget _recallAction() => Alert.action(AppIcons.recallIcon, 'Recall Message');
+
   static Widget getNameCardView(BuildContext ctx, NameCard content, Envelope envelope) {
     ID sender = envelope.sender;
     // action - forward
     forwardNameCard() => ShareNameCard.forwardNameCard(ctx, content, sender);
-    // action - recall
+    // action - delete/recall
+    deleteMessage() => _deleteMessage(ctx, content, envelope);
     recallNameCard() => _recallNameCard(ctx, content, envelope);
     // action - onLongPress
     bool canRecall = _canRecall(content, sender);
@@ -23,9 +27,9 @@ abstract class ContentViewHelper {
       // forward
       Alert.action(AppIcons.shareIcon, 'Forward Name Card'),
       forwardNameCard,
-      // recall
-      !canRecall ? null : Alert.action(AppIcons.recallIcon, 'Recall Message'),
-      recallNameCard,
+      // delete/recall
+      canRecall ? _recallAction() : _deleteAction(),
+      canRecall ? recallNameCard : deleteMessage,
     );
     // action - onTap
     openNameCard() => ProfilePage.open(ctx, content.identifier);
@@ -43,7 +47,8 @@ abstract class ContentViewHelper {
         ShareWebPage.shareWebPage(ctx, url, title: title, desc: desc, icon: icon);
     // action - forward
     forwardWebPage() => ShareWebPage.forwardWebPage(ctx, content, sender);
-    // action - recall
+    // action - delete/recall
+    deleteMessage() => _deleteMessage(ctx, content, envelope);
     recallWebPage() => _recallWebPage(ctx, content, envelope);
     // action - onLongPress
     bool canRecall = _canRecall(content, sender);
@@ -51,9 +56,9 @@ abstract class ContentViewHelper {
       // forward
       Alert.action(AppIcons.shareIcon, 'Forward Web Page'),
       forwardWebPage,
-      // recall
-      !canRecall ? null : Alert.action(AppIcons.recallIcon, 'Recall Message'),
-      recallWebPage,
+      // delete/recall
+      canRecall ? _recallAction() : _deleteAction(),
+      canRecall ? recallWebPage : deleteMessage,
     );
     // action - onTap
     openWebPage() => Browser.open(ctx, HtmlUri.getUriString(content),
@@ -72,7 +77,8 @@ abstract class ContentViewHelper {
     forwardImage() => ShareImage.forwardImage(ctx, content, sender);
     // action - save
     saveImage() => saveImageContent(ctx, content);
-    // action - recall
+    // action - delete/recall
+    deleteMessage() => _deleteMessage(ctx, content, envelope);
     recallImage() => _recallImageMessage(ctx, content, envelope);
     // action - onLongPress
     bool canRecall = _canRecall(content, sender);
@@ -83,9 +89,9 @@ abstract class ContentViewHelper {
       // save
       Alert.action(AppIcons.saveFileIcon, 'Save to Album'),
       saveImage,
-      // recall
-      !canRecall ? null : Alert.action(AppIcons.recallIcon, 'Recall Message'),
-      recallImage,
+      // delete/recall
+      canRecall ? _recallAction() : _deleteAction(),
+      canRecall ? recallImage : deleteMessage,
     );
     // action - onTap
     previewImage() => previewImageContent(ctx, content, messages);
@@ -100,7 +106,8 @@ abstract class ContentViewHelper {
     ID sender = envelope.sender;
     // action - onVideoShare
     onVideoShare(playingItem) => ShareVideo.forwardVideo(ctx, content, sender);
-    // action - recall
+    // action - delete/recall
+    deleteMessage() => _deleteMessage(ctx, content, envelope);
     recallVideo() => _recallVideoMessage(ctx, content, envelope);
     // action - onLongPress
     bool canRecall = _canRecall(content, sender);
@@ -108,9 +115,9 @@ abstract class ContentViewHelper {
       // forward
       Alert.action(AppIcons.shareIcon, 'Forward Video'),
           () => ShareVideo.forwardVideo(ctx, content, sender),
-      // recall
-      !canRecall ? null : Alert.action(AppIcons.recallIcon, 'Recall Message'),
-      recallVideo,
+      // delete/recall
+      canRecall ? _recallAction() : _deleteAction(),
+      canRecall ? recallVideo : deleteMessage,
     );
     // OK
     return ContentViewUtils.getVideoContentView(content, sender,
@@ -121,16 +128,17 @@ abstract class ContentViewHelper {
 
   static Widget getAudioContentView(BuildContext ctx, AudioContent content, Envelope envelope) {
     ID sender = envelope.sender;
-    // action - recall
+    // action - delete/recall
+    deleteMessage() => _deleteMessage(ctx, content, envelope);
     recallAudio() => _recallAudioMessage(ctx, content, envelope);
     // action - onLongPress
     bool canRecall = _canRecall(content, sender);
     // OK
     return ContentViewUtils.getAudioContentView(content, sender,
-      onLongPress: !canRecall ? null : () => Alert.actionSheet(ctx, null, null,
-        // recall
-        Alert.action(AppIcons.recallIcon, 'Recall Message'),
-        recallAudio,
+      onLongPress: () => Alert.actionSheet(ctx, null, null,
+        // delete/recall
+        canRecall ? _recallAction() : _deleteAction(),
+        canRecall ? recallAudio : deleteMessage,
       ),
     );
   }
@@ -153,21 +161,41 @@ abstract class ContentViewHelper {
       onVideoShare: onVideoShare,
       previewing: plain,
     );
+    // action - delete
+    deleteMessage() => _deleteMessage(ctx, content, envelope);
     // action - onLongPress
     bool canRecall = content is TextContent && _canRecall(content, sender);
     // OK
     return ContentViewUtils.getTextContentView(content, sender,
       onDoubleTap: openText,
-      onLongPress: !canRecall ? null : () => Alert.actionSheet(ctx, null, null,
-        // recall
-        Alert.action(AppIcons.recallIcon, 'Recall Message'),
-            () => _recallTextMessage(ctx, content, envelope),
+      onLongPress: () => Alert.actionSheet(ctx, null, null,
+        // delete/recall
+        canRecall ? _recallAction() : _deleteAction(),
+        canRecall ? () => _recallTextMessage(ctx, content, envelope) : deleteMessage,
       ),
       onWebShare: onWebShare,
       onVideoShare: onVideoShare,
     );
   }
 
+}
+
+void _deleteMessage(BuildContext ctx, Content content, Envelope envelope) {
+  Log.info('deleting message: $content');
+  ID sender = envelope.sender;
+  bool mine = sender == ContentViewUtils.currentUser?.identifier;
+  ID chat = content.group ?? (mine ? envelope.receiver : sender);
+  // confirm deletion
+  Alert.confirm(ctx, 'Confirm Delete', 'Sure to delete this message?'.tr, okAction: () {
+    GlobalVariable shared = GlobalVariable();
+    shared.database.removeInstantMessage(chat, envelope, content).then((ok) {
+      if (ok) {
+        Log.info('message deleted.');
+      } else {
+        Log.warning('failed to delete message.');
+      }
+    });
+  });
 }
 
 ///
