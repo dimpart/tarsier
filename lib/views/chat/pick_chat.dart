@@ -110,7 +110,7 @@ class _PickChatCellState extends State<_PickChatCell> {
   @override
   Widget build(BuildContext context) => CupertinoTableCell(
     leading: widget.info.getImage(),
-    title: widget.info.getNameLabel(),
+    title: widget.info.getNameLabel(true),
     trailing: const CupertinoListTileChevron(),
     onTap: widget.onTap,
   );

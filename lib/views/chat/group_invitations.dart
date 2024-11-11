@@ -282,7 +282,7 @@ class _InvitationCellState extends State<_InvitationCell> implements lnc.Observe
           Expanded(child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              memberInfo.getNameLabel(),
+              memberInfo.getNameLabel(true),
               // Text(memberInfo.identifier.toString(),
               //   maxLines: 1,
               //   overflow: TextOverflow.ellipsis,

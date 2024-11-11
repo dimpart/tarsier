@@ -484,13 +484,32 @@ class _ProfileTableState extends State<_ProfileTableCell> {
   @override
   Widget build(BuildContext context) => CupertinoTableCell(
     leading: widget.info.getImage(),
-    title: widget.info.getNameLabel(),
-    subtitle: Text(widget.info.identifier.toString()),
+    title: _title(),
+    subtitle: _subtitle(),
     additionalInfo: _timeLabel(widget.info.lastActiveTime),
     trailing: widget.trailing,
     onTap: () => ProfilePage.open(context, widget.info.identifier),
     onLongPress: widget.onLongPress,
   );
+
+  Widget _title() {
+    bool remarks = widget.info.isNotFriend;
+    return widget.info.getNameLabel(remarks);
+  }
+
+  Widget? _subtitle() {
+    String desc;
+    if (widget.info.isNotFriend) {
+      desc = widget.info.identifier.toString();
+    } else {
+      ContactRemark cr = widget.info.remark;
+      desc = cr.alias;
+      if (desc.isEmpty) {
+        return null;
+      }
+    }
+    return Text(desc);
+  }
 
   Widget? _timeLabel(DateTime? time) {
     if (time == null) {
