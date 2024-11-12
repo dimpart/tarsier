@@ -43,19 +43,22 @@ class _InputState extends State<ChatInputTray> implements lnc.Observer {
         Visa? visa = await shared.facebook.getVisa(user);
         String? nickname = visa?.name;
         if (nickname != null && nickname.isNotEmpty) {
-          String text = _controller.text;
-          TextSelection selection = _controller.selection;
-          String mentioned = '@$nickname ';
-          if (selection.start < 0) {
-            _controller.text += mentioned;
-          } else {
-            _controller.text = text.replaceRange(selection.start, selection.end, mentioned);
-            _controller.selection = TextSelection.collapsed(offset: selection.baseOffset + mentioned.length);
-          }
-          _typing(_controller, widget.info);
+          _insertTextToFocus('@$nickname ');
         }
       }
     }
+  }
+
+  void _insertTextToFocus(String fragment) {
+    String text = _controller.text;
+    TextSelection selection = _controller.selection;
+    if (selection.start < 0) {
+      _controller.text += fragment;
+    } else {
+      _controller.text = text.replaceRange(selection.start, selection.end, fragment);
+      _controller.selection = TextSelection.collapsed(offset: selection.baseOffset + fragment.length);
+    }
+    _typing(_controller, widget.info);
   }
 
   @override
@@ -77,6 +80,7 @@ class _InputState extends State<ChatInputTray> implements lnc.Observer {
     text ??= shared.getConversationEditingText(widget.info);
     if (text != null) {
       _controller.text = text;
+      _lastText = text;
     }
   }
 
@@ -147,12 +151,77 @@ class _InputState extends State<ChatInputTray> implements lnc.Observer {
     textInputAction: TextInputAction.newline,
     focusNode: DevicePlatform.isMobile ? _focusNode : null,
     onTapOutside: (event) => _focusNode.unfocus(),
-    onSubmitted: (value) => _sendText(context, _controller, widget.info),
-    onChanged: (value) => setState(() {
-      Log.warning('onChanged: $value');
+    onSubmitted: (text) => _sendText(context, _controller, widget.info),
+    onChanged: (text) => setState(() {
+      Log.warning('onChanged: $text');
       _typing(_controller, widget.info);
+      var info = widget.info;
+      if (info is GroupInfo) {
+        var delta = _lastCharacter(text);
+        Log.info('last input: "$delta"');
+        if (delta == '@') {
+          _selectMentionedMember(context, info.members);
+        }
+      }
     }),
   );
+
+  String? _lastCharacter(String text) {
+    String last = _lastText;
+    _lastText = text;
+    int diff = text.length - last.length;
+    if (diff != 1) {
+      return null;
+    }
+    int index = 0;
+    for (; index < last.length; ++index) {
+      if (last[index] != text[index]) {
+        break;
+      }
+    }
+    return text[index];
+  }
+  String _lastText = '';
+
+  void _selectMentionedMember(BuildContext context, List<ID> members) {
+    Set<ID> candidates = members.toSet();
+    // TODO: remove myself
+    if (candidates.isEmpty) {
+      Log.error('failed to get members');
+      return;
+    }
+    Log.info('candidates: $candidates');
+    MemberPicker.open(context, candidates,
+      onPicked: (users) => _insertMentionedMembers(users),
+    );
+  }
+
+  void _insertMentionedMembers(Set<ID> users) async {
+    GlobalVariable shared = GlobalVariable();
+    var facebook = shared.facebook;
+    User? current = await facebook.currentUser;
+    if (current == null) {
+      Log.error('failed to get current user');
+      return;
+    }
+    List<String> names = [];
+    for (ID member in users) {
+      if (member == current.identifier) {
+        Log.warning('skip myself: $member');
+        continue;
+      }
+      String nickname = await facebook.getName(member);
+      if (nickname.isNotEmpty) {
+        names.add(nickname);
+      }
+    }
+    if (names.isEmpty) {
+      Log.warning('failed to get names: $users');
+      return;
+    }
+    String text = names.join(' @');
+    _insertTextToFocus('$text ');
+  }
 
 }
 
