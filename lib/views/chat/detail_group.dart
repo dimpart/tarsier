@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:dim_flutter/dim_flutter.dart';
 import 'package:lnc/notification.dart' as lnc;
 
+import '../service/report.dart';
 import 'detail_participants.dart';
 import 'group_admins.dart';
 import 'group_invitations.dart';
@@ -282,6 +283,8 @@ class _ChatDetailState extends State<GroupChatDetailPage> implements lnc.Observe
         children: [
           /// clear history
           _clearButton(context, backgroundColor: backgroundColor, textColor: dangerousTextColor),
+          /// report
+          _reportButton(context, textColor: dangerousTextColor, backgroundColor: backgroundColor),
           /// quit group
           if (widget.info.isNotOwner && widget.info.isNotAdmin/* && widget.info.isMember*/)
             _quitButton(context, backgroundColor: backgroundColor, textColor: dangerousTextColor),
@@ -357,6 +360,11 @@ class _ChatDetailState extends State<GroupChatDetailPage> implements lnc.Observe
         onPressed: () => _clearHistory(context, widget.info),
       );
 
+  Widget _reportButton(BuildContext context, {required Color textColor, required Color backgroundColor}) =>
+      _button('Report'.tr, AppIcons.reportIcon, textColor: textColor, backgroundColor: backgroundColor,
+        onPressed: () => _reportGroupChat(context, widget.info),
+      );
+
   Widget _quitButton(BuildContext context, {required Color textColor, required Color backgroundColor}) =>
       _button('Quit Group'.tr, AppIcons.quitIcon, textColor: textColor, backgroundColor: backgroundColor,
         onPressed: () => widget.info.quit(context: context),
@@ -384,6 +392,19 @@ class _ChatDetailState extends State<GroupChatDetailPage> implements lnc.Observe
     ],
   );
 
+}
+
+void _reportGroupChat(BuildContext context, GroupInfo info) {
+  String text = 'Report Object: "@title"\n'
+      'Group ID: @id\n'
+      '\n'
+      'Reason: ...\n'
+      '(Screenshots will be attached below)'.trParams({
+    'title': info.title,
+    'id': info.identifier.toString(),
+  });
+  // open chat box to report
+  CustomerService.report(context, text);
 }
 
 void _clearHistory(BuildContext ctx, GroupInfo info) {

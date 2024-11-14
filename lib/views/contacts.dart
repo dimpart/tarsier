@@ -183,11 +183,12 @@ class _ContactListAdapter with SectionAdapterMixin {
 
   @override
   Widget getSectionHeader(BuildContext context, int section) {
-    if (section == 0) {
+    section -= 1;
+    if (section < 0) {
       // fixed section
       return const Text('...');
     }
-    String title = _dataSource.getSection(section - 1);
+    String title = _dataSource.getSection(section);
     return Container(
       color: Styles.colors.sectionHeaderBackgroundColor,
       padding: Styles.sectionHeaderPadding,
@@ -199,18 +200,36 @@ class _ContactListAdapter with SectionAdapterMixin {
 
   @override
   int numberOfItems(int section) {
-    if (section == 0) {
+    section -= 1;
+    if (section < 0) {
       // fixed section
       return 4;
     }
-    return _dataSource.getItemCount(section - 1);
+    int count = _dataSource.getItemCount(section);
+    int lastSec = _dataSource.getSectionCount() - 1;
+    if (section >= lastSec) {
+      // expand space to show total count
+      if (_totalOfItems() > 8) {
+        count += 1;
+      }
+    }
+    return count;
+  }
+
+  int _totalOfItems() {
+    int sectionCount = _dataSource.getSectionCount();
+    int totalCount = 0;
+    for (int sec = 0; sec < sectionCount; ++sec) {
+      totalCount += _dataSource.getItemCount(sec);
+    }
+    return totalCount;
   }
 
   @override
   Widget getItem(BuildContext context, IndexPath indexPath) {
-    int section = indexPath.section;
+    int section = indexPath.section - 1;
     int index = indexPath.item;
-    if (section == 0) {
+    if (section < 0) {
       // fixed section
       if (index == 0) {
         return _newFriendsItem(context);
@@ -224,8 +243,25 @@ class _ContactListAdapter with SectionAdapterMixin {
         // error
         return Text('Error'.tr);
       }
+    } else if (section >= _dataSource.getSectionCount()) {
+      // error
+      return Text('Error'.tr);
+    } else if (index >= _dataSource.getItemCount(section)) {
+      // show total count
+      int total = _totalOfItems();
+      Widget view = Text('@total friends'.trParams({
+        'total': '$total',
+      }));
+      view = Container(
+        padding: const EdgeInsets.all(16),
+        // padding: Styles.sectionItemPadding,
+        color: Styles.colors.sectionItemBackgroundColor,
+        alignment: Alignment.center,
+        child: view,
+      );
+      return view;
     }
-    ContactInfo info = _dataSource.getItem(section - 1, index);
+    ContactInfo info = _dataSource.getItem(section, index);
     return ProfilePage.cell(info, onLongPress: () {
       Log.warning('long press: $info');
       Alert.confirm(context, 'Confirm Delete',
