@@ -6,6 +6,7 @@ import '../contact/profile.dart';
 import 'share_contact.dart';
 import 'share_image.dart';
 import 'share_page.dart';
+import 'share_text.dart';
 import 'share_video.dart';
 
 
@@ -106,6 +107,8 @@ abstract class ContentViewHelper {
     ID sender = envelope.sender;
     // action - onVideoShare
     onVideoShare(playingItem) => ShareVideo.forwardVideo(ctx, content, sender);
+    // action - forward
+    forwardVideo() => ShareVideo.forwardVideo(ctx, content, sender);
     // action - delete/recall
     deleteMessage() => _deleteMessage(ctx, content, envelope);
     recallVideo() => _recallVideoMessage(ctx, content, envelope);
@@ -114,7 +117,7 @@ abstract class ContentViewHelper {
     actionSheet() => Alert.actionSheet(ctx, null, null,
       // forward
       Alert.action(AppIcons.shareIcon, 'Forward Video'),
-          () => ShareVideo.forwardVideo(ctx, content, sender),
+      forwardVideo,
       // delete/recall
       canRecall ? _recallAction() : _deleteAction(),
       canRecall ? recallVideo : deleteMessage,
@@ -166,6 +169,21 @@ abstract class ContentViewHelper {
     // action - onLongPress
     bool canRecall = content is TextContent && _canRecall(content, sender);
     // OK
+    if (content is TextContent) {
+      return ContentViewUtils.getTextContentView(content, sender,
+        onDoubleTap: openText,
+        onLongPress: () => Alert.actionSheet(ctx, null, null,
+          // forward
+          Alert.action(AppIcons.shareIcon, 'Forward Text'),
+              () => ShareTextMessage.forwardTextMessage(ctx, content, sender),
+          // delete/recall
+          canRecall ? _recallAction() : _deleteAction(),
+          canRecall ? () => _recallTextMessage(ctx, content, envelope) : deleteMessage,
+        ),
+        onWebShare: onWebShare,
+        onVideoShare: onVideoShare,
+      );
+    }
     return ContentViewUtils.getTextContentView(content, sender,
       onDoubleTap: openText,
       onLongPress: () => Alert.actionSheet(ctx, null, null,

@@ -108,9 +108,9 @@ class _AdministratorsState extends State<AdministratorsPage> implements lnc.Obse
         candidates.remove(item);
       }
       if (members.isEmpty) {
-        Alert.show(context, 'Error', 'Failed to add members'.tr);
+        Alert.show(context, 'Error', 'Failed to add administrators'.tr);
       } else {
-        Log.info('candidates: $members');
+        Log.info('candidates: $candidates');
         MemberPicker.open(context, candidates,
           onPicked: (users) => _addAdmin(context, users.toList(), widget.info),
         );

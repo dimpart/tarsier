@@ -180,7 +180,7 @@ class _ChatDetailState extends State<ChatDetailPage> implements lnc.Observer {
           _clearButton(context, textColor: dangerousTextColor, backgroundColor: backgroundColor),
           /// report
           if (widget.info != CustomerService.webmaster)
-          _reportButton(context, textColor: dangerousTextColor, backgroundColor: backgroundColor)
+          _reportButton(context, textColor: dangerousTextColor, backgroundColor: backgroundColor),
         ],
       ),
 
