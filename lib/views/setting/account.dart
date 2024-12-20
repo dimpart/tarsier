@@ -297,11 +297,11 @@ class _AccountState extends State<AccountPage> {
       return false;
     } else {
       // clone for modifying
-      Document? doc = Document.parse(visa.copyMap(false));
-      if (doc is Visa) {
-        visa = doc;
+      Document? clone = Document.parse(visa.copyMap(false));
+      if (clone is Visa) {
+        visa = clone;
       } else {
-        assert(false, 'visa error: $visa');
+        assert(false, 'visa error: $visa, $user');
         return false;
       }
     }
