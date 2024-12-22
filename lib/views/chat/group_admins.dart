@@ -188,7 +188,7 @@ void _updateAdmin(GroupInfo groupInfo) async {
   ID group = groupInfo.identifier;
   List<ID> admins = await shared.facebook.getAdministrators(group);
   SharedGroupManager man = SharedGroupManager();
-  bool ok = await man.updateAdministrators(group, admins);
+  bool ok = await man.updateAdministrators(admins, group: group);
   if (!ok) {
     // not owner?
     return;
@@ -212,7 +212,7 @@ void _updateAdmin(GroupInfo groupInfo) async {
     // to avoid confused, we must create a new 'reset' command here.
     List<ID> members = await shared.facebook.getMembers(group);
     List<ID> newMembers = [...members];
-    ok = await man.resetGroupMembers(group, newMembers);
+    ok = await man.resetGroupMembers(newMembers, group: group);
     assert(ok, 'failed to reset group: $group, members: $members');
   } else {
     assert(false, 'should not remove current admin: $sender, group: $group');

@@ -109,7 +109,7 @@ class _InvitationsState extends State<InvitationsPage> implements lnc.Observer {
         List<ID> newMembers = _getNewMembers(info.invitations, _adapter.denied);
         // check members
         if (newMembers.isEmpty) {
-          Widget body = Text('Are you sure want to reject all these invitations?'.tr);
+          Widget body = Text('Sure to reject all invitations?'.tr);
           Alert.confirm(context, 'Confirm Delete', body,
             okAction: () => _refreshMembers(newMembers, info).then((ok) {
               if (ok) {
@@ -158,7 +158,7 @@ Future<bool> _refreshMembers(List<ID> newMembers, GroupInfo groupInfo) async {
     }
     allMembers.add(item);
   }
-  return await man.resetGroupMembers(group, allMembers);
+  return await man.resetGroupMembers(allMembers, group: group);
 }
 
 class _InvitationsAdapter with SectionAdapterMixin {

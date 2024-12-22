@@ -144,7 +144,7 @@ class _ChatDetailState extends State<ChatDetailPage> implements lnc.Observer {
       ),
       const SizedBox(height: 16,),
 
-      if (widget.info.identifier.type != EntityType.kStation)
+      if (widget.info.identifier.type != EntityType.STATION)
         CupertinoListSection(
           backgroundColor: dividerColor,
           topMargin: 0,

@@ -161,7 +161,7 @@ void _addMembers(BuildContext ctx, GroupInfo groupInfo, Set<ID> members) {
 void _doAddMembers(BuildContext ctx, GroupInfo groupInfo, List<ID> newMembers) {
   ID group = groupInfo.identifier;
   SharedGroupManager man = SharedGroupManager();
-  man.inviteGroupMembers(group, newMembers).then((ok) {
+  man.inviteGroupMembers(newMembers, group: group).then((ok) {
     if (!ok) {
       Log.error('failed to add new members: $newMembers => $group');
     } else if (groupInfo.isOwner || groupInfo.isAdmin) {
@@ -188,7 +188,7 @@ void _removeMembers(BuildContext ctx, GroupInfo groupInfo, Set<ID> members) {
 void _doRemoveMembers(BuildContext ctx, GroupInfo groupInfo, List<ID> expelMembers) {
   ID group = groupInfo.identifier;
   SharedGroupManager man = SharedGroupManager();
-  man.expelGroupMembers(group, expelMembers).then((ok) {
+  man.expelGroupMembers(expelMembers, group: group).then((ok) {
     if (ok) {
       Log.warning('removed members: $expelMembers => $group');
     } else {

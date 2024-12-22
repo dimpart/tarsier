@@ -489,11 +489,11 @@ Future<Pair<PrivateKey?, String?>?> _saveMnemonic(_RegisterInfo info) async {
     return null;
   }
   int version = Account.type;
-  if (version == MetaType.kETH || version == MetaType.kExETH) {
+  if (version == MetaType.ETH || version == MetaType.ExETH) {
     return Pair(await keychain.ethKey, await keychain.ethAddress);
   } else {
-    assert(version == MetaType.kBTC || version == MetaType.kExBTC
-        || version == MetaType.kMKM, 'meta type error: $version');
+    assert(version == MetaType.BTC || version == MetaType.ExBTC
+        || version == MetaType.MKM, 'meta type error: $version');
     return Pair(await keychain.btcKey, await keychain.btcAddress);
   }
 }

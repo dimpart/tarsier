@@ -327,7 +327,7 @@ class _AccountState extends State<AccountPage> {
     if (ok) {
       // broadcast this document to all friends
       try {
-        await shared.messenger?.broadcastDocument(updated: true);
+        await shared.messenger?.broadcastDocuments(updated: true);
       } catch (e, st) {
         Log.error('failed to broadcast document: $user, error: $e, $st');
       }

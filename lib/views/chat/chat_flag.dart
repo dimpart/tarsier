@@ -122,7 +122,7 @@ class _SendState extends State<ChatSendFlag> implements lnc.Observer {
         setState(() {
         });
       }
-    } else if (mta.type == EntityType.kStation) {
+    } else if (mta.type == EntityType.STATION) {
       current = _MsgStatus.kSent;
       _flags[sn] = current;
       if (mounted) {
@@ -186,7 +186,7 @@ class _SendState extends State<ChatSendFlag> implements lnc.Observer {
       mta = ID.parse(JSONMap.decode(json)?['ID']);
       if (mta == null) {
         Log.error('trace error: $json');
-      } else if (mta.type == EntityType.kStation) {
+      } else if (mta.type == EntityType.STATION) {
         Log.debug('ignore response from station: $mta');
       } else if (mta.isUser) {
         Log.debug('responded from user: $mta');
