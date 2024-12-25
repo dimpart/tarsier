@@ -161,8 +161,14 @@ class _SendState extends State<ChatSendFlag> implements lnc.Observer {
     if (group == null) {
       return false;
     }
-    // TODO: check members.contains(mta)
-    return true;
+    // check members.contains(mta)
+    GroupInfo? info = GroupInfo.fromID(group);
+    if (info == null) {
+      assert(false, 'group not ready: $group');
+      return false;
+    }
+    List<ID> members = info.members;
+    return members.contains(mta);
   }
 
   /// load traces to refresh message status

@@ -30,7 +30,7 @@ abstract class ShareVideo {
       return;
     }
     // build video content
-    var content = FileContent.video(filename: filename, url: url, password: PlainKey.getInstance());
+    var content = FileContent.video(filename: filename, url: url, password: Password.plainKey);
     content['title'] = title;
     content['snapshot'] = snapshot;
     // confirm
