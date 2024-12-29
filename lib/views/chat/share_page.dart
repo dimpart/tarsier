@@ -84,7 +84,7 @@ Future<bool> _sendWebPage(ID receiver, Uri url,
   Log.info('share web page to $receiver: "$title", $url');
   // send web page content
   GlobalVariable shared = GlobalVariable();
-  await shared.emitter.sendContent(content, receiver);
+  await shared.emitter.sendContent(content, receiver: receiver);
   return true;
 }
 

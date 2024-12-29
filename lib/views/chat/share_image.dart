@@ -106,9 +106,10 @@ Future<bool> _sendImage(ID receiver,
   } else {
     Log.debug('forwarding image to $receiver: "$filename", traces: $traces');
   }
+  var pnf = PortableNetworkFile.parse(thumbnail);
   // send image content with traces
   GlobalVariable shared = GlobalVariable();
-  await shared.emitter.sendImage(jpeg, filename: filename, thumbnail: thumbnail, extra: {
+  await shared.emitter.sendPicture(jpeg, filename: filename, thumbnail: pnf, extra: {
     'traces': traces,
   }, receiver: receiver);
   return true;

@@ -352,7 +352,7 @@ Future<bool> _shareMarkdown(ID receiver, {required String title, required String
   //   content.group = receiver;
   // }
   GlobalVariable shared = GlobalVariable();
-  await shared.emitter.sendContent(content, receiver);
+  await shared.emitter.sendContent(content, receiver: receiver);
   return true;
 }
 

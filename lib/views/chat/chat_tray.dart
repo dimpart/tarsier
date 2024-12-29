@@ -258,8 +258,9 @@ void _sendImage(BuildContext context, Conversation chat) =>
         var ted = TransportableData.create(small);
         thumbnail = ted.toString();
       }
+      var pnf = PortableNetworkFile.parse(thumbnail);
       GlobalVariable shared = GlobalVariable();
-      shared.emitter.sendImage(data, filename: 'image.jpeg', thumbnail: thumbnail,
+      shared.emitter.sendPicture(data, filename: 'image.jpeg', thumbnail: pnf,
         receiver: chat.identifier,);
     }));
 

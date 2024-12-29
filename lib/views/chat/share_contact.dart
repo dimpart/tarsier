@@ -76,7 +76,7 @@ Future<bool> _sendContact(ID receiver,
   content['traces'] = traces;
   Log.debug('forward name card to receiver: $receiver, $content');
   GlobalVariable shared = GlobalVariable();
-  await shared.emitter.sendContent(content, receiver);
+  await shared.emitter.sendContent(content, receiver: receiver);
   return true;
 }
 

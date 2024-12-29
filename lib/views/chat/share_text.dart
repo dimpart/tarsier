@@ -84,7 +84,7 @@ Future<bool> _sendText(ID receiver, {required TextContent content, required List
   forward['traces'] = traces;
   Log.warning('forward text message to receiver: $receiver, $forward');
   GlobalVariable shared = GlobalVariable();
-  await shared.emitter.sendContent(forward, receiver);
+  await shared.emitter.sendContent(forward, receiver: receiver);
   return true;
 }
 List<String> _fixedFields = [

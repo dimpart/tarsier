@@ -442,7 +442,7 @@ Future<bool> _sendContact(ID receiver,
   NameCard content = NameCard.create(identifier, name, PortableNetworkFile.parse(avatar));
   Log.debug('name card: $content');
   GlobalVariable shared = GlobalVariable();
-  await shared.emitter.sendContent(content, receiver);
+  await shared.emitter.sendContent(content, receiver: receiver);
   return true;
 }
 

@@ -85,10 +85,11 @@ Widget _forwardVideoPreview(VideoContent content, Conversation chat) {
 }
 Future<bool> _sendVideo(ID receiver,
     {required Uri url, String? filename, String? title, String? snapshot}) async {
+  var pnf = PortableNetworkFile.parse(snapshot);
   // send image content with traces
   GlobalVariable shared = GlobalVariable();
-  await shared.emitter.sendVideo(url,
-    filename: filename, title: title, snapshot: snapshot,
+  await shared.emitter.sendMovie(url,
+    filename: filename, title: title, snapshot: pnf,
     receiver: receiver,
   );
   return true;
