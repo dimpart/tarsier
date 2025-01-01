@@ -482,7 +482,7 @@ class GreetingCounter {
         Log.warning('skip muted chat: $chat');
         continue;
       }
-      Log.warning('stranger: $chat');
+      // Log.warning('stranger: $chat');
       if (chat.unread > 0) {
         count += 1;
       }

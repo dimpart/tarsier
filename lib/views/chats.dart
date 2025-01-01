@@ -429,17 +429,17 @@ class UnreadCounter {
     for (Conversation chat in all) {
       if (chat is ContactInfo) {
         if (chat.isMuted) {
-          Log.warning('skip muted chat: $chat');
+          // Log.warning('skip muted chat: $chat');
           continue;
         } else if (chat.isBlocked) {
-          Log.warning('skip blocked chat: $chat');
+          // Log.warning('skip blocked chat: $chat');
           continue;
         } else if (chat.isNotFriend) {
-          Log.warning('skip stranger chat: $chat');
+          // Log.warning('skip stranger chat: $chat');
           continue;
         }
       }
-      Log.warning('chat: $chat');
+      // Log.warning('chat: $chat');
       count += chat.unread;
     }
     return _count = count;
