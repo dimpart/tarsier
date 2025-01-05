@@ -23,6 +23,7 @@ void main() async {
 
   // Set log level
   Log.level = Log.kDevelop;
+  // Log.level = Log.kRelease;
   if (DevicePlatform.isIOS) {
     Log.colorful = false;
     Log.showTime = true;
@@ -111,7 +112,7 @@ class _MainPageState extends State<_MainPage> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) => DefaultTabController(
     length: 4,
-    initialIndex: 2,
+    initialIndex: AppSettings().getValue('tab_index') ?? 0,
     child: Scaffold(
       body: const TabBarView(
         children: [
@@ -130,6 +131,7 @@ class _MainPageState extends State<_MainPage> with WidgetsBindingObserver {
           ServiceListPage.tab(),
           SettingsPage.tab(),
         ],
+        onTap: (index) => AppSettings().setValue('tab_index', index),
       ),
     ),
   );
