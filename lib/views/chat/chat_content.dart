@@ -147,10 +147,11 @@ abstract class ContentViewHelper {
   }
 
   static Widget getTextContentView(BuildContext ctx, Content content, Envelope envelope) {
-    ID sender = envelope.sender;
-    bool mine = sender == ContentViewUtils.currentUser?.identifier;
     var format = content.getString('format', null);
-    bool plain = mine || format != 'markdown';
+    ID sender = envelope.sender;
+    // bool mine = sender == ContentViewUtils.currentUser?.identifier;
+    // bool plain = mine || format != 'markdown';
+    bool plain = format != 'markdown';
     String text = DefaultMessageBuilder().getText(content, sender);
     // action - onWebShare
     onWebShare(url, {required title, required desc, required icon}) =>
