@@ -21,11 +21,14 @@ abstract class ShareTextMessage {
           traces: traces,
         ).then((ok) {
           if (ok) {
-            Alert.show(ctx, 'Forwarded',
-                'Text message forwarded to @chat'.trParams({
-                  'chat': chat.title,
-                })
-            );
+            // Alert.show(ctx, 'Forwarded',
+            //   'Text message forwarded to @chat'.trParams({
+            //     'chat': chat.title,
+            //   }),
+            // );
+            Log.info('Text message forwarded to @chat'.trParams({
+              'chat': chat.title,
+            }));
           } else {
             Alert.show(ctx, 'Error',
               'Failed to share text with @chat'.trParams({

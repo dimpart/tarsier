@@ -331,19 +331,25 @@ class _StationCellState extends State<_StationCell> implements lnc.Observer {
   void _removeError(BuildContext context, NeighborInfo info) {
     String result = _getResult(info);
     if (result != 'error') {
-      // Alert.show(context, 'Permission Denied', 'Cannot remove this station.'.tr);
+      // Alert.show(context, 'Permission Denied', 'Cannot remove this station'.tr);
       return;
     }
     String remote = '${info.host}:${info.port}';
-    Alert.confirm(context, 'Confirm Delete', 'Sure to remove this station ($remote)?'.tr,
+    Alert.confirm(context, 'Confirm Delete', 'Sure to remove this station (@remote)?'.trParams({
+      'remote': remote,
+    }),
       okAction: () {
         GlobalVariable shared = GlobalVariable();
         shared.database.removeStation(host: info.host, port: info.port, provider: info.provider).then((ok) {
           if (ok) {
-            Alert.show(context, 'Success', 'Station ($remote) is removed.');
+            Alert.show(context, 'Success', 'Station (@remote) is removed'.trParams({
+              'remote': remote,
+            }));
             info.responseTime = null;
           } else {
-            Alert.show(context, 'Error', 'Failed to remove station ($remote).');
+            Alert.show(context, 'Error', 'Failed to remove station (@remote)'.trParams({
+              'remote': remote,
+            }));
           }
         });
       }

@@ -26,12 +26,16 @@ abstract class ShareWebPage {
           url, title: title, desc: desc, icon: icon,
         ).then((ok) {
           if (ok) {
-            Alert.show(ctx, 'Forwarded',
-              'Web Page @title forwarded to @chat'.trParams({
-                'title': title,
-                'chat': chat.title,
-              }),
-            );
+            // Alert.show(ctx, 'Forwarded',
+            //   'Web Page @title forwarded to @chat'.trParams({
+            //     'title': title,
+            //     'chat': chat.title,
+            //   }),
+            // );
+            Log.info('Web Page @title forwarded to @chat'.trParams({
+              'title': title,
+              'chat': chat.title,
+            }));
           } else {
             Alert.show(ctx, 'Error',
               'Failed to share Web Page @title with @chat'.trParams({

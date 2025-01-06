@@ -147,11 +147,11 @@ abstract class ContentViewHelper {
   }
 
   static Widget getTextContentView(BuildContext ctx, Content content, Envelope envelope) {
-    var format = content.getString('format', null);
     ID sender = envelope.sender;
     // bool mine = sender == ContentViewUtils.currentUser?.identifier;
+    // var format = content.getString('format', null);
     // bool plain = mine || format != 'markdown';
-    bool plain = format != 'markdown';
+    // bool plain = format != 'markdown';
     String text = DefaultMessageBuilder().getText(content, sender);
     // action - onWebShare
     onWebShare(url, {required title, required desc, required icon}) =>
@@ -163,7 +163,8 @@ abstract class ContentViewHelper {
       text: text, sender: sender,
       onWebShare: onWebShare,
       onVideoShare: onVideoShare,
-      previewing: plain,
+      // previewing: plain,
+      previewing: false,
     );
     // action - delete
     deleteMessage() => _deleteMessage(ctx, content, envelope);

@@ -21,12 +21,16 @@ abstract class ShareNameCard {
           traces: traces,
         ).then((ok) {
           if (ok) {
-            Alert.show(ctx, 'Forwarded',
-                'Name Card @name forwarded to @chat'.trParams({
-                  'name': content.name,
-                  'chat': chat.title,
-                })
-            );
+            // Alert.show(ctx, 'Forwarded',
+            //   'Name Card @name forwarded to @chat'.trParams({
+            //     'name': content.name,
+            //     'chat': chat.title,
+            //   }),
+            // );
+            Log.info('Name Card @name forwarded to @chat'.trParams({
+              'name': content.name,
+              'chat': chat.title,
+            }));
           } else {
             Alert.show(ctx, 'Error',
               'Failed to share Name Card @name with @chat'.trParams({

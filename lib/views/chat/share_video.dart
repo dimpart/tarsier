@@ -40,11 +40,14 @@ abstract class ShareVideo {
         url: url, filename: filename, title: title, snapshot: snapshot,
       ).then((ok) {
         if (ok) {
-          Alert.show(ctx, 'Forwarded',
-            'Video message forwarded to @chat'.trParams({
-              'chat': chat.title,
-            }),
-          );
+          // Alert.show(ctx, 'Forwarded',
+          //   'Video message forwarded to @chat'.trParams({
+          //     'chat': chat.title,
+          //   }),
+          // );
+          Log.info('Video message forwarded to @chat'.trParams({
+            'chat': chat.title,
+          }));
         } else {
           Alert.show(ctx, 'Error',
             'Failed to share video with @chat'.trParams({
