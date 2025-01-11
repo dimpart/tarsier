@@ -16,6 +16,7 @@ class ChatSendFlag extends StatefulWidget {
 
 enum _MsgStatus {
   kDefault,
+  kEncrypted,
   kWaiting,   // sending out, or waiting file data upload
   kSent,      // MTA respond
   kBlocked,   // blocked by receiver
@@ -30,6 +31,7 @@ class _SendState extends State<ChatSendFlag> implements lnc.Observer {
 
     var nc = lnc.NotificationCenter();
     nc.addObserver(this, NotificationNames.kMessageTraced);
+    nc.addObserver(this, NotificationNames.kPortableNetworkEncrypted);
   }
 
   @override
@@ -69,6 +71,20 @@ class _SendState extends State<ChatSendFlag> implements lnc.Observer {
           widget.iMsg['count_of_traces'] = null;
         }
         await _refresh(sn: sn, mta: mta);
+      }
+    } else if (name == NotificationNames.kPortableNetworkEncrypted) {
+      var pnf = userInfo?['PNF'];
+      int? sn = pnf?['sn'];
+      ID? sender = ID.parse(pnf?['enigma']?['sender']);
+      if (sender == null || sn == null) {
+        Log.error('notification error: $userInfo');
+      } else if (_match(sender: sender, sn: sn, signature: null)) {
+        // if match this message, refresh its status
+        _flags[sn] = _MsgStatus.kEncrypted;
+        if (mounted) {
+          setState(() {
+          });
+        }
       }
     }
   }
@@ -138,8 +154,9 @@ class _SendState extends State<ChatSendFlag> implements lnc.Observer {
       }
     }
     if (current == null || current == _MsgStatus.kDefault ||
+        current == _MsgStatus.kEncrypted ||
         current == _MsgStatus.kWaiting) {
-      // kDefault, kWaiting
+      // kDefault, kEncrypted, kWaiting
       DateTime? time = widget.iMsg.time;
       if (time != null) {
         int expired = Time.currentTimeMilliseconds - 300 * 1000;
@@ -264,6 +281,9 @@ class _SendState extends State<ChatSendFlag> implements lnc.Observer {
 
   IconData? get flag {
     switch (status) {
+      case _MsgStatus.kEncrypted: {
+        return AppIcons.msgEncryptedIcon;
+      }
       case _MsgStatus.kWaiting: {
         return AppIcons.msgWaitingIcon;
       }
@@ -286,6 +306,9 @@ class _SendState extends State<ChatSendFlag> implements lnc.Observer {
   }
   Color? get color {
     switch (status) {
+      case _MsgStatus.kEncrypted: {
+        return CupertinoColors.activeOrange;
+      }
       case _MsgStatus.kWaiting: {
         return CupertinoColors.systemGrey;
       }
@@ -308,6 +331,9 @@ class _SendState extends State<ChatSendFlag> implements lnc.Observer {
   }
   String? get text {
     switch (status) {
+      case _MsgStatus.kEncrypted: {
+        return 'Waiting to upload'.tr;
+      }
       case _MsgStatus.kWaiting: {
         return 'Waiting to send'.tr;
       }
@@ -340,6 +366,9 @@ class _SendState extends State<ChatSendFlag> implements lnc.Observer {
 
   @override
   Widget build(BuildContext context) {
+    if (status == _MsgStatus.kEncrypted) {
+      return _traceInfo();
+    }
     if (status == _MsgStatus.kReceived) {
       if (widget.iMsg['count_of_responded'] == null) {
         _loadTraces().then((value) {
@@ -357,26 +386,34 @@ class _SendState extends State<ChatSendFlag> implements lnc.Observer {
     );
   }
 
-  Widget _traceInfo() => Row(
-    mainAxisSize: MainAxisSize.min,
-    children: [
-      Text('$text ', style: TextStyle(
-        fontSize: 10,
-        color: color,
-      )),
-      Icon(flag, size: 10, color: color,),
-      const SizedBox(width: 8,),
-    ],
-  );
+  Widget _traceInfo() {
+    Widget view;
+    view = Text('$text', style: TextStyle(
+      fontSize: 10,
+      color: color,
+      overflow: TextOverflow.ellipsis,
+    ), textAlign: TextAlign.right,);
+    view = Expanded(child: view);
+    view = Row(
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: [
+        view,
+        const SizedBox(width: 4,),
+        Icon(flag, size: 10, color: color,),
+      ],
+    );
+    return view;
+  }
 
   Future<void> _resendMessage() async {
     Log.warning('re-send message: ${widget.iMsg}');
     // clear last signature for repacking
-    InstantMessage? iMsg = widget.iMsg;
+    InstantMessage iMsg = widget.iMsg;
+    Content content = iMsg.content;
     iMsg.remove('signature');
     if (mounted) {
       setState(() {
-        _flags[iMsg.content.sn] = _MsgStatus.kWaiting;
+        _flags[content.sn] = _MsgStatus.kWaiting;
       });
     }
     // send again

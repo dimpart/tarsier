@@ -437,29 +437,77 @@ class _HistoryAdapter with SectionAdapterMixin {
 
   Widget _getContentFrame(BuildContext context, ID sender, int mainFlex, bool isMine, {
     required Widget image, Widget? name, required Widget body, required Widget? flag
-  }) => Row(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      if (isMine)
-        Expanded(flex: 1, child: Container()),
-      if (!isMine)
-        _getContactAvatarButton(context, sender, image: image),
-      Expanded(flex: mainFlex, child: Column(
-        crossAxisAlignment: isMine ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+  }) {
+    Widget view;
+    view = Column(
+      crossAxisAlignment: isMine ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+      children: [
+        name ?? const SizedBox(height: 8,),
+        body,
+      ],
+    );
+    if (isMine) {
+      view = Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          if (name != null)
-            name,
-          body,
-          if (flag != null)
-            flag,
+          Expanded(flex: 1, child: Container()),
+          Expanded(flex: mainFlex, child: view),
+          _getMyAvatarButton(context, sender, image: image),
         ],
-      )),
-      if (isMine)
-        _getMyAvatarButton(context, sender, image: image),
-      if (!isMine)
-        Expanded(flex: 1, child: Container()),
-    ],
-  );
+      );
+    } else {
+      view = Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _getContactAvatarButton(context, sender, image: image),
+          Expanded(flex: mainFlex, child: view),
+          Expanded(flex: 1, child: Container()),
+        ],
+      );
+    }
+    if (flag != null) {
+      view = Column(
+        children: [
+          view,
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              Expanded(flex: 1, child: Container()),
+              Expanded(flex: 6, child: flag),
+              const SizedBox(width: 48,),
+            ],
+          )
+        ],
+      );
+    }
+    return view;
+  }
+
+  // Widget _getContentFrame(BuildContext context, ID sender, int mainFlex, bool isMine, {
+  //   required Widget image, Widget? name, required Widget body, required Widget? flag
+  // }) => Row(
+  //   crossAxisAlignment: CrossAxisAlignment.start,
+  //   children: [
+  //     if (isMine)
+  //       Expanded(flex: 1, child: Container()),
+  //     if (!isMine)
+  //       _getContactAvatarButton(context, sender, image: image),
+  //     Expanded(flex: mainFlex, child: Column(
+  //       crossAxisAlignment: isMine ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+  //       children: [
+  //         if (name != null)
+  //           name,
+  //         body,
+  //         if (flag != null)
+  //           flag,
+  //       ],
+  //     )),
+  //     if (isMine)
+  //       _getMyAvatarButton(context, sender, image: image),
+  //     if (!isMine)
+  //       Expanded(flex: 1, child: Container()),
+  //   ],
+  // );
 
   Widget _getContactAvatarButton(BuildContext context, ID sender, {
     required Widget image

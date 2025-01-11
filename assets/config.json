@@ -31,12 +31,20 @@
     {"host": "129.226.12.4", "port": 9394, "desc": "HK"}
   ],
 
-  "uploads": [
-    {
-      "url": "http://tfs.dim.chat:8081/{ID}/upload?md5={MD5}&salt={SALT}",
-      "enigma": "123456"
-    }
-  ],
+  "upload": {
+    "avatar": [
+      {
+        "url": "http://tfs.dim.chat:8081/upload/{ID}/avatar?md5={MD5}&salt={SALT}",
+        "enigma": "123456"
+      }
+    ],
+    "file": [
+      {
+        "url": "http://106.52.25.169:8081/upload/{ID}/file?md5={MD5}&salt={SALT}",
+        "enigma": "123456"
+      }
+    ]
+  },
 
   "newest": {
     "android": {

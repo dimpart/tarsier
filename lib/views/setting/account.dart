@@ -257,7 +257,7 @@ class _AccountState extends State<AccountPage> {
       ext = 'jpeg';
     }
     String filename = URLHelper.filenameFromData(data, 'avatar.$ext');
-    FileUploader ftp = FileUploader();
+    var ftp = SharedFileUploader();
     ftp.uploadAvatar(data, filename, widget.user.identifier).then((url) {
       if (url == null) {
         Log.error('failed to upload avatar: $filename');
