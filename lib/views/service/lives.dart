@@ -253,17 +253,20 @@ class _LiveSourceAdapter with SectionAdapterMixin {
   final _LiveSourceListState state;
 
   @override
+  bool shouldSectionHeaderStick(int section) => true;
+
+  @override
   bool shouldExistSectionHeader(int section) => state._searchTag > 0;
 
   @override
   bool shouldExistSectionFooter(int section) => state.description.isNotEmpty;
 
   @override
-  Widget getSectionHeader(BuildContext context, int section) => Center(
-    child: Container(
-      padding: const EdgeInsets.all(8),
-      child: const CupertinoActivityIndicator(),
-    ),
+  Widget getSectionHeader(BuildContext context, int section) => Container(
+    color: Styles.colors.scaffoldBackgroundColor,
+    alignment: Alignment.center,
+    padding: const EdgeInsets.all(8),
+    child: const CupertinoActivityIndicator(),
   );
 
   @override

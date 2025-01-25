@@ -192,7 +192,7 @@ class _SearchState extends State<UserListPage> with Logging implements lnc.Obser
     content['hidden'] = true;
     // TODO: check visa.key
     ID bot = widget.chat.identifier;
-    logInfo('query active users with tag: $_searchTag, keywords: $keywords, title: "$title"');
+    logInfo('query active users with tag: $_searchTag, keywords: $keywords, title: "$title", bot: $bot');
     await messenger.sendContent(content, sender: null, receiver: bot);
   }
 
@@ -219,7 +219,7 @@ class _SearchState extends State<UserListPage> with Logging implements lnc.Obser
 
   Widget _refreshBtn() => IconButton(
       icon: const Icon(AppIcons.refreshIcon, size: 16),
-      onPressed: _refreshing || _searchTag > 0 ? null : () => _refreshList(),
+      onPressed: _refreshing || _searchTag > 0 ? null : _refreshList,
   );
 
   void _refreshList() {
@@ -251,17 +251,20 @@ class _SearchResultAdapter with SectionAdapterMixin {
   final _SearchState state;
 
   @override
+  bool shouldSectionHeaderStick(int section) => true;
+
+  @override
   bool shouldExistSectionHeader(int section) => state._searchTag > 0;
 
   @override
   bool shouldExistSectionFooter(int section) => state.description.isNotEmpty;
 
   @override
-  Widget getSectionHeader(BuildContext context, int section) => Center(
-    child: Container(
-      padding: const EdgeInsets.all(8),
-      child: const CupertinoActivityIndicator(),
-    ),
+  Widget getSectionHeader(BuildContext context, int section) => Container(
+    color: Styles.colors.scaffoldBackgroundColor,
+    alignment: Alignment.center,
+    padding: const EdgeInsets.all(8),
+    child: const CupertinoActivityIndicator(),
   );
 
   @override

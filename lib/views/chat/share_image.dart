@@ -65,20 +65,29 @@ Future<String?> _pathFromContent(ImageContent content) async {
     assert(false, 'failed to parse PNF: $content');
     return null;
   }
-  PortableFileLoader loader = PortableFileLoader(pnf);
-  String? cachePath = await loader.cacheFilePath;
+  String? cachePath;
+  if (pnf.url == null) {
+    var ftp = SharedFileUploader();
+    var task = PortableFileUploadTask(pnf, ftp.enigma);
+    cachePath = await task.cacheFilePath;
+  } else {
+    var task = PortableFileDownloadTask(pnf);
+    cachePath = await task.cacheFilePath;
+  }
   if (cachePath == null) {
+    Log.error('failed to get cache path: $content');
     return null;
   } else if (await Paths.exists(cachePath)) {
     return cachePath;
   } else {
+    Log.error('cache path not exists: $cachePath, $content');
     return null;
   }
 }
 
 Widget _forwardImagePreview(ImageContent content, Conversation chat) {
   Widget to = previewEntity(chat);
-  Widget? from = Gallery.getThumbnail(content);
+  Widget? from = Gallery.getThumbnail(content.toMap());
   if (from != null) {
     from = SizedBox(width: 64, child: from,);
   } else {
