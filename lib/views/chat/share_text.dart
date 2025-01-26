@@ -3,6 +3,7 @@ import 'package:flutter/widgets.dart';
 import 'package:dim_flutter/dim_flutter.dart';
 
 import 'pick_chat.dart';
+import 'share_contact.dart';
 
 
 abstract class ShareTextMessage {
@@ -47,17 +48,7 @@ abstract class ShareTextMessage {
 Widget _forwardTextPreview(TextContent content, Conversation chat) {
   Widget to = previewEntity(chat);
   Widget from = _previewText(content.text);
-  Widget body = Row(
-    mainAxisAlignment: MainAxisAlignment.center,
-    children: [
-      from,
-      const SizedBox(width: 32,),
-      const Text('~>'),
-      const SizedBox(width: 32,),
-      to,
-    ],
-  );
-  return body;
+  return forwardPreview(from, to);
 }
 
 Widget _previewText(String text) {

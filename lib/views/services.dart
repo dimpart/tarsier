@@ -97,24 +97,7 @@ class _BotListAdapter with SectionAdapterMixin, Logging {
       return false;
     }
     _services.clear();
-    for (var item in array) {
-      if (item is Map) {
-        var st = item['type'];
-        if (st == 'ChatBox' || st == 'ChatBot') {
-          _services.add(item);
-        } else if (st == 'UserList') {
-          _services.add(item);
-        } else if (st == 'LiveSources') {
-          _services.add(item);
-        } else if (st == 'WebSites') {
-          _services.add(item);
-        } else {
-          logWarning('ignore service item: $item');
-        }
-      } else {
-        logError('unknown service item: $item');
-      }
-    }
+    _services.addAll(fetchServices(array));
     return true;
   }
 
@@ -175,7 +158,7 @@ class _ServiceTableCellState extends State<_ServiceTableCell> {
     subtitle: _subtitle(widget.info),
     additionalInfo: _additional(widget.info),
     trailing: const CupertinoListTileChevron(),
-    onTap: () => _openService(context, widget.info),
+    onTap: () => openService(context, widget.info),
   );
 
   Widget _leading(Map info) {
@@ -223,7 +206,8 @@ class _ServiceTableCellState extends State<_ServiceTableCell> {
 
 }
 
-bool _openService(BuildContext ctx, Map info) {
+
+bool openService(BuildContext ctx, Map info) {
   Log.warning('tap: $info');
   // check service bot
   ID? bot = ID.parse(info['ID']);
@@ -255,4 +239,32 @@ bool _openService(BuildContext ctx, Map info) {
   }
   Log.error('unknown service type: $st');
   return false;
+}
+
+
+List<Map> fetchServices(List services) {
+  List<Map> array = [];
+  for (var item in services) {
+    if (item is Map) {
+      if (ID.parse(item['ID'])?.type != EntityType.BOT) {
+        Log.error('service bot error: $item');
+        continue;
+      }
+      var st = item['type'];
+      if (st == 'ChatBox' || st == 'ChatBot') {
+        array.add(item);
+      } else if (st == 'UserList') {
+        array.add(item);
+      } else if (st == 'LiveSources') {
+        array.add(item);
+      } else if (st == 'WebSites') {
+        array.add(item);
+      } else {
+        Log.warning('ignore service item: $item');
+      }
+    } else {
+      Log.error('unknown service item: $item');
+    }
+  }
+  return array;
 }

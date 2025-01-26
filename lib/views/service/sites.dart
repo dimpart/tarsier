@@ -5,6 +5,7 @@ import 'package:dim_flutter/dim_flutter.dart';
 import 'package:lnc/notification.dart' as lnc;
 
 import '../chat/pick_chat.dart';
+import '../chat/share_contact.dart';
 import '../chat/share_page.dart';
 import '../chat/share_video.dart';
 
@@ -359,17 +360,7 @@ Future<bool> _shareMarkdown(ID receiver, {required String title, required String
 Widget _sharePreview(String title, Conversation chat) {
   Widget to = previewEntity(chat);
   Widget from = _previewText(title);
-  Widget body = Row(
-    mainAxisAlignment: MainAxisAlignment.center,
-    children: [
-      from,
-      const SizedBox(width: 32,),
-      const Text('~>'),
-      const SizedBox(width: 32,),
-      to,
-    ],
-  );
-  return body;
+  return forwardPreview(from, to);
 }
 Widget _previewText(String text) => SizedBox(
   width: 64,

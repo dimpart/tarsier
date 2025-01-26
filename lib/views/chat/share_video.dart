@@ -3,6 +3,7 @@ import 'package:flutter/widgets.dart';
 import 'package:dim_flutter/dim_flutter.dart';
 
 import 'pick_chat.dart';
+import 'share_contact.dart';
 
 
 abstract class ShareVideo {
@@ -64,7 +65,7 @@ abstract class ShareVideo {
 
 Widget _forwardVideoPreview(VideoContent content, Conversation chat) {
   Widget to = previewEntity(chat);
-  Widget? from = Gallery.getSnapshot(content);
+  Widget? from = Gallery.getSnapshot(content.toMap());
   if (from != null) {
     from = SizedBox(width: 64, child: from,);
   } else {
@@ -74,17 +75,7 @@ Widget _forwardVideoPreview(VideoContent content, Conversation chat) {
     }
     from = _previewText(title);
   }
-  Widget body = Row(
-    mainAxisAlignment: MainAxisAlignment.center,
-    children: [
-      from,
-      const SizedBox(width: 32,),
-      const Text('~>'),
-      const SizedBox(width: 32,),
-      to,
-    ],
-  );
-  return body;
+  return forwardPreview(from, to);
 }
 Future<bool> _sendVideo(ID receiver,
     {required Uri url, String? filename, String? title, String? snapshot}) async {

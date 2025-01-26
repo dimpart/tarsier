@@ -47,6 +47,18 @@ abstract class ShareNameCard {
 }
 
 
+Row forwardPreview(Widget from, Widget to) => Row(
+  mainAxisAlignment: MainAxisAlignment.center,
+  children: [
+    from,
+    const SizedBox(width: 16,),
+    const Icon(AppIcons.forwardIcon, size: 16,),
+    const SizedBox(width: 16,),
+    to,
+  ],
+);
+
+
 Widget _forwardNameCardPreview(NameCard content, Conversation chat) {
   Widget to = previewEntity(chat);
   Widget from;
@@ -60,17 +72,7 @@ Widget _forwardNameCardPreview(NameCard content, Conversation chat) {
     }
     from = _previewText(name);
   }
-  Widget body = Row(
-    mainAxisAlignment: MainAxisAlignment.center,
-    children: [
-      from,
-      const SizedBox(width: 32,),
-      const Text('~>'),
-      const SizedBox(width: 32,),
-      to,
-    ],
-  );
-  return body;
+  return forwardPreview(from, to);
 }
 
 Future<bool> _sendContact(ID receiver,

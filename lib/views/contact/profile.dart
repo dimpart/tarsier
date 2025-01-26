@@ -6,13 +6,25 @@ import 'package:lnc/notification.dart' as lnc;
 
 import '../chat/chat_box.dart';
 import '../chat/pick_chat.dart';
+import '../chat/share_contact.dart';
+import '../services.dart';
 
 
 class ProfilePage extends StatefulWidget {
-  const ProfilePage(this.info, this.fromChat, {super.key});
+  ProfilePage(this.info, this.fromChat, {super.key});
 
   final ContactInfo info;
   final ID? fromChat;
+
+  final List<Map> _services = [];
+  List<Map> get services {
+    var array = info.visa?.getProperty('services');
+    if (array is List) {
+      _services.clear();
+      _services.addAll(fetchServices(array));
+    }
+    return _services;
+  }
 
   static void open(BuildContext context, ID identifier, {ID? fromChat}) {
     ContactInfo? info = ContactInfo.fromID(identifier);
@@ -217,6 +229,18 @@ class _ProfileState extends State<ProfilePage> with Logging implements lnc.Obser
         ],
       ),
 
+      if (widget.services.isNotEmpty)
+        CupertinoListSection(
+          backgroundColor: dividerColor,
+          topMargin: 0,
+          additionalDividerMargin: 32,
+          children: _serviceList(context, widget.services,
+            backgroundColor: backgroundColor,
+            backgroundColorActivated: backgroundColorActivated,
+            primaryTextColor: primaryTextColor,
+          ),
+        ),
+
       if (widget.info.identifier.type != EntityType.STATION)
       CupertinoListSection(
         backgroundColor: dividerColor,
@@ -286,6 +310,31 @@ class _ProfileState extends State<ProfilePage> with Logging implements lnc.Obser
 
     ],
   );
+
+  List<Widget> _serviceList(BuildContext context, List<Map> services, {
+    required Color backgroundColor,
+    required Color backgroundColorActivated,
+    // required Color dividerColor,
+    required Color primaryTextColor,
+    // required Color secondaryTextColor,
+    // required Color dangerousTextColor,
+  }) {
+    List<Widget> items = [];
+    for (var info in services) {
+      var title = info['title'] ?? info['name'];
+      var subtitle = info['subtitle'] ?? info['provider'];
+      items.add(CupertinoListTile(
+        backgroundColor: backgroundColor,
+        backgroundColorActivated: backgroundColorActivated,
+        padding: Styles.settingsSectionItemPadding,
+        title: Text('$title', style: TextStyle(color: primaryTextColor)),
+        additionalInfo: Text('$subtitle'),
+        trailing: const CupertinoListTileChevron(),
+        onTap: () => openService(context, info),
+      ));
+    }
+    return items;
+  }
 
   Widget _avatarImage(BuildContext context) => GestureDetector(
     onTap: () {
@@ -404,16 +453,7 @@ void _shareContact(BuildContext ctx, ContactInfo info) {
     }
     Widget from = previewEntity(info);
     Widget to = previewEntity(chat);
-    Widget body = Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        from,
-        const SizedBox(width: 32,),
-        const Text('~>'),
-        const SizedBox(width: 32,),
-        to,
-      ],
-    );
+    Widget body = forwardPreview(from, to);
     Alert.confirm(ctx, 'Confirm Share', body,
       okAction: () => _sendContact(chat.identifier,
         identifier: info.identifier, name: info.title, avatar: info.avatar,

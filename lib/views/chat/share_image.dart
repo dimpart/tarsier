@@ -5,6 +5,7 @@ import 'package:flutter/widgets.dart';
 import 'package:dim_flutter/dim_flutter.dart';
 
 import 'pick_chat.dart';
+import 'share_contact.dart';
 
 
 abstract class ShareImage {
@@ -94,17 +95,7 @@ Widget _forwardImagePreview(ImageContent content, Conversation chat) {
     String? filename = content.filename ??= 'Image';
     from = _previewText(filename);
   }
-  Widget body = Row(
-    mainAxisAlignment: MainAxisAlignment.center,
-    children: [
-      from,
-      const SizedBox(width: 32,),
-      const Text('~>'),
-      const SizedBox(width: 32,),
-      to,
-    ],
-  );
-  return body;
+  return forwardPreview(from, to);
 }
 
 Future<bool> _sendImage(ID receiver,
