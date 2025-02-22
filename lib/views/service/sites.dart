@@ -347,7 +347,11 @@ class _WebSiteState extends State<WebSitePage> with Logging implements lnc.Obser
 }
 
 Future<bool> _shareMarkdown(ID receiver, {required String title, required String body}) async {
-  var content = TextContent.create(body);
+  // "data:text/plain;charset=UTF-8;base64,"
+  var base64 = Base64.encode(UTF8.encode(body));
+  var link = 'data:text/plain;charset=UTF-8;base64,$base64';
+  var text = '[$title]($link "")';
+  var content = TextContent.create(text);
   content['format'] = 'markdown';
   // if (receiver.isGroup) {
   //   content.group = receiver;

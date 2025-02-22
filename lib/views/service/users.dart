@@ -261,9 +261,9 @@ class _SearchResultAdapter with SectionAdapterMixin {
 
   @override
   Widget getSectionHeader(BuildContext context, int section) => Container(
-    color: Styles.colors.scaffoldBackgroundColor,
+    color: Styles.colors.sectionHeaderBackgroundColor,
+    padding: Styles.sectionHeaderPadding,
     alignment: Alignment.center,
-    padding: const EdgeInsets.all(8),
     child: const CupertinoActivityIndicator(),
   );
 

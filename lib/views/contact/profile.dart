@@ -18,10 +18,11 @@ class ProfilePage extends StatefulWidget {
 
   final List<Map> _services = [];
   List<Map> get services {
-    var array = info.visa?.getProperty('services');
-    if (array is List) {
-      _services.clear();
-      _services.addAll(fetchServices(array));
+    if (_services.isEmpty) {
+      var array = info.visa?.getProperty('services');
+      if (array is List) {
+        _services.addAll(fetchServices(array));
+      }
     }
     return _services;
   }
