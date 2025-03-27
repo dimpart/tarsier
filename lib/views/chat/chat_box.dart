@@ -13,6 +13,7 @@ import 'chat_title.dart';
 import 'chat_tray.dart';
 import 'detail.dart';
 import 'detail_group.dart';
+import 'translation.dart';
 
 
 ///
@@ -329,6 +330,9 @@ class _HistoryAdapter with SectionAdapterMixin {
           child: _getContentView(context, content, iMsg.envelope),
         ),
       );
+      if (Translator().canTranslate(content) && !isMine) {
+        contentView = TranslatableView(contentView, content, sender);
+      }
       // create content frame
       contentView = _getContentFrame(context, sender, mainFlex, isMine,
         image: AvatarFactory().getAvatarView(sender),

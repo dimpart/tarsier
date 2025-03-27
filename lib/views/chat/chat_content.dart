@@ -3,11 +3,11 @@ import 'package:flutter/widgets.dart';
 import 'package:dim_flutter/dim_flutter.dart';
 
 import '../contact/profile.dart';
-import 'share_contact.dart';
-import 'share_image.dart';
-import 'share_page.dart';
-import 'share_text.dart';
-import 'share_video.dart';
+import '../sharing/share_contact.dart';
+import '../sharing/share_image.dart';
+import '../sharing/share_page.dart';
+import '../sharing/share_text.dart';
+import '../sharing/share_video.dart';
 
 
 abstract class ContentViewHelper {

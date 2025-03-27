@@ -5,8 +5,8 @@ import 'package:dim_flutter/dim_flutter.dart';
 import 'package:lnc/notification.dart' as lnc;
 
 import '../chat/chat_box.dart';
-import '../chat/pick_chat.dart';
-import '../chat/share_contact.dart';
+import '../sharing/pick_chat.dart';
+import '../sharing/share_contact.dart';
 import '../services.dart';
 
 
