@@ -53,6 +53,10 @@ class _TranslateState extends State<TranslatableView> implements lnc.Observer {
     if (name == NotificationNames.kTranslateUpdated) {
       TranslateContent? content = info?['content'];
       if (content != null && widget.matchContent(content)) {
+        int? tag = content.tag;
+        if (tag != null) {
+          _transQueries.remove(tag);
+        }
         await _reload();
       }
     } else if (name == NotificationNames.kTranslatorReady) {
@@ -94,7 +98,8 @@ class _TranslateState extends State<TranslatableView> implements lnc.Observer {
       if (_isQuerying(widget.content)) {
         btn = const CupertinoActivityIndicator(radius: 6,);
       } else {
-        btn = _translateButton(text, tag);
+        String? format = widget.content.getString('format', null);
+        btn = _translateButton(text, tag, format: format);
       }
       btn = Container(
         padding: const EdgeInsets.fromLTRB(12, 4, 12, 4),
@@ -148,7 +153,7 @@ class _TranslateState extends State<TranslatableView> implements lnc.Observer {
     );
   }
 
-  Widget _translateButton(String text, int tag) => TextButton(
+  Widget _translateButton(String text, int tag, {required String? format}) => TextButton(
     style: TextButton.styleFrom(
       foregroundColor: CupertinoColors.systemBlue,
       textStyle: const TextStyle(fontSize: 10, color: CupertinoColors.systemBlue),
@@ -156,7 +161,7 @@ class _TranslateState extends State<TranslatableView> implements lnc.Observer {
       padding: EdgeInsets.zero,
       tapTargetSize: MaterialTapTargetSize.shrinkWrap,
     ),
-    onPressed: () => _queryTranslator(text, tag),
+    onPressed: () => _queryTranslator(text, tag, format: format),
     child: Text('Translate'.tr),
   );
 
@@ -183,9 +188,9 @@ class _TranslateState extends State<TranslatableView> implements lnc.Observer {
     }
   }
 
-  void _queryTranslator(String text, int tag) {
+  void _queryTranslator(String text, int tag, {required String? format}) {
     // do querying
-    Translator().request(text, tag);
+    Translator().request(text, tag, format: format);
     setState(() {
       // set querying time
       _transQueries[tag] = DateTime.now();

@@ -59,7 +59,7 @@ class _NetworkState extends State<NetworkSettingPage> {
 
   void _confirmRefresh(BuildContext context) {
     Alert.confirm(context, 'Refresh Stations',
-      'The fastest station will be connected automatically next time.',
+      'Refreshing all stations'.tr,
       okAction: _refreshStations,
     );
     // // TEST:
