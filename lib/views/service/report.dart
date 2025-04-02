@@ -16,7 +16,8 @@ class CustomerService {
     if (info != null) {
       return info;
     }
-    var admin = await Config().webmaster;
+    Config config = await Config().load();
+    var admin = config.webmaster;
     if (admin == null) {
       return null;
     }

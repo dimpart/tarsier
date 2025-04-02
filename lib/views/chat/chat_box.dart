@@ -276,7 +276,7 @@ class _HistoryAdapter with SectionAdapterMixin {
                 color: CupertinoColors.link,
               ),
             ),
-            onPressed: () => Config().termsURL.then((url) => Browser.open(context, url)),
+            onPressed: () => Config().load().then((config) => Browser.open(context, config.termsURL)),
           ),
         ),
       ],

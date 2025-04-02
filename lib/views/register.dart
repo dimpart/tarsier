@@ -414,7 +414,7 @@ class _RegisterState extends State<RegisterPage> {
         child: Text('Terms'.tr,
           style: const TextStyle(color: buttonColor),
         ),
-        onPressed: () => Config().termsURL.then((url) => Browser.open(context, url)),
+        onPressed: () => Config().load().then((config) => Browser.open(context, config.termsURL)),
       ),
     ],
   );
@@ -423,7 +423,7 @@ class _RegisterState extends State<RegisterPage> {
     child: Text('Privacy Policy'.tr,
       style: const TextStyle(color: buttonColor),
     ),
-    onPressed: () => Config().privacyURL.then((url) => Browser.open(context, url)),
+    onPressed: () => Config().load().then((config) => Browser.open(context, config.privacyURL)),
   );
 
 }

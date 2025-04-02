@@ -13,7 +13,7 @@
   ],
 
   "translators": [
-
+    "Gemini@2iqbZy3zcETL19V3Sonaeqxfk4S49zpakG"
   ],
 
   "assistants": [
@@ -32,7 +32,7 @@
   ],
 
   "stations": [
-    {"host": "129.226.12.4", "port": 9394, "desc": "HK"}
+    {"host": "134.185.88.109", "port":9394, "desc": "US"}
   ],
 
   "upload": {
@@ -51,20 +51,25 @@
   },
 
   "newest": {
-    "android": {
+    "android-google": {
       "version": "1.0.0",
       "build": 10001,
-      "url": "http://tarsier.dim.chat/downloads#android"
+      "url": "https://play.google.com/store/apps/details?id=chat.dim.tarsier"
     },
-    "windows": {
+    "ios-apple": {
       "version": "1.0.0",
       "build": 10001,
-      "url": "http://tarsier.dim.chat/downloads#windows"
+      "url": "https://apps.apple.com//app/tarsier-secure-chat/id6449430440?platform=iphone"
     },
     "macos": {
       "version": "1.0.0",
       "build": 10001,
       "url": "http://tarsier.dim.chat/downloads#macos"
+    },
+    "windows": {
+      "version": "1.0.0",
+      "build": 10001,
+      "url": "http://tarsier.dim.chat/downloads#windows"
     }
   },
 

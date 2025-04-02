@@ -238,7 +238,7 @@ class _SettingsPageState extends State<SettingsPage> implements lnc.Observer {
             backgroundColorActivated: backgroundColorActivated,
             primaryTextColor: primaryTextColor,
             secondaryTextColor: secondaryTextColor,
-            onTap: () => Config().sourceURL.then((url) => Browser.open(context, url)),
+            onTap: () => Config().load().then((config) => Browser.open(context, config.sourceURL)),
           ),
           /// Privacy Policy
           _listTile(
@@ -248,7 +248,7 @@ class _SettingsPageState extends State<SettingsPage> implements lnc.Observer {
             backgroundColorActivated: backgroundColorActivated,
             primaryTextColor: primaryTextColor,
             secondaryTextColor: secondaryTextColor,
-            onTap: () => Config().privacyURL.then((url) => Browser.open(context, url)),
+            onTap: () => Config().load().then((config) => Browser.open(context, config.privacyURL)),
           ),
           /// About Tarsier
           _about(context, backgroundColor: backgroundColor, backgroundColorActivated: backgroundColorActivated,
@@ -266,20 +266,20 @@ class _SettingsPageState extends State<SettingsPage> implements lnc.Observer {
     Newest? newest = Config().newest;
     bool canUpgrade = newest != null && newest.canUpgrade(client);
     return _listTile(
-        leading: AppIcons.setAboutIcon, title: 'About'.tr,
-        additional: 'Tarsier (v${client.versionName})',
-        trailing: canUpgrade ? Text('NEW'.tr, style: const TextStyle(
-          color: CupertinoColors.white,
-          backgroundColor: CupertinoColors.systemRed,
-          decoration: TextDecoration.none,
-          fontSize: 12,
-          fontWeight: FontWeight.bold,
-        ),) : Container(),
-        backgroundColor: backgroundColor,
-        backgroundColorActivated: backgroundColorActivated,
-        primaryTextColor: primaryTextColor,
-        secondaryTextColor: secondaryTextColor,
-        onTap: () => Config().aboutURL.then((url) => _showAbout(context, url, client)),
+      leading: AppIcons.setAboutIcon, title: 'About'.tr,
+      additional: 'Tarsier (v${client.versionName})',
+      trailing: canUpgrade ? Text('NEW'.tr, style: const TextStyle(
+        color: CupertinoColors.white,
+        backgroundColor: CupertinoColors.systemRed,
+        decoration: TextDecoration.none,
+        fontSize: 12,
+        fontWeight: FontWeight.bold,
+      ),) : Container(),
+      backgroundColor: backgroundColor,
+      backgroundColorActivated: backgroundColorActivated,
+      primaryTextColor: primaryTextColor,
+      secondaryTextColor: secondaryTextColor,
+      onTap: () => Config().load().then((config) => _showAbout(context, config.aboutURL, client)),
     );
   }
 
