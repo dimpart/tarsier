@@ -94,12 +94,14 @@ class _TranslateState extends State<TranslatableView> implements lnc.Observer {
     String? local = record?.text;
     if (record == null || local == null || local.isEmpty) {
       // translate record not found
+      String? warning;
       Widget btn;
       if (_isQuerying(widget.content)) {
+        warning = tr.warning;
         btn = const CupertinoActivityIndicator(radius: 6,);
       } else {
         String? format = widget.content.getString('format', null);
-        btn = _translateButton(text, tag, format: format);
+        btn = _translateButton(context, text, tag, format: format);
       }
       btn = Container(
         padding: const EdgeInsets.fromLTRB(12, 4, 12, 4),
@@ -110,6 +112,11 @@ class _TranslateState extends State<TranslatableView> implements lnc.Observer {
         children: [
           widget.sourceView,
           btn,
+          if (warning != null && warning.isNotEmpty)
+            Container(
+              padding: const EdgeInsets.fromLTRB(12, 0, 12, 4),
+              child: Text(warning, style: Styles.translatorTextStyle,),
+            ),
         ],
       );
     }
@@ -153,7 +160,7 @@ class _TranslateState extends State<TranslatableView> implements lnc.Observer {
     );
   }
 
-  Widget _translateButton(String text, int tag, {required String? format}) => TextButton(
+  Widget _translateButton(BuildContext ctx, String text, int tag, {required String? format}) => TextButton(
     style: TextButton.styleFrom(
       foregroundColor: CupertinoColors.systemBlue,
       textStyle: const TextStyle(fontSize: 10, color: CupertinoColors.systemBlue),
@@ -161,7 +168,7 @@ class _TranslateState extends State<TranslatableView> implements lnc.Observer {
       padding: EdgeInsets.zero,
       tapTargetSize: MaterialTapTargetSize.shrinkWrap,
     ),
-    onPressed: () => _queryTranslator(text, tag, format: format),
+    onPressed: () => _queryTranslator(ctx, text, tag, format: format),
     child: Text('Translate'.tr),
   );
 
@@ -188,12 +195,24 @@ class _TranslateState extends State<TranslatableView> implements lnc.Observer {
     }
   }
 
-  void _queryTranslator(String text, int tag, {required String? format}) {
-    // do querying
+  void _queryTranslator(BuildContext ctx, String text, int tag, {required String? format}) {
+    var warning = Translator().warning;
+    if (warning == null || warning.isEmpty) {
+      _doQuery(text, tag, format: format);
+    } else if (_transConfirmed) {
+      _doQuery(text, tag, format: format);
+    } else {
+      Alert.confirm(ctx, 'Confirm', warning,
+        okAction: () => _doQuery(text, tag, format: format),
+      );
+    }
+  }
+  void _doQuery(String text, int tag, {required String? format}) {
     Translator().request(text, tag, format: format);
     setState(() {
       // set querying time
       _transQueries[tag] = DateTime.now();
+      _transConfirmed = true;
     });
   }
 
@@ -210,3 +229,4 @@ class _TranslateState extends State<TranslatableView> implements lnc.Observer {
 }
 
 Map<int, DateTime> _transQueries = {};
+bool _transConfirmed = false;
