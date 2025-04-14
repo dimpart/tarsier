@@ -112,20 +112,24 @@ class _InvitationsState extends State<InvitationsPage> implements lnc.Observer {
           Widget body = Text('Sure to reject all invitations?'.tr);
           Alert.confirm(context, 'Confirm Delete', body,
             okAction: () => _refreshMembers(newMembers, info).then((ok) {
-              if (ok) {
+              if (ok && context.mounted) {
                 closePage(context);
               }
             }),
           );
         } else {
-          previewMembers(newMembers).then((body) => Alert.confirm(context, 'Confirm Add',
-            body,
-            okAction: () => _refreshMembers(newMembers, info).then((ok) {
-              if (ok) {
-                closePage(context);
-              }
-            }),
-          ));
+          previewMembers(newMembers).then((body) {
+            if (context.mounted) {
+              Alert.confirm(context, 'Confirm Add',
+                body,
+                okAction: () => _refreshMembers(newMembers, info).then((ok) {
+                  if (ok && context.mounted) {
+                    closePage(context);
+                  }
+                }),
+              );
+            }
+          });
         }
       },
     );

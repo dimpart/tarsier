@@ -26,7 +26,7 @@ void main() async {
   // Log.level = Log.kRelease;
   if (DevicePlatform.isIOS) {
     Log.colorful = false;
-    Log.showTime = true;
+    Log.showTime = false;
     Log.showCaller = true;
   } else {
     Log.colorful = true;
@@ -178,64 +178,52 @@ class _SystemChecker with Logging {
 
   bool _checked = false;
 
-  void check(BuildContext context) {
+  Future<bool> check(BuildContext context) async {
     if (_checked) {
       logWarning('system checked');
-      return;
+      return false;
     } else {
       _checked = true;
     }
     // wait a while
-    Future.delayed(const Duration(seconds: 5)).then((_) {
-      logWarning('system checking');
-      // test speeds for all stations
-      _checkStationSpeeds();
-      // checking for upgrade
-      _checkAppUpdate(context);
-      // checking for avatar
-      _checkAvatar(context);
-    });
-  }
-
-  void _checkStationSpeeds() async {
+    await Future.delayed(const Duration(seconds: 5));
+    logWarning('system checking');
+    //
+    //  1. test speeds for all stations
+    //
     logWarning('check station speeds');
     StationSpeeder speeder = StationSpeeder();
     await speeder.reload();
     await speeder.testAll();
-  }
-
-  void _checkAppUpdate(BuildContext context) {
-    logWarning('check app update');
-    NewestManager().checkUpdate(context);
-  }
-
-  void _checkAvatar(BuildContext context) {
-    _getAvatar().then((pnf) {
-      if (pnf == null) {
-        Alert.confirm(context, 'Pick Image',
-          'Please choose your avatar'.tr,
-          okAction: () => AccountPage.open(context),
-        );
-      } else {
-        Log.info('current user avatar: $pnf');
-      }
-    });
+    //
+    //  2. checking for upgrade
+    //
+    if (context.mounted) {
+      logWarning('check app update');
+      NewestManager().checkUpdate(context);
+    }
+    //
+    //  3. checking for avatar
+    //
+    var pnf = await _getAvatar();
+    if (pnf != null) {
+      Log.info('current user avatar: $pnf');
+    } else if (context.mounted) {
+      Alert.confirm(context, 'Pick Image',
+        'Please choose your avatar'.tr,
+        okAction: () => AccountPage.open(context),
+      );
+    }
+    return true;
   }
 
 }
 
 Future<PortableNetworkFile?> _getAvatar() async {
   GlobalVariable shared = GlobalVariable();
-  SharedFacebook facebook = shared.facebook;
-  User? user = await facebook.currentUser;
-  if (user == null) {
-    Log.error('current user not found');
-    return null;
-  }
-  Visa? visa = await user.visa;
-  if (visa == null) {
-    Log.error('visa not found: $user');
-    return null;
-  }
-  return visa.avatar;
+  User? user = await shared.facebook.currentUser;
+  assert(user != null, 'current user not found');
+  Visa? visa = await user?.visa;
+  assert(visa != null, 'visa not found: $user');
+  return visa?.avatar;
 }

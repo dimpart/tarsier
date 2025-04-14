@@ -20,7 +20,9 @@ Widget contactCard(BuildContext context, ContactInfo info, {
 Widget plusButton(BuildContext context) => IconButton(
   iconSize: 16,
   onPressed: () => _getContacts().then((members) {
-    if (members == null) {
+    if (!context.mounted) {
+      Log.warning('context unmounted: $context');
+    } else if (members == null) {
       Alert.show(context, 'Error', 'Failed to add members'.tr);
     } else {
       Log.info('candidates: $members');
@@ -34,7 +36,9 @@ Widget plusButton(BuildContext context) => IconButton(
 
 Widget plusCard(BuildContext context, Conversation fromWhere, {GestureTapCallback? onTap, MemberPickerCallback? onPicked}) => GestureDetector(
   onTap: onTap ?? () => _getContacts(fromWhere).then((members) {
-    if (members == null) {
+    if (!context.mounted) {
+      Log.warning('context unmounted: $context');
+    } else if (members == null) {
       Alert.show(context, 'Error', 'Failed to add members'.tr);
     } else if (fromWhere.isUser) {
       Log.info('candidates: $members');
@@ -69,7 +73,9 @@ Widget plusCard(BuildContext context, Conversation fromWhere, {GestureTapCallbac
 
 Widget minusCard(BuildContext context, GroupInfo fromWhere, {GestureTapCallback? onTap, required MemberPickerCallback onPicked}) => GestureDetector(
   onTap: onTap ?? () => _getMembers(fromWhere).then((members) {
-    if (members == null) {
+    if (!context.mounted) {
+      Log.warning('context unmounted: $context');
+    } else if (members == null) {
       Alert.show(context, 'Error', 'Group not ready'.tr);
     } else {
       Log.info('candidates: $members');
@@ -170,12 +176,18 @@ void _newChat(BuildContext context, List<ID> members) {
     SharedGroupManager man = SharedGroupManager();
     man.createGroup(members).then((group) {
       if (group == null) {
-        Alert.show(context, 'Error', 'Failed to create group'.tr);
+        if (context.mounted) {
+          Alert.show(context, 'Error', 'Failed to create group'.tr);
+        }
         return;
       }
       Log.warning('new group: $group');
       Conversation? chat = Conversation.fromID(group);
-      chat?.reloadData().then((nothing) => ChatBox.open(context, chat, null));
+      chat?.reloadData().then((nothing) {
+        if (context.mounted) {
+          ChatBox.open(context, chat, null);
+        }
+      });
     });
   }
 }

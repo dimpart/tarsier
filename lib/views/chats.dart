@@ -275,7 +275,9 @@ class _ChatTableCellState extends State<_ChatTableCell> implements lnc.Observer 
     Amanuensis clerk = Amanuensis();
     Alert.confirm(context, 'Confirm Delete', 'Sure to remove this conversation?'.tr,
       okAction: () => clerk.removeConversation(chat).onError((error, stackTrace) {
-        Alert.show(context, 'Error', 'Failed to remove conversation'.tr);
+        if (context.mounted) {
+          Alert.show(context, 'Error', 'Failed to remove conversation'.tr);
+        }
         return false;
       })
     );

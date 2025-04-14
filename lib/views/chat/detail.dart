@@ -17,12 +17,16 @@ class ChatDetailPage extends StatefulWidget {
     assert(identifier.isUser, 'ID error: $identifier');
     ContactInfo? info = ContactInfo.fromID(identifier);
     info?.reloadData().then((value) {
-      showPage(
-        context: context,
-        builder: (context) => ChatDetailPage(info),
-      );
+      if (context.mounted) {
+        showPage(
+          context: context,
+          builder: (context) => ChatDetailPage(info),
+        );
+      }
     }).onError((error, stackTrace) {
-      Alert.show(context, 'Error', '$error');
+      if (context.mounted) {
+        Alert.show(context, 'Error', '$error');
+      }
     });
   }
 
@@ -253,7 +257,9 @@ void _clearHistory(BuildContext ctx, ContactInfo info) {
 void _doClear(BuildContext ctx, ID chat) {
   Amanuensis clerk = Amanuensis();
   clerk.clearConversation(chat).then((ok) {
-    if (ok) {
+    if (!ctx.mounted) {
+      Log.warning('context unmounted');
+    } else if (ok) {
       closePage(ctx);
     } else {
       Alert.show(ctx, 'Error', 'Failed to clear chat history'.tr);

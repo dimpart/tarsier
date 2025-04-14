@@ -14,7 +14,9 @@ abstract class ShareImage {
     // get local file path, if not exists
     // try to download from file server
     _pathFromContent(content).then((path) {
-      if (path == null) {
+      if (!ctx.mounted) {
+        Log.warning('context unmounted: $ctx');
+      } else if (path == null) {
         Alert.show(ctx, 'Image Not Found',
             'Failed to load image @filename'.trParams({
               'filename': '${content.filename}',
@@ -34,7 +36,9 @@ abstract class ShareImage {
             okAction: () => _sendImage(chat.identifier,
               path: path, filename: filename, thumbnail: thumbnail, traces: traces,
             ).then((ok) {
-              if (ok) {
+              if (!ctx.mounted) {
+                Log.warning('context unmounted: $ctx');
+              } else if (ok) {
                 // Alert.show(ctx, 'Forwarded',
                 //   'Image message forwarded to @chat'.trParams({
                 //     'chat': chat.title,

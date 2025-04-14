@@ -256,7 +256,9 @@ class _ChatTableCellState extends State<_ChatTableCell> implements lnc.Observer 
     Log.warning('removing $chat');
     Amanuensis clerk = Amanuensis();
     clerk.removeConversation(chat).onError((error, stackTrace) {
-      Alert.show(context, 'Error', 'Failed to remove conversation'.tr);
+      if (context.mounted) {
+        Alert.show(context, 'Error', 'Failed to remove conversation'.tr);
+      }
       return false;
     });
   }

@@ -153,10 +153,14 @@ void _addMembers(BuildContext ctx, GroupInfo groupInfo, Set<ID> members) {
     return;
   }
   List<ID> newMembers = members.toList();
-  previewMembers(newMembers).then((body) => Alert.confirm(ctx, 'Confirm Add',
-    body,
-    okAction: () => _doAddMembers(ctx, groupInfo, newMembers),
-  ));
+  previewMembers(newMembers).then((body) {
+    if (ctx.mounted) {
+      Alert.confirm(ctx, 'Confirm Add',
+        body,
+        okAction: () => _doAddMembers(ctx, groupInfo, newMembers),
+      );
+    }
+  });
 }
 void _doAddMembers(BuildContext ctx, GroupInfo groupInfo, List<ID> newMembers) {
   ID group = groupInfo.identifier;
@@ -166,12 +170,14 @@ void _doAddMembers(BuildContext ctx, GroupInfo groupInfo, List<ID> newMembers) {
       Log.error('failed to add new members: $newMembers => $group');
     } else if (groupInfo.isOwner || groupInfo.isAdmin) {
       Log.warning('added new members: $newMembers => $group');
-    } else {
+    } else if (ctx.mounted) {
       Alert.show(ctx, 'Success', 'Invitation sent'.tr);
     }
   }).catchError((error, stackTrace) {
     Log.error('failed to invite members: $groupInfo, $error');
-    Alert.show(ctx, 'Error', '$error');
+    if (ctx.mounted) {
+      Alert.show(ctx, 'Error', '$error');
+    }
   });
 }
 
@@ -180,10 +186,14 @@ void _removeMembers(BuildContext ctx, GroupInfo groupInfo, Set<ID> members) {
     return;
   }
   List<ID> expelMembers = members.toList();
-  previewMembers(expelMembers).then((body) => Alert.confirm(ctx, 'Confirm Delete',
-    body,
-    okAction: () => _doRemoveMembers(ctx, groupInfo, expelMembers),
-  ));
+  previewMembers(expelMembers).then((body) {
+    if (ctx.mounted) {
+      Alert.confirm(ctx, 'Confirm Delete',
+        body,
+        okAction: () => _doRemoveMembers(ctx, groupInfo, expelMembers),
+      );
+    }
+  });
 }
 void _doRemoveMembers(BuildContext ctx, GroupInfo groupInfo, List<ID> expelMembers) {
   ID group = groupInfo.identifier;
@@ -196,6 +206,8 @@ void _doRemoveMembers(BuildContext ctx, GroupInfo groupInfo, List<ID> expelMembe
     }
   }).catchError((error, stackTrace) {
     Log.error('failed to remove members: $groupInfo, $error');
-    Alert.show(ctx, 'Error', '$error');
+    if (ctx.mounted) {
+      Alert.show(ctx, 'Error', '$error');
+    }
   });
 }

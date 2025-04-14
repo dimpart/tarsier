@@ -30,12 +30,16 @@ class ProfilePage extends StatefulWidget {
   static void open(BuildContext context, ID identifier, {ID? fromChat}) {
     ContactInfo? info = ContactInfo.fromID(identifier);
     info?.reloadData().then((value) {
-      showPage(
-        context: context,
-        builder: (context) => ProfilePage(info, fromChat),
-      );
+      if (context.mounted) {
+        showPage(
+          context: context,
+          builder: (context) => ProfilePage(info, fromChat),
+        );
+      }
     }).onError((error, stackTrace) {
-      Alert.show(context, 'Error', '$error');
+      if (context.mounted) {
+        Alert.show(context, 'Error', '$error');
+      }
     });
   }
 
@@ -343,7 +347,7 @@ class _ProfileState extends State<ProfilePage> with Logging implements lnc.Obser
       shared.facebook.getAvatar(widget.info.identifier).then((pnf) {
         if (pnf == null) {
           logError('avatar image not found: ${widget.info.identifier}');
-        } else {
+        } else if (context.mounted) {
           logInfo('preview avatar: $pnf');
           previewAvatar(context, widget.info.identifier, pnf);
         }
@@ -459,7 +463,9 @@ void _shareContact(BuildContext ctx, ContactInfo info) {
       okAction: () => _sendContact(chat.identifier,
         identifier: info.identifier, name: info.title, avatar: info.avatar,
       ).then((ok) {
-        if (ok) {
+        if (!ctx.mounted) {
+          Log.warning('context unmounted: $ctx');
+        } else if (ok) {
           Alert.show(ctx, 'Shared',
             'Contact @name shared to @chat'.trParams({
               'name': info.title,

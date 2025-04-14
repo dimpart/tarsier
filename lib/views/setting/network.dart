@@ -341,7 +341,9 @@ class _StationCellState extends State<_StationCell> implements lnc.Observer {
       okAction: () {
         GlobalVariable shared = GlobalVariable();
         shared.database.removeStation(host: info.host, port: info.port, provider: info.provider).then((ok) {
-          if (ok) {
+          if (!context.mounted) {
+            Log.warning('context unmounted: $context');
+          } else if (ok) {
             Alert.show(context, 'Success', 'Station (@remote) is removed'.trParams({
               'remote': remote,
             }));

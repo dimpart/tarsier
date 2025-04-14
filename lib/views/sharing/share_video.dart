@@ -40,7 +40,9 @@ abstract class ShareVideo {
       okAction: () => _sendVideo(chat.identifier,
         url: url, filename: filename, title: title, snapshot: snapshot,
       ).then((ok) {
-        if (ok) {
+        if (!ctx.mounted) {
+          Log.warning('context unmounted: $ctx');
+        } else if (ok) {
           // Alert.show(ctx, 'Forwarded',
           //   'Video message forwarded to @chat'.trParams({
           //     'chat': chat.title,

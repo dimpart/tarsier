@@ -155,10 +155,14 @@ void _addAdmin(BuildContext context, List<ID> newAdmins, GroupInfo groupInfo) {
     return;
   }
   // confirm to save
-  previewMembers(newAdmins).then((body) => Alert.confirm(context, 'Confirm Add',
-    body,
-    okAction: () => db.saveAdministrators(allAdmins, group: groupInfo.identifier),
-  ));
+  previewMembers(newAdmins).then((body) {
+    if (context.mounted) {
+      Alert.confirm(context, 'Confirm Add',
+        body,
+        okAction: () => db.saveAdministrators(allAdmins, group: groupInfo.identifier),
+      );
+    }
+  });
 }
 void _removeAdmin(BuildContext context, ContactInfo adminInfo, GroupInfo groupInfo) {
   List<ID> oldAdmins = groupInfo.admins;

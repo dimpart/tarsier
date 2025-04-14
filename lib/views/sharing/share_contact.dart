@@ -20,7 +20,9 @@ abstract class ShareNameCard {
           identifier: content.identifier, name: content.name, avatar: content.avatar?.url.toString(),
           traces: traces,
         ).then((ok) {
-          if (ok) {
+          if (!ctx.mounted) {
+            Log.warning('context unmounted: $ctx');
+          } else if (ok) {
             // Alert.show(ctx, 'Forwarded',
             //   'Name Card @name forwarded to @chat'.trParams({
             //     'name': content.name,

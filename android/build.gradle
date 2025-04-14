@@ -1,19 +1,32 @@
 buildscript {
-    ext.kotlin_version = '1.8.0'
+    ext.kotlin_version = '1.9.23'
     repositories {
+
+        maven { url "https://maven.aliyun.com/repository/public/" }
+        maven { url "https://maven.aliyun.com/repository/google/" }
+        maven { url "https://maven.aliyun.com/repository/jcenter/" }
+
         google()
         mavenCentral()
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:7.4.2'
+        classpath 'com.android.tools.build:gradle:8.9.1'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-        classpath("com.google.gms:google-services:4.4.2")
     }
 }
 
 allprojects {
     repositories {
+
+        maven { url "https://maven.aliyun.com/repository/public/" }
+        maven { url "https://maven.aliyun.com/repository/google/" }
+        maven { url "https://maven.aliyun.com/repository/jcenter/" }
+
+        maven { url "https://repo.spring.io/plugins-release/" }
+        maven { url "https://repository.mulesoft.org/nexus/content/repositories/public/" }
+        maven { url "https://dl.bintray.com/bilibili/maven/" }
+
         google()
         mavenCentral()
     }

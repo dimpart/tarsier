@@ -26,7 +26,9 @@ abstract class ShareWebPage {
         okAction: () => _sendWebPage(chat.identifier,
           url, title: title, desc: desc, icon: icon,
         ).then((ok) {
-          if (ok) {
+          if (!ctx.mounted) {
+            Log.warning('context unmounted: $ctx');
+          } else if (ok) {
             // Alert.show(ctx, 'Forwarded',
             //   'Web Page @title forwarded to @chat'.trParams({
             //     'title': title,

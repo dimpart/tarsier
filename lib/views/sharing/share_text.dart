@@ -21,7 +21,9 @@ abstract class ShareTextMessage {
           content: content,
           traces: traces,
         ).then((ok) {
-          if (ok) {
+          if (!ctx.mounted) {
+            Log.warning('context unmounted: $ctx');
+          } else if (ok) {
             // Alert.show(ctx, 'Forwarded',
             //   'Text message forwarded to @chat'.trParams({
             //     'chat': chat.title,

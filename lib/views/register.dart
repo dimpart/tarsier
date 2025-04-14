@@ -414,7 +414,11 @@ class _RegisterState extends State<RegisterPage> {
         child: Text('Terms'.tr,
           style: const TextStyle(color: buttonColor),
         ),
-        onPressed: () => Config().load().then((config) => Browser.open(context, config.termsURL)),
+        onPressed: () => Config().load().then((config) {
+          if (context.mounted) {
+            Browser.open(context, config.termsURL);
+          }
+        }),
       ),
     ],
   );
@@ -423,7 +427,11 @@ class _RegisterState extends State<RegisterPage> {
     child: Text('Privacy Policy'.tr,
       style: const TextStyle(color: buttonColor),
     ),
-    onPressed: () => Config().load().then((config) => Browser.open(context, config.privacyURL)),
+    onPressed: () => Config().load().then((config) {
+      if (context.mounted) {
+        Browser.open(context, config.privacyURL);
+      }
+    }),
   );
 
 }
@@ -436,16 +444,18 @@ void _submit(BuildContext context, _RegisterInfo info) =>
         Alert.show(context, 'Terms', 'Please agree the privacy policy'.tr);
       } else {
         (info.importing ? _importAccount(context, info) : _createAccount(context, info))
-            .then((identifier) => {
-              if (identifier != null) {
+            .then((identifier) {
+              if (!context.mounted) {
+                Log.warning('context unmounted: $context');
+              } else if (identifier != null) {
                 _addUser(context, identifier).onError((error, stackTrace) {
                   Log.error('add user error: $error');
                   return false;
-                })
+                });
               } else if (info.importing) {
-                Alert.show(context, 'Error', 'Failed to import account'.tr)
+                Alert.show(context, 'Error', 'Failed to import account'.tr);
               } else {
-                Alert.show(context, 'Fatal Error', 'Failed to generate ID'.tr)
+                Alert.show(context, 'Fatal Error', 'Failed to generate ID'.tr);
               }
             });
       }
@@ -501,7 +511,9 @@ Future<Pair<PrivateKey?, String?>?> _saveMnemonic(_RegisterInfo info) async {
 Future<bool> _addUser(BuildContext context, ID identifier) async {
   GlobalVariable shared = GlobalVariable();
   return shared.database.addUser(identifier).then((value) {
-    changeToMainPage(context);
+    if (context.mounted) {
+      changeToMainPage(context);
+    }
     return true;
   });
 }
@@ -513,7 +525,7 @@ void _checkCurrentUser(BuildContext context, void Function() onNotFound) {
     shared.facebook.currentUser.then((user) {
       if (user == null) {
         onNotFound();
-      } else {
+      } else if (context.mounted) {
         changeToMainPage(context);
       }
     }).onError((error, stackTrace) {

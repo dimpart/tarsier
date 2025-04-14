@@ -16,7 +16,6 @@ import io.flutter.embedding.engine.FlutterEngine;
 
 import chat.dim.channels.ChannelManager;
 import chat.dim.filesys.LocalCache;
-import chat.dim.fcm.PushNotificationService;
 
 public class MainActivity extends FlutterActivity {
 
@@ -37,10 +36,6 @@ public class MainActivity extends FlutterActivity {
         // init audio recorder/player
         manager.audioChannel.initAudioPlayer(MainActivity.this);
         manager.audioChannel.initAudioRecorder(MainActivity.this);
-
-        // FCM (C2DM)
-        PushNotificationService.prepareNotification(this);
-
     }
 
     private static void prepareDirectories(Context context) {

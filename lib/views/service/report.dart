@@ -25,7 +25,10 @@ class CustomerService {
   }
 
   static void report(BuildContext context, String text) => getWebmaster().then((admin) {
-    if (admin == null) {
+    if (!context.mounted) {
+      Log.warning('context unmounted: $context');
+      return;
+    } else if (admin == null) {
       Log.error('failed to get webmaster');
       return;
     }

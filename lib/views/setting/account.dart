@@ -14,7 +14,9 @@ class AccountPage extends StatefulWidget {
   static void open(BuildContext context) {
     GlobalVariable shared = GlobalVariable();
     shared.facebook.currentUser.then((user) {
-      if (user == null) {
+      if (!context.mounted) {
+        Log.warning('context unmounted: $context');
+      } else if (user == null) {
          Alert.show(context, 'Error', 'Current user not found'.tr);
       } else {
         showPage(
@@ -213,7 +215,9 @@ class _AccountState extends State<AccountPage> {
   Widget _updateButton(BuildContext context, {required Color textColor, required Color backgroundColor}) =>
       _button('Update & Broadcast'.tr, AppIcons.updateDocIcon, textColor: textColor, backgroundColor: backgroundColor,
         onPressed: () => _saveInfo(context).then((ok) {
-          if (ok) {
+          if (!context.mounted) {
+            Log.warning('context unmounted: $context');
+          } else if (ok) {
             Alert.show(context, 'Success', 'Profile is updated'.tr);
           } else {
             Alert.show(context, 'Error', 'Failed to update profile'.tr);
@@ -267,7 +271,9 @@ class _AccountState extends State<AccountPage> {
         _avatarUrl = url;
       }
     }).onError((error, stackTrace) {
-      Alert.show(context, 'Upload Failed', '$error');
+      if (context.mounted) {
+        Alert.show(context, 'Upload Failed', '$error');
+      }
     });
   }));
 
@@ -278,7 +284,9 @@ class _AccountState extends State<AccountPage> {
     // 1. get sign key for current user
     SignKey? sKey = await shared.facebook.getPrivateKeyForVisaSignature(user.identifier)
         .onError((error, stackTrace) {
-          Alert.show(context, 'Error', 'Failed to get private key'.tr);
+          if (context.mounted) {
+            Alert.show(context, 'Error', 'Failed to get private key'.tr);
+          }
           return null;
         });
     if (sKey == null) {
@@ -288,7 +296,9 @@ class _AccountState extends State<AccountPage> {
     // 2. get visa document for current user
     Visa? visa = await user.visa
         .onError((error, stackTrace) {
-          Alert.show(context, 'Error', 'Failed to get visa'.tr);
+          if (context.mounted) {
+            Alert.show(context, 'Error', 'Failed to get visa'.tr);
+          }
           return null;
         });
     if (visa == null) {
@@ -319,7 +329,9 @@ class _AccountState extends State<AccountPage> {
     // 5. save it
     bool ok = await shared.facebook.saveDocument(visa)
         .onError((error, stackTrace) {
-          Alert.show(context, 'Error', 'Failed to save visa'.tr);
+          if (context.mounted) {
+            Alert.show(context, 'Error', 'Failed to save visa'.tr);
+          }
           return false;
         });
     assert(ok, 'failed to save visa: $visa');

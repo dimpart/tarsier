@@ -238,7 +238,11 @@ class _SettingsPageState extends State<SettingsPage> implements lnc.Observer {
             backgroundColorActivated: backgroundColorActivated,
             primaryTextColor: primaryTextColor,
             secondaryTextColor: secondaryTextColor,
-            onTap: () => Config().load().then((config) => Browser.open(context, config.sourceURL)),
+            onTap: () => Config().load().then((config) {
+              if (context.mounted) {
+                Browser.open(context, config.sourceURL);
+              }
+            }),
           ),
           /// Privacy Policy
           _listTile(
@@ -248,7 +252,11 @@ class _SettingsPageState extends State<SettingsPage> implements lnc.Observer {
             backgroundColorActivated: backgroundColorActivated,
             primaryTextColor: primaryTextColor,
             secondaryTextColor: secondaryTextColor,
-            onTap: () => Config().load().then((config) => Browser.open(context, config.privacyURL)),
+            onTap: () => Config().load().then((config) {
+              if (context.mounted) {
+                Browser.open(context, config.privacyURL);
+              }
+            }),
           ),
           /// About Tarsier
           _about(context, backgroundColor: backgroundColor, backgroundColorActivated: backgroundColorActivated,
@@ -279,7 +287,11 @@ class _SettingsPageState extends State<SettingsPage> implements lnc.Observer {
       backgroundColorActivated: backgroundColorActivated,
       primaryTextColor: primaryTextColor,
       secondaryTextColor: secondaryTextColor,
-      onTap: () => Config().load().then((config) => _showAbout(context, config.aboutURL, client)),
+      onTap: () => Config().load().then((config) {
+        if (context.mounted) {
+          _showAbout(context, config.aboutURL, client);
+        }
+      }),
     );
   }
 

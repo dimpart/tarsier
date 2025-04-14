@@ -20,12 +20,16 @@ class GroupChatDetailPage extends StatefulWidget {
     assert(identifier.isGroup, 'ID error: $identifier');
     GroupInfo? info = GroupInfo.fromID(identifier);
     info?.reloadData().then((value) {
-      showPage(
-        context: context,
-        builder: (context) => GroupChatDetailPage(info),
-      );
+      if (context.mounted) {
+        showPage(
+          context: context,
+          builder: (context) => GroupChatDetailPage(info),
+        );
+      }
     }).onError((error, stackTrace) {
-      Alert.show(context, 'Error', '$error');
+      if (context.mounted) {
+        Alert.show(context, 'Error', '$error');
+      }
     });
   }
 
@@ -249,7 +253,7 @@ class _ChatDetailState extends State<GroupChatDetailPage> implements lnc.Observe
         ],
       ),
 
-      // if (widget.info.identifier.type != EntityType.kStation)
+      // if (widget.info.identifier.type != EntityType.STATION)
         CupertinoListSection(
           backgroundColor: dividerColor,
           topMargin: 0,
@@ -415,7 +419,9 @@ void _clearHistory(BuildContext ctx, GroupInfo info) {
 void _doClear(BuildContext ctx, ID chat) {
   Amanuensis clerk = Amanuensis();
   clerk.clearConversation(chat).then((ok) {
-    if (ok) {
+    if (!ctx.mounted) {
+      Log.warning('context unmounted: $ctx');
+    } else if (ok) {
       closePage(ctx);
     } else {
       Alert.show(ctx, 'Error', 'Failed to clear chat history'.tr);
