@@ -14,6 +14,7 @@ import io.flutter.Log;
 import io.flutter.embedding.android.FlutterActivity;
 import io.flutter.embedding.engine.FlutterEngine;
 
+import chat.dim.c2dm.PushCenter;
 import chat.dim.channels.ChannelManager;
 import chat.dim.filesys.LocalCache;
 
@@ -71,6 +72,15 @@ public class MainActivity extends FlutterActivity {
             Log.w("INIT", "Application in RELEASE mode");
         }
         super.onCreate(savedInstanceState);
+        // report device token
+        PushCenter.register(MainActivity.this);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // clear notifications
+        PushCenter.clearNotifications(MainActivity.this);
     }
 
     public static boolean isApkInDebug(Context context) {

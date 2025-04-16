@@ -2,6 +2,9 @@ plugins {
     id("com.android.application")
     id("kotlin-android")
     id "dev.flutter.flutter-gradle-plugin"
+
+    // Add the dependency for the Google services Gradle plugin
+    id 'com.google.gms.google-services'
 }
 
 def localProperties = new Properties()
@@ -76,4 +79,6 @@ flutter {
 
 dependencies {
     implementation 'com.android.support:multidex:1.0.3'
+
+    implementation 'com.google.firebase:firebase-messaging:24.1.1'
 }
