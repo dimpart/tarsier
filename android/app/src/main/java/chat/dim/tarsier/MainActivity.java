@@ -79,8 +79,15 @@ public class MainActivity extends FlutterActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        // clear notifications
-        PushCenter.clearNotifications(MainActivity.this);
+        // clear badge & notifications
+        PushCenter.cleanup(MainActivity.this);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        // clear badge & notifications
+        PushCenter.cleanup(MainActivity.this);
     }
 
     public static boolean isApkInDebug(Context context) {

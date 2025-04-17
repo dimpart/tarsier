@@ -2,6 +2,7 @@ package chat.dim.c2dm;
 
 import android.app.NotificationManager;
 import android.content.Context;
+import android.os.Build;
 
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.messaging.FirebaseMessaging;
@@ -11,12 +12,13 @@ import java.util.Map;
 
 import chat.dim.channels.ChannelManager;
 import chat.dim.protocol.ReportCommand;
+import chat.dim.utils.Log;
 
 public enum PushCenter {
 
     INSTANCE;
 
-    public static PushCenter getInstance() {
+    static PushCenter getInstance() {
         return INSTANCE;
     }
 
@@ -26,30 +28,35 @@ public enum PushCenter {
     boolean done = false;
 
     public static void register(Context context) {
-        PushCenter center = getInstance();
-        if (center.done) {
-            logError("no need to register again");
-            return;
-        } else {
-            center.done = true;
-        }
         try {
+            PushCenter center = getInstance();
+            if (center.done) {
+                Log.warning("no need to register again");
+                return;
+            } else {
+                center.done = true;
+            }
             // 1.
-            logInfo("initializing firebase app");
+            Log.info("initializing firebase app");
             center.initialize(context);
             // 2.
-            logInfo("reporting device token");
+            Log.info("reporting device token");
             center.reportDeviceToken(context);
         } catch (Exception e) {
-            logError("failed to prepare: " + e);
+            Log.error("failed to prepare: " + e);
         }
     }
 
-    static void logInfo(String message) {
-        System.out.println("[Firebase]       | " + message);
-    }
-    static void logError(String message) {
-        System.out.println("[Firebase] ERROR | " + message);
+    public static void cleanup(Context context) {
+        try {
+            // clear notifications
+            PushCenter center = getInstance();
+            center.clearNotifications(context);
+            // clear badge count
+            AppBadge.removeCount(context);
+        } catch (Exception e) {
+            Log.error("failed to clear notifications: " + e);
+        }
     }
 
     private void initialize(Context context) {
@@ -57,7 +64,7 @@ public enum PushCenter {
         if (apps.isEmpty()) {
             FirebaseApp.initializeApp(context);
         } else {
-            logError("firebase app initialized: " + apps.size());
+            Log.error("firebase app initialized: " + apps.size());
         }
     }
 
@@ -68,7 +75,7 @@ public enum PushCenter {
                 // Get new FCM registration token
                 reportToken(task.getResult(), context);
             } else {
-                logError("failed to get token: " + task);
+                Log.error("failed to get token: " + task);
             }
         });
     }
@@ -82,18 +89,28 @@ public enum PushCenter {
         command.put("channel", "firebase");
         command.put("token", token);
         command.put("topic", app);
+        // system
+        command.put("system_version", Build.VERSION.RELEASE);
+        command.put("sdk_version", Build.VERSION.SDK_INT);
+        // device
+        command.put("manufacturer", Build.MANUFACTURER);
+        command.put("brand", Build.BRAND);
+        command.put("model", Build.MODEL);
+        command.put("device", Build.DEVICE);
+        command.put("product", Build.PRODUCT);
+        command.put("hardware", Build.HARDWARE);
 
-        logInfo("report token to: " + receiver + ", " + command);
+        Log.info("report token to: " + receiver + ", " + command);
 
         ChannelManager man = ChannelManager.getInstance();
         man.sessionChannel.sendCommand(command, receiver);
     }
 
-    public static void clearNotifications(Context context) {
+    private void clearNotifications(Context context) {
         NotificationManager notificationManager =
                 (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         if (notificationManager != null) {
-            logInfo("clearing all notifications");
+            Log.info("clearing all notifications");
             notificationManager.cancelAll();
         }
     }
