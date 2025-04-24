@@ -15,9 +15,6 @@
     DIMChannelManager *manager = [DIMChannelManager sharedInstance];
     [manager initChannels:controller.binaryMessenger];
     
-    // load plugins
-    [DIMClientFacebook prepare];
-    
     // query device token
     DIMPushNotificationController *pnc = [DIMPushNotificationController sharedInstance];
     [pnc application:application didFinishLaunchingWithOptions:launchOptions];
