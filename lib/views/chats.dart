@@ -128,18 +128,22 @@ class _ChatListState extends State<ChatHistoryPage> implements lnc.Observer {
   }
 
   @override
-  Widget build(BuildContext context) => Scaffold(
-    backgroundColor: Styles.colors.scaffoldBackgroundColor,
-    appBar: CupertinoNavigationBar(
-      backgroundColor: Styles.colors.appBardBackgroundColor,
-      middle: StatedTitleView.from(context, () => 'Secure Chat'.tr),
-      trailing: plusButton(context),
-    ),
-    body: buildSectionListView(
-      enableScrollbar: true,
-      adapter: _adapter,
-    ),
-  );
+  Widget build(BuildContext context) {
+    PermissionChecker().checkNotificationPermissions(context);
+    var colors = Styles.colors;
+    return Scaffold(
+      backgroundColor: colors.scaffoldBackgroundColor,
+      appBar: CupertinoNavigationBar(
+        backgroundColor: colors.appBardBackgroundColor,
+        middle: StatedTitleView.from(context, () => 'Secure Chat'.tr),
+        trailing: plusButton(context),
+      ),
+      body: buildSectionListView(
+        enableScrollbar: true,
+        adapter: _adapter,
+      ),
+    );
+  }
 }
 
 class _ChatListAdapter with SectionAdapterMixin {
