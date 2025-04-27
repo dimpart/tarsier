@@ -64,6 +64,13 @@ class _SettingsPageState extends State<SettingsPage> implements lnc.Observer {
 
   @override
   Widget build(BuildContext context) {
+    var checker = PermissionChecker();
+    bool? granted = checker.isNotificationPermissionGranted;
+    checker.checkNotificationPermissions(context).then((_) {
+      if (context.mounted && checker.isNotificationPermissionGranted != granted) {
+        setState(() {});
+      }
+    });
     var colors = Styles.colors;
     return Scaffold(
       backgroundColor: colors.scaffoldBackgroundColor,
@@ -91,6 +98,7 @@ class _SettingsPageState extends State<SettingsPage> implements lnc.Observer {
               dividerColor: colors.sectionItemDividerColor,
               primaryTextColor: colors.primaryTextColor,
               secondaryTextColor: colors.tertiaryTextColor,
+              isNotificationPermissionGranted: checker.isNotificationPermissionGranted,
             ),
           ),
         ],
@@ -104,6 +112,7 @@ class _SettingsPageState extends State<SettingsPage> implements lnc.Observer {
     required Color dividerColor,
     required Color primaryTextColor,
     required Color secondaryTextColor,
+    required bool? isNotificationPermissionGranted,
   }) => Column(
     // mainAxisSize: MainAxisSize.min,
     children: [
@@ -207,6 +216,17 @@ class _SettingsPageState extends State<SettingsPage> implements lnc.Observer {
         topMargin: 0,
         additionalDividerMargin: 32,
         children: [
+          /// Notification
+          if (isNotificationPermissionGranted != null)
+          _listTile(
+            leading: AppIcons.notificationIcon, title: 'Notification'.tr,
+            additional: isNotificationPermissionGranted ? 'Enabled'.tr : 'Disabled'.tr,
+            backgroundColor: backgroundColor,
+            backgroundColorActivated: backgroundColorActivated,
+            primaryTextColor: primaryTextColor,
+            secondaryTextColor: secondaryTextColor,
+            onTap: () => PermissionCenter().openSettings(),
+          ),
           /// Relay Stations
           _listTile(
             leading: AppIcons.setNetworkIcon, title: 'Network'.tr,
