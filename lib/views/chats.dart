@@ -129,7 +129,8 @@ class _ChatListState extends State<ChatHistoryPage> implements lnc.Observer {
 
   @override
   Widget build(BuildContext context) {
-    PermissionChecker().checkNotificationPermissions(context);
+    // var checker = PermissionChecker();
+    // checker.checkNotificationPermissions(context);
     var colors = Styles.colors;
     return Scaffold(
       backgroundColor: colors.scaffoldBackgroundColor,
