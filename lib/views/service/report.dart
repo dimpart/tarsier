@@ -11,12 +11,12 @@ class CustomerService {
   static ContactInfo? webmaster;
 
   // protected
-  static Future<ContactInfo?> getWebmaster() async {
+  static ContactInfo? getWebmaster() {
     var info = webmaster;
     if (info != null) {
       return info;
     }
-    Config config = await Config().load();
+    Config config = Config();
     var admin = config.webmaster;
     if (admin == null) {
       return null;
@@ -24,19 +24,17 @@ class CustomerService {
     return webmaster = ContactInfo.fromID(admin);
   }
 
-  static void report(BuildContext context, String text) => getWebmaster().then((admin) {
-    if (!context.mounted) {
-      Log.warning('context unmounted: $context');
-      return;
-    } else if (admin == null) {
-      Log.error('failed to get webmaster');
+  static void report(BuildContext context, String text) {
+    var admin = getWebmaster();
+    if (admin == null) {
+      Alert.show(context, 'Error', 'Customer service not found'.tr);
       return;
     }
     ChatBox.open(context, admin, {
       'title': 'Customer Service'.tr,
       'text': text,
     });
-  });
+  }
 
   static Widget reportButton(BuildContext context, String text) => IconButton(
     icon: const Icon(

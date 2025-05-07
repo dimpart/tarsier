@@ -276,11 +276,7 @@ class _HistoryAdapter with SectionAdapterMixin {
                 color: CupertinoColors.link,
               ),
             ),
-            onPressed: () => Config().load().then((config) {
-              if (context.mounted) {
-                Browser.open(context, config.termsURL);
-              }
-            }),
+            onPressed: () => Browser.open(context, Config().termsURL),
           ),
         ),
       ],
