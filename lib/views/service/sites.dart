@@ -69,11 +69,6 @@ class _WebSiteState extends State<WebSitePage> with Logging implements lnc.Obser
   }
 
   Future<void> _refreshHomepage(Content content, {required bool isRefresh}) async {
-    // check customized info
-    if (!_checkHomepage(content)) {
-      assert(false, 'content error: $content');
-      return;
-    }
     // check tag
     int? tag = content['tag'];
     if (!isRefresh) {
@@ -94,45 +89,14 @@ class _WebSiteState extends State<WebSitePage> with Logging implements lnc.Obser
     }
   }
 
-  bool _checkHomepage(Content content) {
-    if (content['app'] != 'chat.dim.sites' || content['mod'] != 'homepage') {
-      return false;
-    } else if (content['title'] != widget.title) {
-      // not for this view
-      return false;
-    } else {
-      assert(content['act'] == 'respond', 'content error: $content');
-      return true;
-    }
-  }
-
-  /// load from local storage
-  Future<Content?> _loadHomepage() async {
-    GlobalVariable shared = GlobalVariable();
-    var pair = await shared.database.getInstantMessages(widget.chat.identifier,
-        limit: 32);
-    List<InstantMessage> messages = pair.first;
-    logInfo('checking home page from ${messages.length} messages');
-    for (var msg in messages) {
-      var content = msg.content;
-      // check customized info
-      if (_checkHomepage(content)) {
-        // got last one
-        var format = content['format'];
-        if (format is String) {
-          format = format.toLowerCase();
-        }
-        if (format == 'markdown' || format == 'html') {
-          return content;
-        }
-      }
-    }
-    return null;
-  }
+  static const app = 'chat.dim.sites';
+  static const mod = 'homepage';
 
   Future<void> _load() async {
     // check old records
-    var content = await _loadHomepage();
+    var title = widget.title;
+    var shared = GlobalVariable();
+    var content = await shared.database.getAppCustomizedContent('$app:$mod:$title');
     if (content == null) {
       // query for new records
       logInfo('query sites first');

@@ -69,11 +69,6 @@ class _LiveSourceListState extends State<LiveSourceListPage> with Logging implem
   }
 
   Future<void> _refreshLives(Content content, {required bool isRefresh}) async {
-    // check customized info
-    if (!_checkLives(content)) {
-      assert(false, 'content error: $content');
-      return;
-    }
     List lives = content['lives'] ?? [];
     String? desc = content['description'];
     // check tag
@@ -104,42 +99,14 @@ class _LiveSourceListState extends State<LiveSourceListPage> with Logging implem
     }
   }
 
-  bool _checkLives(Content content) {
-    if (content['app'] != 'chat.dim.tvbox' || content['mod'] != 'lives') {
-      return false;
-    } else if (content['title'] != widget.title) {
-      // not for this view
-      return false;
-    } else {
-      assert(content['act'] == 'respond', 'content error: $content');
-      return true;
-    }
-  }
-
-  /// load from local storage
-  Future<Content?> _loadLives() async {
-    GlobalVariable shared = GlobalVariable();
-    var pair = await shared.database.getInstantMessages(widget.chat.identifier,
-        limit: 32);
-    List<InstantMessage> messages = pair.first;
-    logInfo('checking lives from ${messages.length} messages');
-    for (var msg in messages) {
-      var content = msg.content;
-      // check customized info
-      if (_checkLives(content)) {
-        // got last one
-        var lives = content['lives'];
-        if (lives is List && lives.isNotEmpty) {
-          return content;
-        }
-      }
-    }
-    return null;
-  }
+  static const app = 'chat.dim.tvbox';
+  static const mod = 'lives';
 
   Future<void> _load() async {
     // check old records
-    var content = await _loadLives();
+    var title = widget.title;
+    var shared = GlobalVariable();
+    var content = await shared.database.getAppCustomizedContent('$app:$mod:$title');
     if (content == null) {
       // query for new records
       logInfo('query lives first');

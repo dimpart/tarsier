@@ -68,11 +68,6 @@ class _SearchState extends State<UserListPage> with Logging implements lnc.Obser
   }
 
   Future<void> _refreshActiveUsers(Content content, {required bool isRefresh}) async {
-    // check customized info
-    if (!_checkActiveUsers(content)) {
-      assert(false, 'content error: $content');
-      return;
-    }
     List users = content['users'] ?? [];
     String? desc = content['description'];
     // check tag
@@ -107,42 +102,14 @@ class _SearchState extends State<UserListPage> with Logging implements lnc.Obser
     }
   }
 
-  bool _checkActiveUsers(Content content) {
-    if (content['app'] != 'chat.dim.search' || content['mod'] != 'users') {
-      return false;
-    } else if (content['title'] != widget.title) {
-      // not for this view
-      return false;
-    } else {
-      assert(content['act'] == 'respond', 'content error: $content');
-      return true;
-    }
-  }
-
-  /// load from local storage
-  Future<Content?> _loadActiveUsers() async {
-    GlobalVariable shared = GlobalVariable();
-    var pair = await shared.database.getInstantMessages(widget.chat.identifier,
-        limit: 32);
-    List<InstantMessage> messages = pair.first;
-    logInfo('checking active users from ${messages.length} messages');
-    for (var msg in messages) {
-      var content = msg.content;
-      // check customized info
-      if (_checkActiveUsers(content)) {
-        // got last one
-        var users = content['users'];
-        if (users is List && users.isNotEmpty) {
-          return content;
-        }
-      }
-    }
-    return null;
-  }
+  static const app = 'chat.dim.search';
+  static const mod = 'users';
 
   Future<void> _load() async {
     // check old records
-    var content = await _loadActiveUsers();
+    var title = widget.title;
+    var shared = GlobalVariable();
+    var content = await shared.database.getAppCustomizedContent('$app:$mod:$title');
     if (content == null) {
       // query for new records
       logInfo('query active users first');
