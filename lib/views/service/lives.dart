@@ -104,9 +104,9 @@ class _LiveSourceListState extends State<LiveSourceListPage> with Logging implem
 
   Future<void> _load() async {
     // check old records
-    var title = widget.title;
     var shared = GlobalVariable();
-    var content = await shared.database.getAppCustomizedContent('$app:$mod:$title');
+    var handler = ServiceContentHandler(shared.database);
+    var content = await handler.getContent(app, mod, widget.title);
     if (content == null) {
       // query for new records
       logInfo('query lives first');
