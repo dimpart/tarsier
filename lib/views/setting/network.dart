@@ -14,11 +14,20 @@ class NetworkSettingPage extends StatefulWidget {
 
 }
 
-class _NetworkState extends State<NetworkSettingPage> {
-  _NetworkState();
+class _NetworkState extends State<NetworkSettingPage> with Logging implements lnc.Observer {
+  _NetworkState() {
+    var nc = lnc.NotificationCenter();
+    nc.addObserver(this, NotificationNames.kStationsUpdated);
+  }
 
   late final _StationListAdapter _adapter = _StationListAdapter();
   bool _refreshing = false;
+
+  final TextEditingController _hostTextController = TextEditingController();
+  final TextEditingController _portTextController = TextEditingController();
+
+  final FocusNode _hostFocusNode = FocusNode();
+  final FocusNode _portFocusNode = FocusNode();
 
   Future<void> _reload() async {
     await _adapter.reload();
@@ -30,9 +39,29 @@ class _NetworkState extends State<NetworkSettingPage> {
 
   @override
   void dispose() {
-    super.dispose();
+    var nc = lnc.NotificationCenter();
+    nc.removeObserver(this, NotificationNames.kStationsUpdated);
+    _hostTextController.dispose();
+    _portTextController.dispose();
+    _hostFocusNode.dispose();
+    _portFocusNode.dispose();
     GlobalVariable shared = GlobalVariable();
     shared.terminal.reconnect();
+    super.dispose();
+  }
+
+  @override
+  Future<void> onReceiveNotification(lnc.Notification notification) async {
+    String name = notification.name;
+    Map? userInfo = notification.userInfo;
+    if (name == NotificationNames.kStationsUpdated) {
+      String? action = userInfo?['action'];
+      if (action == 'add' || action == 'remove' || action == 'removeAll') {
+        await _reload();
+      }
+    } else {
+      logError('notification error: $notification');
+    }
   }
 
   @override
@@ -51,11 +80,154 @@ class _NetworkState extends State<NetworkSettingPage> {
           icon: const Icon(AppIcons.refreshIcon, size: 16),
           onPressed: _refreshing ? null : () => _confirmRefresh(context)),
     ),
-    body: buildSectionListView(
-      enableScrollbar: true,
-      adapter: _adapter,
-    ),
+    body: Column(
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: [
+        Expanded(
+          flex: 1,
+          child: buildSectionListView(
+            enableScrollbar: true,
+            adapter: _adapter,
+          ),
+        ),
+        Container(
+          color: Styles.colors.inputTrayBackgroundColor,
+          padding: const EdgeInsets.all(16),
+          child: _inputTray(context),
+        ),
+      ],
+    )
   );
+
+  Widget _inputTray(BuildContext context) {
+    //
+    //  host input
+    //
+    Widget hostInput = CupertinoTextField(
+      minLines: 1,
+      maxLines: 8,
+      prefix: const Text(' Host'),
+      prefixMode: OverlayVisibilityMode.notEditing,
+      placeholder: '12.34.56.78',
+      controller: _hostTextController,
+      focusNode: _hostFocusNode,
+      onTapOutside: (event) => _hostFocusNode.unfocus(),
+    );
+    hostInput = Container(
+      width: 200,
+      padding: const EdgeInsets.only(left: 12, right: 2),
+      child: hostInput,
+    );
+    //
+    //  port input
+    //
+    Widget portInput = CupertinoTextField(
+      minLines: 1,
+      maxLines: 8,
+      prefix: const Text(' Port'),
+      prefixMode: OverlayVisibilityMode.notEditing,
+      placeholder: '9394',
+      keyboardType: TextInputType.number,
+      controller: _portTextController,
+      focusNode: _portFocusNode,
+      onTapOutside: (event) => _portFocusNode.unfocus(),
+    );
+    portInput = Container(
+      width: 100,
+      padding: const EdgeInsets.only(left: 2, right: 12),
+      child: portInput,
+    );
+    //
+    //  add button
+    //
+    Widget addButton = CupertinoButton(
+      sizeStyle: CupertinoButtonSize.small,
+      color: Styles.colors.normalButtonColor,
+      onPressed: () => _addStation(context,
+        hostController: _hostTextController,
+        portController: _portTextController,
+      ),
+      child: Text('Add'.tr, style: TextStyle(
+        color: Styles.colors.buttonTextColor,
+      ),),
+    );
+    //
+    //  input tray
+    //
+    Widget view = Column(
+      children: [
+        Container(
+          width: 360,
+          padding: const EdgeInsets.only(bottom: 8),
+          child: Text('New Station'.tr),
+        ),
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            hostInput,
+            portInput,
+            addButton,
+          ],
+        ),
+      ],
+    );
+    return Center(child: view,);
+  }
+
+  void _addStation(BuildContext context, {
+    required TextEditingController hostController,
+    required TextEditingController portController,
+  }) {
+    String host = hostController.text.trim();
+    String text = portController.text.trim();
+    //
+    //  check host
+    //
+    if (host.isEmpty) {
+      Alert.show(context, 'Error', 'Please input station host'.tr);
+      return;
+    } else if (DomainNameServer.isIPAddress(host)) {
+      // host is an IP address
+    } else if (DomainNameServer.isDomainName(host.toLowerCase())) {
+      // host is a domain name
+    } else {
+      Alert.show(context, 'Error', 'Station host error'.tr);
+      return;
+    }
+    //
+    //  check port
+    //
+    if (text.isEmpty) {
+      Alert.show(context, 'Error', 'Please input station port'.tr);
+      return;
+    }
+    int? port = int.tryParse(text);
+    if (port == null || port < 15 || port > 65535) {
+      Alert.show(context, 'Error', 'Port number error'.tr);
+      return;
+    }
+    //
+    //  save into database
+    //
+    ID sp = ProviderInfo.GSP;
+    GlobalVariable shared = GlobalVariable();
+    shared.database.addStation(null, host: host, port: port, provider: sp).then((ok) {
+      if (ok) {
+        hostController.text = '';
+        portController.text = '';
+      } else {
+        logError('failed to add station ($host:$port)');
+        if (context.mounted) {
+          Alert.show(context, 'Error', 'Failed to add station'.tr);
+        }
+      }
+    }).onError((e, st) {
+      logError('failed to add station ($host:$text), error: $e, $st');
+      if (context.mounted) {
+        Alert.show(context, 'Error', 'Failed to add station'.tr);
+      }
+    });
+  }
 
   void _confirmRefresh(BuildContext context) {
     Alert.confirm(context, 'Refresh Stations',
@@ -159,7 +331,7 @@ class _StationCell extends StatefulWidget {
 
 }
 
-class _StationCellState extends State<_StationCell> implements lnc.Observer {
+class _StationCellState extends State<_StationCell> with Logging implements lnc.Observer {
   _StationCellState() {
 
     var nc = lnc.NotificationCenter();
@@ -185,9 +357,9 @@ class _StationCellState extends State<_StationCell> implements lnc.Observer {
         return;
       }
       String? state = userInfo?['state'];
-      Log.debug('test state: $state, $meter');
+      logDebug('test state: $state, $meter');
       if (state == 'start') {
-        Log.debug('start to test station speed: $meter');
+        logDebug('start to test station speed: $meter');
         if (mounted) {
           setState(() {
             widget.info.testTime = DateTime.now();
@@ -195,9 +367,9 @@ class _StationCellState extends State<_StationCell> implements lnc.Observer {
           });
         }
       } else if (state == 'connected') {
-        Log.debug('connected to station: $meter');
+        logDebug('connected to station: $meter');
       } else if (state == 'failed' || meter?.responseTime == null) {
-        Log.error('speed task failed: $meter, $state');
+        logError('speed task failed: $meter, $state');
         if (mounted) {
           setState(() {
             widget.info.testTime = DateTime.now();
@@ -206,7 +378,7 @@ class _StationCellState extends State<_StationCell> implements lnc.Observer {
         }
       } else {
         assert(state == 'finished', 'meta state error: $userInfo');
-        Log.debug('refreshing $meter -> ${widget.info}, $state');
+        logDebug('refreshing $meter -> ${widget.info}, $state');
         if (mounted) {
           setState(() {
             widget.info.testTime = DateTime.now();
@@ -227,7 +399,7 @@ class _StationCellState extends State<_StationCell> implements lnc.Observer {
         }
       }
     } else {
-      Log.error('notification error: $notification');
+      logError('notification error: $notification');
     }
   }
 
@@ -330,7 +502,7 @@ class _StationCellState extends State<_StationCell> implements lnc.Observer {
 
   void _removeError(BuildContext context, NeighborInfo info) {
     String result = _getResult(info);
-    if (result != 'error') {
+    if (result != 'error' && result != 'unknown') {
       // Alert.show(context, 'Permission Denied', 'Cannot remove this station'.tr);
       return;
     }
@@ -342,7 +514,7 @@ class _StationCellState extends State<_StationCell> implements lnc.Observer {
         GlobalVariable shared = GlobalVariable();
         shared.database.removeStation(host: info.host, port: info.port, provider: info.provider).then((ok) {
           if (!context.mounted) {
-            Log.warning('context unmounted: $context');
+            logWarning('context unmounted: $context');
           } else if (ok) {
             Alert.show(context, 'Success', 'Station (@remote) is removed'.trParams({
               'remote': remote,

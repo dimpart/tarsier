@@ -89,14 +89,11 @@ class _WebSiteState extends State<WebSitePage> with Logging implements lnc.Obser
     }
   }
 
-  static const app = 'chat.dim.sites';
-  static const mod = 'homepage';
-
   Future<void> _load() async {
     // check old records
     var shared = GlobalVariable();
     var handler = ServiceContentHandler(shared.database);
-    var content = await handler.getContent(app, mod, widget.title);
+    var content = await handler.getContent(widget.chat.identifier, 'homepage', widget.title);
     if (content == null) {
       // query for new records
       logInfo('query sites first');

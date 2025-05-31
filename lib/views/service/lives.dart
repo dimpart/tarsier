@@ -99,14 +99,11 @@ class _LiveSourceListState extends State<LiveSourceListPage> with Logging implem
     }
   }
 
-  static const app = 'chat.dim.tvbox';
-  static const mod = 'lives';
-
   Future<void> _load() async {
     // check old records
     var shared = GlobalVariable();
     var handler = ServiceContentHandler(shared.database);
-    var content = await handler.getContent(app, mod, widget.title);
+    var content = await handler.getContent(widget.chat.identifier, 'lives', widget.title);
     if (content == null) {
       // query for new records
       logInfo('query lives first');

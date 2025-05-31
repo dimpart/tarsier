@@ -102,14 +102,11 @@ class _SearchState extends State<UserListPage> with Logging implements lnc.Obser
     }
   }
 
-  static const app = 'chat.dim.search';
-  static const mod = 'users';
-
   Future<void> _load() async {
     // check old records
     var shared = GlobalVariable();
     var handler = ServiceContentHandler(shared.database);
-    var content = await handler.getContent(app, mod, widget.title);
+    var content = await handler.getContent(widget.chat.identifier, 'users', widget.title);
     if (content == null) {
       // query for new records
       logInfo('query active users first');
@@ -267,7 +264,7 @@ class _SearchDataSource with Logging {
   List<ContactInfo>? _items;
 
   Future<void> refresh(List<ContactInfo> array) async {
-    Log.debug('refreshing ${array.length} search result(s)');
+    logDebug('refreshing ${array.length} search result(s)');
     _items = array;
   }
 
