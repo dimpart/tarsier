@@ -124,62 +124,75 @@ class _TranslateState extends State<TranslatableView> implements lnc.Observer {
     //  2. show translated result
     //
     var trView = _translatedView(context, record);
-    trView = Container(
-      color: Styles.colors.textMessageBackgroundColor,
-      padding: Styles.textMessagePadding,
-      child: trView,
-    );
-    const radius = Radius.circular(12);
-    const borderRadius = BorderRadius.all(radius);
-    trView = Container(
-      margin: Styles.messageContentMargin,
-      child: ClipRRect(
-        borderRadius: borderRadius,
+    if (trView != null) {
+      trView = Container(
+        color: Styles.colors.textMessageBackgroundColor,
+        padding: Styles.textMessagePadding,
         child: trView,
-      ),
-    );
+      );
+      const radius = Radius.circular(12);
+      const borderRadius = BorderRadius.all(radius);
+      trView = Container(
+        margin: Styles.messageContentMargin,
+        child: ClipRRect(
+          borderRadius: borderRadius,
+          child: trView,
+        ),
+      );
+    }
+    // create panel view for translation
+    var trPanel = _foldButton(record.folded, record);
     var result = record.result;
     String? from = result?.from;
     String? to = result?.to;
-    Widget? langView;
     if (from != null || to != null) {
-      langView = _translateLanguages(from, to);
-      langView = Container(
-        padding: const EdgeInsets.fromLTRB(12, 4, 12, 4),
-        child: langView,
+      trPanel = Row(
+        children: [
+          _translateLanguages(from, to),
+          const SizedBox(width: 8,),
+          trPanel,
+        ],
       );
     }
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         widget.sourceView,
-        if (langView != null)
-          langView,
-        trView,
+        Container(
+          padding: const EdgeInsets.fromLTRB(12, 4, 12, 4),
+          child: trPanel,
+        ),
+        if (trView != null)
+          trView,
       ],
     );
   }
 
   Widget _translateButton(BuildContext ctx, String text, int tag, {required String? format}) => TextButton(
-    style: TextButton.styleFrom(
-      foregroundColor: CupertinoColors.systemBlue,
-      textStyle: const TextStyle(fontSize: 10, color: CupertinoColors.systemBlue),
-      minimumSize: Size.zero,
-      padding: EdgeInsets.zero,
-      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-    ),
+    style: Styles.translateButtonStyle,
     onPressed: () => _queryTranslator(ctx, text, tag, format: format),
     child: Text('Translate'.tr),
   );
 
-  Widget _translateLanguages(String? from, String? to) => Text('$from -> $to',
+  Widget _translateLanguages(String? from, String? to) => Text('$from >> $to',
     style: const TextStyle(
       fontSize: 10,
       color: CupertinoColors.systemGrey,
     ),
   );
 
-  Widget _translatedView(BuildContext ctx, TranslateContent record) {
+  Widget _foldButton(bool folded, TranslateContent content) => TextButton(
+    style: Styles.translateButtonStyle,
+    onPressed: () => setState(() {
+      content.folded = !folded;
+    }),
+    child: Text(folded ? 'Show'.tr : 'Hide'.tr),
+  );
+
+  Widget? _translatedView(BuildContext ctx, TranslateContent record) {
+    if (record.folded) {
+      return null;
+    }
     String? format = record.getString('format', null);
     String text = record.text ?? '';
     if (format == 'markdown' && text.isNotEmpty) {

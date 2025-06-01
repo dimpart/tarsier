@@ -105,10 +105,13 @@ class _NetworkState extends State<NetworkSettingPage> with Logging implements ln
     //
     Widget hostInput = CupertinoTextField(
       minLines: 1,
-      maxLines: 8,
+      maxLines: 1,
       prefix: const Text(' Host'),
       prefixMode: OverlayVisibilityMode.notEditing,
       placeholder: '12.34.56.78',
+      decoration: Styles.textFieldDecoration,
+      style: Styles.textFieldStyle,
+      keyboardType: TextInputType.text,
       controller: _hostTextController,
       focusNode: _hostFocusNode,
       onTapOutside: (event) => _hostFocusNode.unfocus(),
@@ -123,17 +126,19 @@ class _NetworkState extends State<NetworkSettingPage> with Logging implements ln
     //
     Widget portInput = CupertinoTextField(
       minLines: 1,
-      maxLines: 8,
+      maxLines: 1,
       prefix: const Text(' Port'),
       prefixMode: OverlayVisibilityMode.notEditing,
       placeholder: '9394',
+      decoration: Styles.textFieldDecoration,
+      style: Styles.textFieldStyle,
       keyboardType: TextInputType.number,
       controller: _portTextController,
       focusNode: _portFocusNode,
       onTapOutside: (event) => _portFocusNode.unfocus(),
     );
     portInput = Container(
-      width: 100,
+      width: 112,
       padding: const EdgeInsets.only(left: 2, right: 12),
       child: portInput,
     );

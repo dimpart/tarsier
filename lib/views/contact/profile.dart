@@ -510,8 +510,37 @@ class _ProfileTableCell extends StatefulWidget {
 
 }
 
-class _ProfileTableState extends State<_ProfileTableCell> {
-  _ProfileTableState();
+class _ProfileTableState extends State<_ProfileTableCell> implements lnc.Observer {
+  _ProfileTableState() {
+    var nc = lnc.NotificationCenter();
+    nc.addObserver(this, NotificationNames.kDocumentUpdated);
+    nc.addObserver(this, NotificationNames.kRemarkUpdated);
+  }
+
+  @override
+  void dispose() {
+    var nc = lnc.NotificationCenter();
+    nc.removeObserver(this, NotificationNames.kRemarkUpdated);
+    nc.removeObserver(this, NotificationNames.kDocumentUpdated);
+    super.dispose();
+  }
+
+  @override
+  Future<void> onReceiveNotification(lnc.Notification notification) async {
+    String name = notification.name;
+    Map? info = notification.userInfo;
+    if (name == NotificationNames.kDocumentUpdated) {
+      ID? identifier = info?['ID'];
+      if (identifier == widget.info.identifier) {
+        await _reload();
+      }
+    } else if (name == NotificationNames.kRemarkUpdated) {
+      ID? identifier = info?['contact'];
+      if (identifier == widget.info.identifier) {
+        await _reload();
+      }
+    }
+  }
 
   Future<void> _reload() async {
     await widget.info.reloadData();
