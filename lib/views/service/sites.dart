@@ -149,21 +149,37 @@ class _WebSiteState extends State<WebSitePage> with Logging implements lnc.Obser
 
   @override
   Widget build(BuildContext context) {
-    Widget body;
+    Widget? body;
     var page = _content;
-    if (page == null || _queryTag > 0) {
-      // loading
-      body = const Center(
-        child: CupertinoActivityIndicator(),
-      );
+    if (page == null) {
+      // body empty
     } else if (page['format'] == 'html') {
       // web page
       var sender = widget.chat.identifier;
       String text = DefaultMessageBuilder().getText(page, sender);
-      return Browser.view(context, HtmlUri.blank, html: text);
+      body = Browser.view(context, HtmlUri.blank, html: text);
+      if (_queryTag == 0) {
+        return body;
+      }
+      // TODO: show refreshing indicator
+      return body;
     } else {
+      // plaintext, markdown, ...
       body = _body(context, page);
     }
+    if (body == null) {
+      // first loading
+      body = const Center(child: CupertinoActivityIndicator());
+    } else if (_queryTag > 0) {
+      // refreshing
+      body = Column(
+        children: [
+          const Center(child: CupertinoActivityIndicator()),
+          body,
+        ],
+      );
+    }
+
     return Scaffold(
       backgroundColor: Styles.colors.scaffoldBackgroundColor,
       appBar: CupertinoNavigationBar(

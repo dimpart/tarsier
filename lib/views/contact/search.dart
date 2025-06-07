@@ -115,6 +115,7 @@ class _SearchState extends State<SearchPage> implements lnc.Observer {
   Widget _searchWidget(BuildContext context) => CupertinoSearchTextField(
     style: Styles.textFieldStyle,
     controller: _controller,
+    placeholder: 'Input ID or nickname to search'.tr,
     onSubmitted: (value) => _search(context, value),
     onChanged: (value) => setState(() {
       var shared = SharedEditingText();

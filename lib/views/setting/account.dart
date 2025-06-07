@@ -101,7 +101,7 @@ class _AccountState extends State<AccountPage> {
               dividerColor: colors.sectionItemDividerColor,
               primaryTextColor: colors.primaryTextColor,
               secondaryTextColor: colors.tertiaryTextColor,
-              dangerousTextColor: CupertinoColors.systemRed,
+              importantTextColor: colors.importantButtonColor,
             ),
           ),
         ],
@@ -115,7 +115,7 @@ class _AccountState extends State<AccountPage> {
     required Color dividerColor,
     required Color primaryTextColor,
     required Color secondaryTextColor,
-    required Color dangerousTextColor,
+    required Color importantTextColor,
   }) => Column(
     mainAxisAlignment: MainAxisAlignment.start,
     children: [
@@ -160,11 +160,14 @@ class _AccountState extends State<AccountPage> {
 
       CupertinoListSection(
         backgroundColor: dividerColor,
+        separatorColor: dividerColor,
         dividerMargin: 0,
         additionalDividerMargin: 0,
         children: [
           /// update profile
-          _updateButton(context, backgroundColor: backgroundColor, textColor: dangerousTextColor),
+          _updateButton(context, backgroundColor: backgroundColor, textColor: importantTextColor),
+          /// update description
+          _intro('UpdateVisa::Description'.tr, backgroundColor: dividerColor, textColor: secondaryTextColor),
         ],
       ),
 
@@ -212,21 +215,26 @@ class _AccountState extends State<AccountPage> {
     ),
   );
 
-  Widget _updateButton(BuildContext context, {required Color textColor, required Color backgroundColor}) =>
-      _button('Update & Broadcast'.tr, AppIcons.updateDocIcon, textColor: textColor, backgroundColor: backgroundColor,
-        onPressed: () => _saveInfo(context).then((ok) {
-          if (!context.mounted) {
-            Log.warning('context unmounted: $context');
-          } else if (ok) {
-            Alert.show(context, 'Success', 'Profile is updated'.tr);
-          } else {
-            Alert.show(context, 'Error', 'Failed to update profile'.tr);
-          }
-        }),
-      );
+  Widget _updateButton(BuildContext context, {
+    required Color textColor, required Color backgroundColor
+  }) => _button('Update & Broadcast'.tr, AppIcons.updateDocIcon,
+    textColor: textColor,
+    backgroundColor: backgroundColor,
+    onPressed: () => _saveInfo(context).then((ok) {
+      if (!context.mounted) {
+        Log.warning('context unmounted: $context');
+      } else if (ok) {
+        Alert.show(context, 'Success', 'Profile is updated'.tr);
+      } else {
+        Alert.show(context, 'Error', 'Failed to update profile'.tr);
+      }
+    }),
+  );
 
-  Widget _button(String title, IconData icon, {required Color textColor, required Color backgroundColor,
-    VoidCallback? onPressed}) => Row(
+  Widget _button(String title, IconData icon, {
+    required Color textColor, required Color backgroundColor,
+    VoidCallback? onPressed
+  }) => Row(
     children: [
       Expanded(child: Container(
         color: backgroundColor,
@@ -241,6 +249,22 @@ class _AccountState extends State<AccountPage> {
                 style: TextStyle(color: textColor, fontWeight: FontWeight.bold,),
               ),
             ],
+          ),
+        ),
+      ))
+    ],
+  );
+
+  Widget _intro(String desc, {
+    required Color textColor, required Color backgroundColor,
+  }) => Row(
+    children: [
+      Expanded(child: Container(
+        color: backgroundColor,
+        padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+        child: Text(desc,
+          style: TextStyle(
+            color: textColor,
           ),
         ),
       ))

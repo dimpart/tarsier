@@ -463,13 +463,23 @@ class _StationCellState extends State<_StationCell> with Logging implements lnc.
   }
 
   String _getName(NeighborInfo info) {
-    String? name = info.name;
-    name ??= info.identifier?.toString();
-    if (name != null && name.isNotEmpty) {
-      return name;
+    ID? sid = info.identifier;
+    if (sid == null || sid.isBroadcast) {
+      // station ID not responded
     } else {
-      return '${info.host}:${info.port}';
+      String? name = info.name;
+      name ??= sid.toString();
+      if (name.isNotEmpty) {
+        return name;
+      }
     }
+    // String? name = sid?.name;
+    // if (name != null && name.isNotEmpty) {
+    //   String host = info.host;
+    //   return '$name@$host';
+    // }
+    return info.host;
+    // return '${info.host}:${info.port}';
   }
   Icon _getChosen(NeighborInfo info) {
     if (_isCurrentStation(info)) {
