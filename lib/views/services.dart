@@ -9,6 +9,7 @@ import 'service/lives.dart';
 import 'service/report.dart';
 import 'service/sites.dart';
 import 'service/users.dart';
+import 'service/playlist.dart';
 
 
 class ServiceListPage extends StatefulWidget {
@@ -229,6 +230,10 @@ bool openService(BuildContext ctx, Map info) {
     // active users
     UserListPage.open(ctx, contact, info);
     return true;
+  } else if (st == 'PlayList') {
+    // video list
+    PlaylistPage.open(ctx, contact, info);
+    return true;
   } else if (st == 'LiveSources') {
     // live source list
     LiveSourceListPage.open(ctx, contact, info);
@@ -255,6 +260,8 @@ List<Map> fetchServices(List services) {
       if (st == 'ChatBox' || st == 'ChatBot') {
         array.add(item);
       } else if (st == 'UserList') {
+        array.add(item);
+      } else if (st == 'PlayList') {
         array.add(item);
       } else if (st == 'LiveSources') {
         array.add(item);

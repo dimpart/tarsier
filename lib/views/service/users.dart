@@ -13,7 +13,7 @@ class UserListPage extends StatefulWidget {
   final Conversation chat;
   final Map info;
 
-  String get title => info['title'] ?? 'Users';
+  String get title => info['title'] ?? 'Users'.tr;
   String? get keywords => info['keywords'];
 
   static void open(BuildContext context, Conversation chat, Map info) => showPage(
@@ -40,7 +40,7 @@ class _SearchState extends State<UserListPage> with Logging implements lnc.Obser
 
   bool _refreshing = false;
 
-  int _searchTag = 9394;  // show CupertinoActivityIndicator
+  int _queryTag = 9527;  // show CupertinoActivityIndicator
   String? _description;
 
   String get description => _description ?? '';
@@ -75,14 +75,14 @@ class _SearchState extends State<UserListPage> with Logging implements lnc.Obser
     if (!isRefresh) {
       // update from local
       logInfo('refresh active users from old record: ${users.length}, $desc');
-      _searchTag = 0;
-    } else if (tag == _searchTag) {
+      _queryTag = 0;
+    } else if (tag == _queryTag) {
       // update from remote
-      logInfo('respond with search tag: $tag, ${users.length}, $desc');
-      _searchTag = 0;
+      logInfo('respond with query tag: $tag, ${users.length}, $desc');
+      _queryTag = 0;
     } else {
       // expired response
-      logWarning('search tag not match, ignore this response: $tag <> $_searchTag');
+      logWarning('query tag not match, ignore this response: $tag <> $_queryTag');
       return;
     }
     // refresh if not empty
@@ -91,7 +91,7 @@ class _SearchState extends State<UserListPage> with Logging implements lnc.Obser
       for (ContactInfo item in array) {
         await item.reloadData();
       }
-      await _dataSource.refresh(array);
+      _dataSource.refresh(array);
       logInfo('${array.length} contacts refreshed');
     }
     if (mounted) {
@@ -145,18 +145,18 @@ class _SearchState extends State<UserListPage> with Logging implements lnc.Obser
     String? keywords = widget.keywords;
     // build command
     var content = TextContent.create(keywords ?? title);
+    _queryTag = content.sn;
     if (mounted) {
       setState(() {
-        _searchTag = content.sn;
       });
     }
-    content['tag'] = _searchTag;
+    content['tag'] = _queryTag;
     content['title'] = title;
     content['keywords'] = keywords;
     content['hidden'] = true;
     // TODO: check visa.key
     ID bot = widget.chat.identifier;
-    logInfo('query active users with tag: $_searchTag, keywords: $keywords, title: "$title", bot: $bot');
+    logInfo('query active users with tag: $_queryTag, keywords: $keywords, title: "$title", bot: $bot');
     await messenger.sendContent(content, sender: null, receiver: bot);
   }
 
@@ -183,7 +183,7 @@ class _SearchState extends State<UserListPage> with Logging implements lnc.Obser
 
   Widget _refreshBtn() => IconButton(
       icon: const Icon(AppIcons.refreshIcon, size: 16),
-      onPressed: _refreshing || _searchTag > 0 ? null : _refreshList,
+      onPressed: _refreshing || _queryTag > 0 ? null : _refreshList,
   );
 
   void _refreshList() {
@@ -218,7 +218,7 @@ class _SearchResultAdapter with SectionAdapterMixin {
   bool shouldSectionHeaderStick(int section) => true;
 
   @override
-  bool shouldExistSectionHeader(int section) => state._searchTag > 0;
+  bool shouldExistSectionHeader(int section) => state._queryTag > 0;
 
   @override
   bool shouldExistSectionFooter(int section) => state.description.isNotEmpty;
@@ -263,7 +263,7 @@ class _SearchDataSource with Logging {
 
   List<ContactInfo>? _items;
 
-  Future<void> refresh(List<ContactInfo> array) async {
+  void refresh(List<ContactInfo> array) {
     logDebug('refreshing ${array.length} search result(s)');
     _items = array;
   }

@@ -16,7 +16,7 @@ class WebSitePage extends StatefulWidget {
   final Conversation chat;
   final Map info;
 
-  String get title => info['title'] ?? 'Index Page';
+  String get title => info['title'] ?? 'Index Page'.tr;
   String? get keywords => info['keywords'];
 
   static void open(BuildContext context, Conversation chat, Map info) => showPage(
@@ -37,7 +37,7 @@ class _WebSiteState extends State<WebSitePage> with Logging implements lnc.Obser
 
   bool _refreshing = false;
 
-  int _queryTag = 9527;
+  int _queryTag = 9527;  // show CupertinoActivityIndicator
   Content? _content;
 
   static const Duration kHomepageQueryExpires = Duration(minutes: 32);
@@ -132,9 +132,9 @@ class _WebSiteState extends State<WebSitePage> with Logging implements lnc.Obser
     String? keywords = widget.keywords;
     // build command
     var content = TextContent.create(keywords ?? title);
+    _queryTag = content.sn;
     if (mounted) {
       setState(() {
-        _queryTag = content.sn;
       });
     }
     content['tag'] = _queryTag;
@@ -172,10 +172,11 @@ class _WebSiteState extends State<WebSitePage> with Logging implements lnc.Obser
       body = const Center(child: CupertinoActivityIndicator());
     } else if (_queryTag > 0) {
       // refreshing
-      body = Column(
+      body = Stack(
+        alignment: Alignment.topCenter,
         children: [
-          const Center(child: CupertinoActivityIndicator()),
           body,
+          const CupertinoActivityIndicator(),
         ],
       );
     }

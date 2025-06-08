@@ -14,7 +14,7 @@ class LiveSourceListPage extends StatefulWidget {
   final Conversation chat;
   final Map info;
 
-  String get title => info['title'] ?? 'Live Stream Sources';
+  String get title => info['title'] ?? 'Live Stream Sources'.tr;
   String? get keywords => info['keywords'];
 
   static void open(BuildContext context, Conversation chat, Map info) => showPage(
@@ -41,7 +41,7 @@ class _LiveSourceListState extends State<LiveSourceListPage> with Logging implem
 
   bool _refreshing = false;
 
-  int _searchTag = 9527;  // show CupertinoActivityIndicator
+  int _queryTag = 9527;  // show CupertinoActivityIndicator
   String? _description;
 
   String get description => _description ?? '';
@@ -76,19 +76,19 @@ class _LiveSourceListState extends State<LiveSourceListPage> with Logging implem
     if (!isRefresh) {
       // update from local
       logInfo('refresh lives from old record: ${lives.length}, $desc');
-      _searchTag = 0;
-    } else if (tag == _searchTag) {
+      _queryTag = 0;
+    } else if (tag == _queryTag) {
       // update from remote
-      logInfo('respond with search tag: $tag, ${lives.length}, $desc');
-      _searchTag = 0;
+      logInfo('respond with query tag: $tag, ${lives.length}, $desc');
+      _queryTag = 0;
     } else {
       // expired response
-      logWarning('search tag not match, ignore this response: $tag <> $_searchTag');
+      logWarning('query tag not match, ignore this response: $tag <> $_queryTag');
       return;
     }
     // refresh if not empty
     if (lives.isNotEmpty) {
-      await _dataSource.refresh(lives);
+      _dataSource.refresh(lives);
       logInfo('${lives.length} live sources refreshed');
     }
     if (mounted) {
@@ -142,18 +142,18 @@ class _LiveSourceListState extends State<LiveSourceListPage> with Logging implem
     String? keywords = widget.keywords;
     // build command
     var content = TextContent.create(keywords ?? title);
+    _queryTag = content.sn;
     if (mounted) {
       setState(() {
-        _searchTag = content.sn;
       });
     }
-    content['tag'] = _searchTag;
+    content['tag'] = _queryTag;
     content['title'] = title;
     content['keywords'] = keywords;
     content['hidden'] = true;
     // TODO: check visa.key
     ID bot = widget.chat.identifier;
-    logInfo('query lives with tag: $_searchTag, keywords: $keywords, title: "$title"');
+    logInfo('query lives with tag: $_queryTag, keywords: $keywords, title: "$title"');
     await messenger.sendContent(content, sender: null, receiver: bot);
   }
 
@@ -180,7 +180,7 @@ class _LiveSourceListState extends State<LiveSourceListPage> with Logging implem
 
   Widget _refreshBtn() => IconButton(
     icon: const Icon(AppIcons.refreshIcon, size: 16),
-    onPressed: _refreshing || _searchTag > 0 ? null : () => _refreshList(),
+    onPressed: _refreshing || _queryTag > 0 ? null : () => _refreshList(),
   );
 
   void _refreshList() {
@@ -220,7 +220,7 @@ class _LiveSourceAdapter with SectionAdapterMixin {
   bool shouldSectionHeaderStick(int section) => true;
 
   @override
-  bool shouldExistSectionHeader(int section) => state._searchTag > 0;
+  bool shouldExistSectionHeader(int section) => state._queryTag > 0;
 
   @override
   bool shouldExistSectionFooter(int section) => state.description.isNotEmpty;
@@ -265,7 +265,7 @@ class _LiveDataSource with Logging {
 
   List<TVBox>? _sources;
 
-  Future<void> refresh(Iterable array) async {
+  void refresh(Iterable array) {
     List<TVBox> lives = [];
     Map info;
     Uri? url;
