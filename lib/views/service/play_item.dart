@@ -11,33 +11,20 @@ import 'play_manager.dart';
 class Season extends Dictionary {
   Season(super.dict);
 
-  static Duration kExpires = const Duration(minutes: 32);
+  /// video name
+  String get name => getString('name', '')!;
+
+  /// playing page URL
+  Uri? get page => HtmlUri.parseUri(this['page']);
 
   /// create time
   DateTime? get time => getDateTime('time', null);
 
-  bool isExpired({DateTime? now}) {
-    var lastTime = time;
-    if (lastTime == null) {
-      return true;
-    } else {
-      now ??= DateTime.now();
-    }
-    var expired = lastTime.add(kExpires);
-    return now.isAfter(expired);
-  }
-
   @override
   String toString() {
     Type clazz = runtimeType;
-    return '<$clazz name="$name" />';
+    return '<$clazz name="$name" url="$page" />';
   }
-
-  // playing page URL
-  Uri? get page => HtmlUri.parseUri(this['page']);
-
-  // video name
-  String get name => getString('name', '')!;
 
   static Season? parse(Object? season) {
     if (season == null) {
@@ -76,8 +63,6 @@ class _PlayItemState extends State<PlaylistItem> with Logging implements lnc.Obs
     nc.addObserver(this, NotificationNames.kVideoItemUpdated);
   }
 
-  static const Duration kPlayItemQueryExpires = Duration(minutes: 32);
-
   @override
   void dispose() {
     var nc = lnc.NotificationCenter();
@@ -104,7 +89,7 @@ class _PlayItemState extends State<PlaylistItem> with Logging implements lnc.Obs
   Future<bool> _refreshPlayInfo(Content content, {required bool isRefresh}) async {
     var format = content['format'];
     var text = content['text'];
-    logInfo('refreshing play item with format: $format, size: ${text?.length}');
+    logInfo('refreshing play item with format: $format, size: ${text?.length}, name: "${widget.info.name}"');
     if (format != null && text != null) {
       if (mounted) {
         setState(() {
@@ -118,52 +103,37 @@ class _PlayItemState extends State<PlaylistItem> with Logging implements lnc.Obs
 
   Future<void> _load() async {
     Season season = widget.info;
-    String page = season['page'] ?? season.name;
-    // check old records
-    var shared = GlobalVariable();
-    var handler = ServiceContentHandler(shared.database);
-    var content = await handler.getContent(widget.chat.identifier, 'season', page);
-    if (content == null) {
-      // query for new records
-      logInfo('query video info first');
-      await _query(null);
+    String? name = season['name'];
+    Uri? page = HtmlUri.parseUri(season['page']);
+    if (page == null) {
+      assert(false, 'season error: $season');
       return;
     }
-    // check record time
-    var time = content.time;
-    if (time == null) {
-      logError('video info error: $content');
-      await _query(content);
-    } else if (content['format'] != 'markdown') {
-      // FIXME:
-      logError('video format error: $content');
+    // check old records
+    var pm = PlaylistManager();
+    var content = await pm.getSeasonContent(page, widget.chat.identifier);
+    if (content == null) {
+      // query for new records
+      logInfo('query video info first: "$name" $page');
       await _query(null);
     } else {
-      int? expires = content.getInt('expires', null);
-      if (expires == null || expires <= 8) {
-        expires = kPlayItemQueryExpires.inSeconds;
-      }
-      int later = time.millisecondsSinceEpoch + expires * 1000;
-      var now = DateTime.now().millisecondsSinceEpoch;
-      if (now > later) {
-        logInfo('query video info again');
-        await _query(content);
-      }
+      logInfo('query video info again: "$name" $page');
+      await _query(content);
+      // refresh with content loaded
+      await _refreshPlayInfo(content, isRefresh: false);
     }
-    // refresh with content loaded
-    await _refreshPlayInfo(content, isRefresh: false);
   }
   // query for new records
-  Future<bool> _query(Content? content) async {
+  Future<Content?> _query(Content? content) async {
     // check content load from local cache
     ID bot = widget.chat.identifier;
     Uri? page = widget.info.page;
     if (page == null) {
       assert(false, 'season info error: ${widget.info}');
-      return false;
+      return null;
     }
     var man = PlaylistManager();
-    return await man.updateSeason(content, page, bot);
+    return await man.queryVideoInfo(content, page, bot);
   }
 
   @override

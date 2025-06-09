@@ -42,8 +42,6 @@ class _PlaylistState extends State<PlaylistPage> with Logging implements lnc.Obs
 
   int _queryTag = 9527;  // show CupertinoActivityIndicator
 
-  static const Duration kPlaylistQueryExpires = Duration(minutes: 32);
-
   @override
   void dispose() {
     var nc = lnc.NotificationCenter();
@@ -56,7 +54,7 @@ class _PlaylistState extends State<PlaylistPage> with Logging implements lnc.Obs
     String name = notification.name;
     Map? userInfo = notification.userInfo;
     if (name == NotificationNames.kPlaylistUpdated) {
-      logInfo('playlist updated: $name, $userInfo');
+      logInfo('playlist updated: $name');
       var content = userInfo?['cmd'];
       if (content is Content) {
         await _refreshPlaylist(content, isRefresh: true);
@@ -74,15 +72,15 @@ class _PlaylistState extends State<PlaylistPage> with Logging implements lnc.Obs
     int? tag = content['tag'];
     if (!isRefresh) {
       // update from local
-      logInfo('refresh playlist from old record: ${playlist.length}');
+      logInfo('refresh playlist from old record, size: ${playlist.length}');
       _queryTag = 0;
     } else if (tag == _queryTag) {
       // update from remote
-      logInfo('respond with query tag: $tag, ${playlist.length}');
+      logInfo('respond with query tag: $tag, playlist size: ${playlist.length}');
       _queryTag = 0;
     } else {
       // expired response
-      logWarning('query tag not match, ignore this response: $tag <> $_queryTag');
+      logWarning('query tag not match: $tag <> $_queryTag, size: ${playlist.length}');
       return false;
     }
     // refresh if not empty
@@ -100,60 +98,37 @@ class _PlaylistState extends State<PlaylistPage> with Logging implements lnc.Obs
 
   Future<void> _load() async {
     // check old records
-    var shared = GlobalVariable();
-    var handler = ServiceContentHandler(shared.database);
-    var content = await handler.getContent(widget.chat.identifier, 'playlist', widget.title);
+    var pm = PlaylistManager();
+    var content = await pm.getPlaylistContent(widget.title, widget.chat.identifier);
     if (content == null) {
       // query for new records
-      logInfo('query playlist first');
-      await _query();
-      return;
-    }
-    // check record time
-    var time = content.time;
-    if (time == null) {
-      logError('playlist content error: $content');
-      await _query();
+      logInfo('query playlist first: ${widget.title}');
+      await _query(null, isRefresh: false);
     } else {
-      int? expires = content.getInt('expires', null);
-      if (expires == null || expires <= 8) {
-        expires = kPlaylistQueryExpires.inSeconds;
-      }
-      int later = time.millisecondsSinceEpoch + expires * 1000;
-      var now = DateTime.now().millisecondsSinceEpoch;
-      if (now > later) {
-        logInfo('query playlist again');
-        await _query();
-      }
+      logInfo('query playlist again: ${widget.title}');
+      await _query(content, isRefresh: false);
+      // refresh with content loaded
+      await _refreshPlaylist(content, isRefresh: false);
     }
-    // refresh with content loaded
-    await _refreshPlaylist(content, isRefresh: false);
   }
   // query for new records
-  Future<void> _query() async {
-    GlobalVariable shared = GlobalVariable();
-    SharedMessenger? messenger = shared.messenger;
-    if (messenger == null) {
-      logError('messenger not set, not connect yet?');
-      return;
-    }
+  Future<Content?> _query(Content? content, {required bool isRefresh}) async {
     String title = widget.title;
     String? keywords = widget.keywords;
-    // build command
-    var content = CustomizedContent.create(app: 'chat.dim.video', mod: 'playlist', act: 'request');
-    _queryTag = content.sn;
-    if (mounted) {
-      setState(() {
-      });
+    Map extra = {
+      'title': title,
+      'keywords': keywords,
+    };
+    var pm = PlaylistManager();
+    var query = await pm.queryPlaylist(content, extra, widget.chat.identifier, isRefresh: isRefresh);
+    if (query != null) {
+      _queryTag = query.sn;
+      if (mounted) {
+        setState(() {
+        });
+      }
     }
-    content['tag'] = _queryTag;
-    content['title'] = title;
-    content['keywords'] = keywords;
-    content['hidden'] = true;
-    // TODO: check visa.key
-    ID bot = widget.chat.identifier;
-    logInfo('query playlist with tag: $_queryTag, keywords: $keywords, title: "$title"');
-    await messenger.sendContent(content, sender: null, receiver: bot);
+    return query;
   }
 
   @override
@@ -228,7 +203,7 @@ class _PlaylistState extends State<PlaylistPage> with Logging implements lnc.Obs
       }
     });
     // query
-    _query();
+    _query(null, isRefresh: true);
   }
 
 }
