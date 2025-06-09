@@ -14,6 +14,8 @@ class ChatInputTray extends StatefulWidget {
 
   String? get text => extra?['text'];
 
+  bool get isTextOnly => extra?['input_mode'] == 'text only';
+
   @override
   State<StatefulWidget> createState() => _InputState();
 
@@ -29,6 +31,12 @@ class _InputState extends State<ChatInputTray> implements lnc.Observer {
   final FocusNode _focusNode = FocusNode();
 
   bool _isVoice = false;
+
+  bool get showMicrophoneIcon => !widget.isTextOnly && !_isVoice;
+  bool get showKeyboardIcon => !widget.isTextOnly && _isVoice;
+
+  bool get showFunctionIcon => !widget.isTextOnly && (_controller.text.isEmpty || _isVoice);
+  bool get showSendIcon => !showFunctionIcon;
 
   @override
   Future<void> onReceiveNotification(lnc.Notification notification) async {
@@ -88,67 +96,79 @@ class _InputState extends State<ChatInputTray> implements lnc.Observer {
   Widget build(BuildContext context) => Row(
     mainAxisSize: MainAxisSize.min,
     children: [
-      if (!_isVoice)
+      //
+      //  Left
+      //
+      if (showMicrophoneIcon) // if (!_isVoice)
         CupertinoButton(
-          child: const Icon(AppIcons.chatMicIcon),
           onPressed: () => setState(() {
             _isVoice = true;
           }),
+          child: const Icon(AppIcons.chatMicIcon),
         ),
-      if (_isVoice)
+      if (showKeyboardIcon) // if (_isVoice)
         CupertinoButton(
-          child: const Icon(AppIcons.chatKeyboardIcon),
           onPressed: () => setState(() {
             _isVoice = false;
           }),
+          child: const Icon(AppIcons.chatKeyboardIcon),
         ),
-      if (!_isVoice)
-        Expanded(
-          flex: 1,
-          child: DevicePlatform.isMobile ? _inputTextField(context) : Focus(
-            focusNode: _focusNode,
-            child: _inputTextField(context),
-            onKeyEvent: (FocusNode focusNode, KeyEvent event) {
-              Log.info('focus node: $focusNode, key event: $event');
-              var checker = RawKeyboardChecker();
-              var key = checker.checkKeyEvent(event);
-              if (key != null && key.isModified && key == RawKeyboardKey.enter) {
-                _sendText(context, _controller, widget.info);
-                return KeyEventResult.handled;
-              }
-              return KeyEventResult.ignored;
-            },
-          ),
-        ),
-      if (_isVoice)
-        Expanded(
-          flex: 1,
-          child: RecordButton(
-            onComplected: (data, duration) => _sendVoice(data, duration, widget.info),
-          ),
-        ),
-      if (_controller.text.isEmpty || _isVoice)
+      //
+      //  Center
+      //
+      Expanded(
+        flex: 1,
+        child: _isVoice
+            ? _recordBtn() : DevicePlatform.isMobile
+            ? _mobileInputField(context)
+            : _tabletInputField(context),
+      ),
+      //
+      //  Right
+      //
+      if (showFunctionIcon)
         CupertinoButton(
-          child: const Icon(AppIcons.chatFunctionIcon),
           onPressed: () => _sendImage(context, widget.info),
+          child: const Icon(AppIcons.chatFunctionIcon),
         ),
-      if (_controller.text.isNotEmpty && !_isVoice)
+      if (showSendIcon)
         CupertinoButton(
-          child: const Icon(AppIcons.chatSendIcon),
-          onPressed: () => _sendText(context, _controller, widget.info),
+          onPressed: _controller.text.isEmpty ? null : () => _sendText(context, _controller, widget.info),
+          child: _sendButtonIcon(),
         ),
     ],
+  );
+
+  Widget _recordBtn() => RecordButton(
+    onComplected: (data, duration) => _sendVoice(data, duration, widget.info),
+  );
+
+  Widget _mobileInputField(BuildContext context) => _inputTextField(context);
+
+  Widget _tabletInputField(BuildContext context) => Focus(
+    focusNode: _focusNode,
+    child: _inputTextField(context),
+    onKeyEvent: (FocusNode focusNode, KeyEvent event) {
+      Log.info('focus node: $focusNode, key event: $event');
+      var checker = RawKeyboardChecker();
+      var key = checker.checkKeyEvent(event);
+      if (key != null && key.isModified && key == RawKeyboardKey.enter) {
+        _sendText(context, _controller, widget.info);
+        return KeyEventResult.handled;
+      }
+      return KeyEventResult.ignored;
+    },
   );
 
   Widget _inputTextField(BuildContext context) => CupertinoTextField(
     minLines: 1,
     maxLines: 8,
     controller: _controller,
-    placeholder: 'Input text message'.tr,
+    placeholder: widget.extra?['input_prompt'] ?? 'Input text message'.tr,
     decoration: Styles.textFieldDecoration,
     style: Styles.textFieldStyle,
-    keyboardType: TextInputType.multiline,
-    textInputAction: TextInputAction.newline,
+    keyboardType: _inputType(),
+    textInputAction: _inputAction(),
     focusNode: DevicePlatform.isMobile ? _focusNode : null,
     onTapOutside: (event) => _focusNode.unfocus(),
     onSubmitted: (text) => _sendText(context, _controller, widget.info),
@@ -165,6 +185,54 @@ class _InputState extends State<ChatInputTray> implements lnc.Observer {
       }
     }),
   );
+  TextInputType _inputType() {
+    String? type = widget.extra?['input_type'];
+    switch (type) {
+      case 'text':
+        return TextInputType.text;
+
+      case 'number':
+        return TextInputType.number;
+
+      case 'phone':
+        return TextInputType.phone;
+
+      case 'datetime':
+        return TextInputType.datetime;
+
+      case 'email':
+        return TextInputType.emailAddress;
+
+      case 'url':
+        return TextInputType.url;
+    }
+    // default
+    return TextInputType.multiline;
+  }
+  TextInputAction _inputAction() {
+    String? action = widget.extra?['input_action'];
+    switch (action) {
+      case 'go':
+        return TextInputAction.go;
+
+      case 'search':
+        return TextInputAction.search;
+
+      case 'send':
+        return TextInputAction.send;
+    }
+    // default
+    return TextInputAction.newline;
+  }
+
+  Icon _sendButtonIcon() {
+    String? action = widget.extra?['input_action'];
+    switch (action) {
+      case 'search':
+        return const Icon(AppIcons.searchIcon);
+    }
+    return const Icon(AppIcons.chatSendIcon);
+  }
 
   String? _lastCharacter(String text) {
     String last = _lastText;

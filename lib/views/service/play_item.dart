@@ -160,7 +160,7 @@ class _PlayItemState extends State<PlaylistItem> with Logging implements lnc.Obs
     );
     view = Container(
       color: Styles.colors.textMessageBackgroundColor,
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.only(bottom: 8),
       child: Column(
         children: [
           const CupertinoActivityIndicator(),
@@ -182,7 +182,7 @@ class _PlayItemState extends State<PlaylistItem> with Logging implements lnc.Obs
     view = Container(
       color: Styles.colors.textMessageBackgroundColor,
       alignment: Alignment.center,
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.only(bottom: 8),
       child: view,
     );
     return view;

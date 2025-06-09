@@ -5,6 +5,7 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:dim_flutter/dim_flutter.dart';
 import 'package:lnc/notification.dart' as lnc;
 
+import '../chat/chat_box.dart';
 import 'play_item.dart';
 import 'play_manager.dart';
 
@@ -103,7 +104,7 @@ class _PlaylistState extends State<PlaylistPage> with Logging implements lnc.Obs
     if (content == null) {
       // query for new records
       logInfo('query playlist first: ${widget.title}');
-      await _query(null, isRefresh: false);
+      await _query(null, isRefresh: true);
     } else {
       logInfo('query playlist again: ${widget.title}');
       await _query(content, isRefresh: false);
@@ -145,7 +146,7 @@ class _PlaylistState extends State<PlaylistPage> with Logging implements lnc.Obs
       // body empty
     } else {
       double width = MediaQuery.of(context).size.width;
-      int axisCount = width ~/ 200;
+      int axisCount = width ~/ 128;
       body = MasonryGridView.count(
         crossAxisCount: axisCount,
         mainAxisSpacing: 4,
@@ -176,11 +177,19 @@ class _PlaylistState extends State<PlaylistPage> with Logging implements lnc.Obs
         backgroundColor: Styles.colors.appBardBackgroundColor,
         // backgroundColor: Styles.themeBarBackgroundColor,
         middle: StatedTitleView.from(context, () => widget.title),
-        trailing: _refreshBtn(),
+        trailing: _trailing(_refreshBtn(), _searchBtn(context)),
       ),
       child: body,
     );
   }
+
+  Widget _trailing(Widget btn1, Widget btn2) => Row(
+    mainAxisSize: MainAxisSize.min,
+    children: [
+      btn1,
+      btn2,
+    ],
+  );
 
   Widget _refreshBtn() => IconButton(
     icon: const Icon(AppIcons.refreshIcon, size: 16),
@@ -205,6 +214,11 @@ class _PlaylistState extends State<PlaylistPage> with Logging implements lnc.Obs
     // query
     _query(null, isRefresh: true);
   }
+
+  Widget _searchBtn(BuildContext context) => IconButton(
+    icon: const Icon(AppIcons.searchIcon, size: 16),
+    onPressed: () => ChatBox.open(context, widget.chat, widget.info),
+  );
 
 }
 
