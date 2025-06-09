@@ -5,6 +5,7 @@ import 'package:lnc/notification.dart' as lnc;
 
 import '../sharing/share_page.dart';
 import '../sharing/share_video.dart';
+import 'play_manager.dart';
 
 
 class Season extends Dictionary {
@@ -89,20 +90,18 @@ class _PlayItemState extends State<PlaylistItem> with Logging implements lnc.Obs
     String name = notification.name;
     Map? userInfo = notification.userInfo;
     if (name == NotificationNames.kVideoItemUpdated) {
-      logInfo('video info updated: $name, $userInfo');
+      logInfo('video item updated: $name');
       var content = userInfo?['cmd'];
-      if (content is Content) {
+      Map? season = userInfo?['season'];
+      if (season?['page'] == widget.info['page']) {
+        logInfo('video info updated: $name, ${season?["name"]}');
+        assert(content is Content, 'video content error: $content');
         await _refreshPlayInfo(content, isRefresh: true);
       }
     }
   }
 
   Future<bool> _refreshPlayInfo(Content content, {required bool isRefresh}) async {
-    Map? season = content['season'];
-    season ??= content;
-    if (season['page'] != widget.info['page']) {
-      return false;
-    }
     var format = content['format'];
     var text = content['text'];
     logInfo('refreshing play item with format: $format, size: ${text?.length}');
@@ -127,17 +126,18 @@ class _PlayItemState extends State<PlaylistItem> with Logging implements lnc.Obs
     if (content == null) {
       // query for new records
       logInfo('query video info first');
-      await _query();
+      await _query(null);
       return;
     }
     // check record time
     var time = content.time;
     if (time == null) {
       logError('video info error: $content');
-      await _query();
+      await _query(content);
     } else if (content['format'] != 'markdown') {
+      // FIXME:
       logError('video format error: $content');
-      await _query();
+      await _query(null);
     } else {
       int? expires = content.getInt('expires', null);
       if (expires == null || expires <= 8) {
@@ -147,31 +147,23 @@ class _PlayItemState extends State<PlaylistItem> with Logging implements lnc.Obs
       var now = DateTime.now().millisecondsSinceEpoch;
       if (now > later) {
         logInfo('query video info again');
-        await _query();
+        await _query(content);
       }
     }
     // refresh with content loaded
     await _refreshPlayInfo(content, isRefresh: false);
   }
   // query for new records
-  Future<void> _query() async {
-    GlobalVariable shared = GlobalVariable();
-    SharedMessenger? messenger = shared.messenger;
-    if (messenger == null) {
-      logError('messenger not set, not connect yet?');
-      return;
-    }
-    Season season = widget.info;
-    String page = season['page'];
-    // build command
-    var content = CustomizedContent.create(app: 'chat.dim.video', mod: 'season', act: 'request');
-    content['page'] = page;
-    content['format'] = 'markdown';
-    content['hidden'] = true;
-    // TODO: check visa.key
+  Future<bool> _query(Content? content) async {
+    // check content load from local cache
     ID bot = widget.chat.identifier;
-    logInfo('query video info: "$page"');
-    await messenger.sendContent(content, sender: null, receiver: bot);
+    Uri? page = widget.info.page;
+    if (page == null) {
+      assert(false, 'season info error: ${widget.info}');
+      return false;
+    }
+    var man = PlaylistManager();
+    return await man.updateSeason(content, page, bot);
   }
 
   @override

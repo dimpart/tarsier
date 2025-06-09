@@ -6,6 +6,7 @@ import 'package:dim_flutter/dim_flutter.dart';
 import 'package:lnc/notification.dart' as lnc;
 
 import 'play_item.dart';
+import 'play_manager.dart';
 
 
 class PlaylistPage extends StatefulWidget {
@@ -63,8 +64,12 @@ class _PlaylistState extends State<PlaylistPage> with Logging implements lnc.Obs
     }
   }
 
-  Future<void> _refreshPlaylist(Content content, {required bool isRefresh}) async {
-    List playlist = content['playlist'] ?? [];
+  Future<bool> _refreshPlaylist(Content content, {required bool isRefresh}) async {
+    var man = PlaylistManager();
+    List? playlist = await man.updatePlaylist(content, widget.chat.identifier);
+    if (playlist == null) {
+      return false;
+    }
     // check tag
     int? tag = content['tag'];
     if (!isRefresh) {
@@ -78,7 +83,7 @@ class _PlaylistState extends State<PlaylistPage> with Logging implements lnc.Obs
     } else {
       // expired response
       logWarning('query tag not match, ignore this response: $tag <> $_queryTag');
-      return;
+      return false;
     }
     // refresh if not empty
     if (playlist.isNotEmpty) {
@@ -90,6 +95,7 @@ class _PlaylistState extends State<PlaylistPage> with Logging implements lnc.Obs
         //
       });
     }
+    return true;
   }
 
   Future<void> _load() async {
