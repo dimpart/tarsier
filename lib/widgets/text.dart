@@ -7,38 +7,39 @@ import 'package:markdown/markdown.dart' as md;
 
 import 'package:dim_flutter/dim_flutter.dart';
 
-import '../views/sharing/pick_chat.dart';
-import '../views/sharing/share_contact.dart';
+import '../sharing/pick_chat.dart';
+import '../sharing/share_contact.dart';
 
 
 class TextPreviewPage extends StatefulWidget {
   const TextPreviewPage({super.key,
-    required this.sender,
     required this.text,
+    required this.format,
+    required this.sender,
     required this.onWebShare,
     required this.onVideoShare,
-    this.previewing = false,
   });
 
-  final ID sender;
   final String text;
+  final String? format;
+  final ID sender;
   final OnWebShare? onWebShare;
   final OnVideoShare? onVideoShare;
-  final bool previewing;
 
   static void open(BuildContext ctx, {
-    required String text,
     required ID sender,
+    required String text,
+    required String? format,
     required OnWebShare? onWebShare,
     required OnVideoShare? onVideoShare,
-    bool previewing = false
   }) => showPage(
     context: ctx,
-    builder: (context) => TextPreviewPage(text: text,
+    builder: (context) => TextPreviewPage(
+      text: text,
+      format: format,
       sender: sender,
       onWebShare: onWebShare,
       onVideoShare: onVideoShare,
-      previewing: previewing,
     ),
   );
 
@@ -56,7 +57,7 @@ class _TextPreviewState extends State<TextPreviewPage> {
   void initState() {
     super.initState();
     setState(() {
-      _previewing = widget.previewing;
+      _previewing = widget.format == 'markdown';
     });
     _refresh();
   }
@@ -77,7 +78,7 @@ class _TextPreviewState extends State<TextPreviewPage> {
     appBar: CupertinoNavigationBar(
       backgroundColor: Styles.colors.appBardBackgroundColor,
       previousPageTitle: _back,
-      trailing: _previewing ? _richButton() : _plainButton(),
+      trailing: _trailing(_shareBtn(context), _previewing ? _richButton() : _plainButton()),
     ),
     body: GestureDetector(
       child: Column(
@@ -95,13 +96,29 @@ class _TextPreviewState extends State<TextPreviewPage> {
     ),
   );
 
-  Widget _body() => Container(
-    padding: const EdgeInsets.fromLTRB(32, 32, 32, 64),
-    alignment: AlignmentDirectional.centerStart,
-    color: Styles.colors.textMessageBackgroundColor,
-    child: _previewing ? _richText() : _plainText(),
+  Widget _trailing(Widget btn1, Widget btn2) => Row(
+    mainAxisSize: MainAxisSize.min,
+    children: [
+      btn1,
+      btn2,
+    ],
   );
-
+  Widget _shareBtn(BuildContext ctx) => IconButton(
+    icon: const Icon(AppIcons.shareIcon,
+      color: CupertinoColors.systemGrey,
+      size: 24,
+    ),
+    onPressed: () => PickChatPage.open(ctx,
+      onPicked: (chat) => Alert.confirm(ctx, 'Confirm Forward',
+        _sharePreview(widget.text, chat),
+        okAction: () => _shareMarkdown(
+          text: widget.text,
+          format: widget.format,
+          receiver: chat.identifier,
+        ),
+      ),
+    ),
+  );
   Widget _plainButton() => IconButton(
     icon: const Icon(AppIcons.plainTextIcon,
       color: CupertinoColors.systemGrey,
@@ -117,6 +134,12 @@ class _TextPreviewState extends State<TextPreviewPage> {
     onPressed: () => setState(() => _previewing = false),
   );
 
+  Widget _body() => Container(
+    padding: const EdgeInsets.fromLTRB(32, 32, 32, 64),
+    alignment: AlignmentDirectional.centerStart,
+    color: Styles.colors.textMessageBackgroundColor,
+    child: _previewing ? _richText() : _plainText(),
+  );
   Widget _plainText() => SelectableText(
     widget.text,
     style: const TextStyle(
@@ -131,6 +154,36 @@ class _TextPreviewState extends State<TextPreviewPage> {
   );
 
 }
+
+Future<bool> _shareMarkdown({
+  required String text,
+  required String? format,
+  required ID receiver
+}) async {
+  var content = TextContent.create(text);
+  if (format != null) {
+    content['format'] = format;
+  }
+  // if (receiver.isGroup) {
+  //   content.group = receiver;
+  // }
+  GlobalVariable shared = GlobalVariable();
+  await shared.emitter.sendContent(content, receiver: receiver);
+  return true;
+}
+
+Widget _sharePreview(String title, Conversation chat) {
+  Widget to = previewEntity(chat);
+  Widget from = _previewText(title);
+  return forwardPreview(from, to);
+}
+Widget _previewText(String text) => SizedBox(
+  width: 64,
+  child: Text(text,
+    maxLines: 3,
+    overflow: TextOverflow.ellipsis,
+  ),
+);
 
 
 class RichTextView extends StatefulWidget {
@@ -263,9 +316,10 @@ abstract class _MarkdownUtils {
           Alert.show(context, 'Error', 'Data error: "$href"');
         } else {
           TextPreviewPage.open(context,
-            text: plain, sender: sender,
+            text: plain,
+            format: 'markdown',
+            sender: sender,
             onWebShare: onWebShare, onVideoShare: onVideoShare,
-            previewing: true,
           );
         }
       } else {

@@ -2,14 +2,14 @@ import 'package:flutter/widgets.dart';
 
 import 'package:dim_flutter/dim_flutter.dart';
 
+import '../../sharing/share_contact.dart';
+import '../../sharing/share_image.dart';
+import '../../sharing/share_page.dart';
+import '../../sharing/share_text.dart';
+import '../../sharing/share_video.dart';
 import '../../widgets/message.dart';
 import '../../widgets/text.dart';
 import '../contact/profile.dart';
-import '../sharing/share_contact.dart';
-import '../sharing/share_image.dart';
-import '../sharing/share_page.dart';
-import '../sharing/share_text.dart';
-import '../sharing/share_video.dart';
 
 
 abstract class ContentViewHelper {
@@ -150,10 +150,7 @@ abstract class ContentViewHelper {
 
   static Widget getTextContentView(BuildContext ctx, Content content, Envelope envelope) {
     ID sender = envelope.sender;
-    // bool mine = sender == ContentViewUtils.currentUser?.identifier;
-    // var format = content.getString('format', null);
-    // bool plain = mine || format != 'markdown';
-    // bool plain = format != 'markdown';
+    String? format = content.getString('format', null);
     String text = DefaultMessageBuilder().getText(content, sender);
     // action - onWebShare
     onWebShare(url, {required title, required desc, required icon}) =>
@@ -162,11 +159,11 @@ abstract class ContentViewHelper {
     onVideoShare(playingItem) => ShareVideo.shareVideo(ctx, playingItem);
     // action - onDoubleTap
     openText() => TextPreviewPage.open(ctx,
-      text: text, sender: sender,
+      text: text,
+      format: format,
+      sender: sender,
       onWebShare: onWebShare,
       onVideoShare: onVideoShare,
-      // previewing: plain,
-      previewing: false,
     );
     // action - delete
     deleteMessage() => _deleteMessage(ctx, content, envelope);

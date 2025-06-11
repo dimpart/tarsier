@@ -4,9 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:dim_flutter/dim_flutter.dart';
 import 'package:lnc/notification.dart' as lnc;
 
+import '../../sharing/pick_chat.dart';
+import '../../sharing/share_contact.dart';
 import '../chat/chat_box.dart';
-import '../sharing/pick_chat.dart';
-import '../sharing/share_contact.dart';
 import '../services.dart';
 
 

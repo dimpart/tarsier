@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 
 import 'package:dim_flutter/dim_flutter.dart';
 
+import 'name_card.dart';
 import 'text.dart';
+import 'web_page.dart';
 
 
 abstract class ContentViewUtils {

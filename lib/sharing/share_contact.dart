@@ -2,6 +2,8 @@ import 'package:flutter/widgets.dart';
 
 import 'package:dim_flutter/dim_flutter.dart';
 
+import '../widgets/name_card.dart';
+
 import 'pick_chat.dart';
 
 

@@ -4,11 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:dim_flutter/dim_flutter.dart';
 import 'package:lnc/notification.dart' as lnc;
 
+import '../../sharing/pick_chat.dart';
+import '../../sharing/share_contact.dart';
+import '../../sharing/share_page.dart';
+import '../../sharing/share_video.dart';
 import '../../widgets/text.dart';
-import '../sharing/pick_chat.dart';
-import '../sharing/share_contact.dart';
-import '../sharing/share_page.dart';
-import '../sharing/share_video.dart';
 
 
 class WebSitePage extends StatefulWidget {
