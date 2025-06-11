@@ -2,6 +2,8 @@ import 'package:flutter/widgets.dart';
 
 import 'package:dim_flutter/dim_flutter.dart';
 
+import '../../widgets/message.dart';
+import '../../widgets/text.dart';
 import '../contact/profile.dart';
 import '../sharing/share_contact.dart';
 import '../sharing/share_image.dart';

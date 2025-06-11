@@ -5,6 +5,7 @@ import 'package:flutter_section_list/flutter_section_list.dart';
 import 'package:dim_flutter/dim_flutter.dart';
 import 'package:lnc/notification.dart' as lnc;
 
+import '../../widgets/message.dart';
 import '../contact/profile.dart';
 
 import 'chat_content.dart';

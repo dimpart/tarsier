@@ -3,8 +3,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:dim_flutter/dim_flutter.dart';
 import 'package:lnc/notification.dart' as lnc;
 
+import '../../widgets/text.dart';
 import '../sharing/share_page.dart';
 import '../sharing/share_video.dart';
+
 import 'play_manager.dart';
 
 
@@ -160,7 +162,7 @@ class _PlayItemState extends State<PlaylistItem> with Logging implements lnc.Obs
     );
     view = Container(
       color: Styles.colors.textMessageBackgroundColor,
-      padding: const EdgeInsets.only(bottom: 8),
+      padding: const EdgeInsets.all(8),
       child: Column(
         children: [
           const CupertinoActivityIndicator(),
@@ -182,7 +184,7 @@ class _PlayItemState extends State<PlaylistItem> with Logging implements lnc.Obs
     view = Container(
       color: Styles.colors.textMessageBackgroundColor,
       alignment: Alignment.center,
-      padding: const EdgeInsets.only(bottom: 8),
+      padding: const EdgeInsets.all(8),
       child: view,
     );
     return view;
