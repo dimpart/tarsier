@@ -7,7 +7,7 @@ import 'package:lnc/notification.dart' as lnc;
 import '../../sharing/pick_chat.dart';
 import '../../sharing/share_contact.dart';
 import '../chat/chat_box.dart';
-import '../services.dart';
+import '../service/base.dart';
 
 
 class ProfilePage extends StatefulWidget {
@@ -16,12 +16,12 @@ class ProfilePage extends StatefulWidget {
   final ContactInfo info;
   final ID? fromChat;
 
-  final List<Map> _services = [];
-  List<Map> get services {
+  final List<ServiceInfo> _services = [];
+  List<ServiceInfo> get services {
     if (_services.isEmpty) {
       var array = info.visa?.getProperty('services');
       if (array is List) {
-        _services.addAll(fetchServices(array));
+        _services.addAll(ServiceInfo.convert(array));
       }
     }
     return _services;
@@ -316,7 +316,7 @@ class _ProfileState extends State<ProfilePage> with Logging implements lnc.Obser
     ],
   );
 
-  List<Widget> _serviceList(BuildContext context, List<Map> services, {
+  List<Widget> _serviceList(BuildContext context, List<ServiceInfo> services, {
     required Color backgroundColor,
     required Color backgroundColorActivated,
     // required Color dividerColor,
@@ -326,16 +326,15 @@ class _ProfileState extends State<ProfilePage> with Logging implements lnc.Obser
   }) {
     List<Widget> items = [];
     for (var info in services) {
-      var title = info['title'] ?? info['name'];
-      var subtitle = info['subtitle'] ?? info['provider'];
+      var subtitle = info.subtitle ?? info.provider;
       items.add(CupertinoListTile(
         backgroundColor: backgroundColor,
         backgroundColorActivated: backgroundColorActivated,
         padding: Styles.settingsSectionItemPadding,
-        title: Text('$title', style: TextStyle(color: primaryTextColor)),
-        additionalInfo: Text('$subtitle'),
+        title: Text(info.title, style: TextStyle(color: primaryTextColor)),
+        additionalInfo: subtitle == null ? null : Text(subtitle),
         trailing: const CupertinoListTileChevron(),
-        onTap: () => openService(context, info),
+        onTap: () => info.open(context),
       ));
     }
     return items;
