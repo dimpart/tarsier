@@ -81,6 +81,10 @@ class _ChatBoxState extends State<ChatBox> implements lnc.Observer {
     nc.removeObserver(this, NotificationNames.kMembersUpdated);
     nc.removeObserver(this, NotificationNames.kBlockListUpdated);
     nc.removeObserver(this, NotificationNames.kMessageUpdated);
+    // post notification
+    nc.postNotification(NotificationNames.kChatBoxClosed, this, {
+      'ID': widget.info.identifier,
+    });
     super.dispose();
   }
 

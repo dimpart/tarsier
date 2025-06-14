@@ -35,6 +35,7 @@ class _PlaylistState extends State<PlaylistPage> with Logging implements lnc.Obs
 
     var nc = lnc.NotificationCenter();
     nc.addObserver(this, NotificationNames.kPlaylistUpdated);
+    nc.addObserver(this, NotificationNames.kChatBoxClosed);
   }
 
   late final _PlaylistSource _dataSource;
@@ -46,6 +47,7 @@ class _PlaylistState extends State<PlaylistPage> with Logging implements lnc.Obs
   @override
   void dispose() {
     var nc = lnc.NotificationCenter();
+    nc.removeObserver(this, NotificationNames.kChatBoxClosed);
     nc.removeObserver(this, NotificationNames.kPlaylistUpdated);
     super.dispose();
   }
@@ -59,6 +61,12 @@ class _PlaylistState extends State<PlaylistPage> with Logging implements lnc.Obs
       var content = userInfo?['cmd'];
       if (content is Content) {
         await _refreshPlaylist(content, isRefresh: true);
+      }
+    } else if (name == NotificationNames.kChatBoxClosed) {
+      var bot = userInfo?['ID'];
+      if (bot == widget.chat.identifier) {
+        // query to update playlist
+        _query(null, isRefresh: true);
       }
     }
   }
@@ -146,7 +154,7 @@ class _PlaylistState extends State<PlaylistPage> with Logging implements lnc.Obs
       // body empty
     } else {
       double width = MediaQuery.of(context).size.width;
-      int axisCount = width ~/ 128;
+      int axisCount = width ~/ 192;
       body = MasonryGridView.count(
         crossAxisCount: axisCount,
         mainAxisSpacing: 4,

@@ -4,6 +4,7 @@ import 'package:dim_flutter/dim_flutter.dart';
 import 'package:lnc/notification.dart' as lnc;
 
 import '../../sharing/share_page.dart';
+import '../../sharing/share_text.dart';
 import '../../sharing/share_video.dart';
 import '../../widgets/text.dart';
 
@@ -185,6 +186,17 @@ class _PlayItemState extends State<PlaylistItem> with Logging implements lnc.Obs
       color: Styles.colors.textMessageBackgroundColor,
       alignment: Alignment.center,
       padding: const EdgeInsets.all(8),
+      child: view,
+    );
+    // gesture to forward rich text
+    var content = TextContent.create(text);
+    content['format'] = 'markdown';
+    view = GestureDetector(
+      onLongPress: () => Alert.actionSheet(ctx, null, null,
+        // forward
+        Alert.action(AppIcons.shareIcon, 'Forward Rich Text'),
+            () => ShareTextMessage.forwardTextMessage(ctx, content, sender),
+      ),
       child: view,
     );
     return view;
