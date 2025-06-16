@@ -79,8 +79,9 @@ abstract class ServiceInfo extends Dictionary {
       assert(false, 'service info error: $service');
       return null;
     }
-    // check ID
-    if (ID.parse(info['ID'])?.type != EntityType.BOT) {
+    // check bot ID
+    var bot = ID.parse(info['ID']);
+    if (bot?.type != EntityType.BOT) {
       Log.error('service bot error: $info');
       return null;
     }
@@ -138,7 +139,7 @@ class _ServiceFactory {
 
       default:
         callback = (ctx, bot, info) {
-          Log.error('unknown service type: $st, bot: ${bot.name}');
+          Log.error('unknown service type: $st, bot: ${bot.name}, info: $info');
           Alert.show(ctx, 'Upgrade', 'Current version not support this service'.tr);
         };
         break;
@@ -149,7 +150,7 @@ class _ServiceFactory {
 
 }
 
-typedef _OpenService = void Function(BuildContext ctx, ContactInfo bot, ServiceInfo info);
+typedef _OpenService = void Function(BuildContext ctx, ContactInfo bot, Map info);
 
 class _ServiceItem extends ServiceInfo {
   _ServiceItem(super.dict, this._callback);
@@ -163,7 +164,7 @@ class _ServiceItem extends ServiceInfo {
     if (bot == null) {
       return false;
     }
-    _callback(context, bot, this);
+    _callback(context, bot, toMap());
     return true;
   }
 

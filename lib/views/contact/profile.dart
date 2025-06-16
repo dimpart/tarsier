@@ -6,6 +6,7 @@ import 'package:lnc/notification.dart' as lnc;
 
 import '../../sharing/pick_chat.dart';
 import '../../sharing/share_contact.dart';
+import '../../widgets/text.dart';
 import '../chat/chat_box.dart';
 import '../service/base.dart';
 
@@ -118,10 +119,20 @@ class _ProfileState extends State<ProfilePage> with Logging implements lnc.Obser
     }
   }
 
+  Future<void> _refresh() async {
+    var shared = GlobalVariable();
+    var facebook = shared.facebook;
+    ID identifier = widget.info.identifier;
+    List<Document> docs = await facebook.getDocuments(identifier);
+    logInfo('refreshing ${docs.length} document(s) "${widget.info.name}" $identifier');
+    await facebook.checker?.queryDocuments(identifier, docs);
+  }
+
   @override
   void initState() {
     super.initState();
     _reload();
+    _refresh();
   }
 
   @override
@@ -229,7 +240,8 @@ class _ProfileState extends State<ProfilePage> with Logging implements lnc.Obser
             backgroundColorActivated: backgroundColorActivated,
             padding: Styles.settingsSectionItemPadding,
             title: Text('App'.tr, style: TextStyle(color: primaryTextColor)),
-            additionalInfo: Text(widget.info.clientInfo ?? 'Unknown'.tr),
+            // additionalInfo: Text(widget.info.clientInfo ?? 'Unknown'.tr),
+            additionalInfo: _appInfo(context, widget.info),
           ),
         ],
       ),
@@ -315,6 +327,66 @@ class _ProfileState extends State<ProfilePage> with Logging implements lnc.Obser
 
     ],
   );
+
+  Widget _appInfo(BuildContext context, ContactInfo? info) {
+    // get client info - "name (os; store) version"
+    String? clientInfo = info?.clientInfo;
+    clientInfo ??= 'Unknown'.tr;
+    // get app/sys info from visa
+    Visa? visa = info?.visa;
+    var app = visa?.getProperty('app');
+    var sys = visa?.getProperty('sys');
+    if (app == null && sys == null) {
+      return Text(clientInfo);
+    }
+    // show for debugging
+    return GestureDetector(
+      child: Text(clientInfo),
+      onDoubleTap: () => _showAppInfo(context, app: app, sys: sys),
+    );
+  }
+
+  void _showAppInfo(BuildContext context, {dynamic app, dynamic sys}) {
+    var text = '';
+    // show app info
+    if (app is Map) {
+      text += '## visa.app\n';
+      text += '| Key | Value |\n';
+      text += '|-----|-------|\n';
+      app.forEach((key, value) {
+        text += '| $key | $value |\n';
+      });
+      text += '\n';
+    } else {
+      text += 'visa.app: $app\n';
+    }
+    // show sys info
+    if (sys is Map) {
+      text += '## visa.sys\n';
+      text += '| Key | Value |\n';
+      text += '|-----|-------|\n';
+      sys.forEach((key, value) {
+        text += '| $key | $value |\n';
+      });
+      text += '\n';
+    } else {
+      text += 'visa.sys: $sys\n';
+    }
+    Widget body = RichTextView(text: text,
+      sender: ID.FOUNDER, onWebShare: null, onVideoShare: null,
+    );
+    body = buildScrollView(
+      child: body,
+    );
+    body = SizedBox(
+      height: 320,
+      child: body,
+    );
+    return FrostedGlassPage.show(context,
+      title: 'Client Info'.tr,
+      body: body,
+    );
+  }
 
   List<Widget> _serviceList(BuildContext context, List<ServiceInfo> services, {
     required Color backgroundColor,
