@@ -125,7 +125,7 @@ class _ProfileState extends State<ProfilePage> with Logging implements lnc.Obser
     ID identifier = widget.info.identifier;
     List<Document> docs = await facebook.getDocuments(identifier);
     logInfo('refreshing ${docs.length} document(s) "${widget.info.name}" $identifier');
-    await facebook.checker?.queryDocuments(identifier, docs);
+    await facebook.entityChecker?.queryDocuments(identifier, docs);
   }
 
   @override

@@ -351,16 +351,17 @@ class _AccountState extends State<AccountPage> {
     Uint8List? sig = visa.sign(sKey);
     assert(sig != null, 'failed to sign visa: $visa, $user');
     // 5. save it
-    bool ok = await shared.facebook.saveDocument(visa)
+    var archivist = shared.facebook.archivist;
+    bool? ok = await archivist?.saveDocument(visa)
         .onError((error, stackTrace) {
           if (context.mounted) {
             Alert.show(context, 'Error', 'Failed to save visa'.tr);
           }
           return false;
         });
-    assert(ok, 'failed to save visa: $visa');
+    assert(ok == true, 'failed to save visa: $visa');
     Log.info('visa updated: $ok, $visa');
-    if (ok) {
+    if (ok == true) {
       // broadcast this document to all friends
       try {
         await shared.messenger?.broadcastDocuments(updated: true);
@@ -368,7 +369,7 @@ class _AccountState extends State<AccountPage> {
         Log.error('failed to broadcast document: $user, error: $e, $st');
       }
     }
-    return ok;
+    return ok == true;
   }
 
   /*

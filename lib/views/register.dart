@@ -490,7 +490,7 @@ Future<Pair<PrivateKey?, String?>?> _saveMnemonic(_RegisterInfo info) async {
     Log.debug('mnemonic error: [$mnemonic]');
     return null;
   }
-  int version = Account.type;
+  String version = Account.type;
   if (version == MetaType.ETH || version == MetaType.ExETH) {
     return Pair(await keychain.ethKey, await keychain.ethAddress);
   } else {

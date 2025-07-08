@@ -22,7 +22,7 @@ void main() async {
   /// TODO: set distribution channel name
 
   // Set log level
-  Log.level = Log.kDevelop;
+  Log.level = Log.DEVELOP;
   // Log.level = Log.kRelease;
   if (DevicePlatform.isIOS) {
     Log.colorful = false;
@@ -33,7 +33,7 @@ void main() async {
     Log.showTime = true;
     Log.showCaller = true;
   }
-  bool debug = Log.level != Log.kRelease;
+  bool debug = Log.level != Log.RELEASE;
 
   // Check Brightness & Language
   await initFacade();
