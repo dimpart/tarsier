@@ -15,13 +15,13 @@ class Season extends Dictionary {
   Season(super.dict);
 
   /// video name
-  String get name => getString('name', '')!;
+  String get name => getString('name') ?? '';
 
   /// playing page URL
   Uri? get page => HtmlUri.parseUri(this['page']);
 
   /// create time
-  DateTime? get time => getDateTime('time', null);
+  DateTime? get time => getDateTime('time');
 
   @override
   String toString() {
@@ -148,8 +148,8 @@ class _PlayItemState extends State<PlaylistItem> with Logging implements lnc.Obs
   @override
   Widget build(BuildContext context) {
     Season season = widget.info;
-    String? format = season.getString('format', null);
-    String? text = season.getString('text', null);
+    String? format = season.getString('format');
+    String? text = season.getString('text');
     if (format == 'markdown' && text != null) {
       return _richTextView(context, text);
     } else {

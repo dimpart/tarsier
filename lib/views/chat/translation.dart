@@ -16,7 +16,7 @@ class TranslatableView extends StatefulWidget {
   final ID sender;
 
   bool matchContent(TranslateContent tr) {
-    String? text = content.getString('text', null);
+    String? text = content.getString('text');
     return tr.result?.text == text || tr.tag == content.sn;
   }
 
@@ -89,7 +89,7 @@ class _TranslateState extends State<TranslatableView> implements lnc.Observer {
     //
     //  1. fetch translation record
     //
-    String text = widget.content.getString('text', '')!;
+    String text = widget.content.getString('text') ?? '';
     int tag = widget.content.sn;
     TranslateContent? record = tr.fetch(text, tag);
     String? local = record?.text;
@@ -101,7 +101,7 @@ class _TranslateState extends State<TranslatableView> implements lnc.Observer {
         warning = tr.warning;
         btn = const CupertinoActivityIndicator(radius: 6,);
       } else {
-        String? format = widget.content.getString('format', null);
+        String? format = widget.content.getString('format');
         btn = _translateButton(context, text, tag, format: format);
       }
       btn = Container(
@@ -194,7 +194,7 @@ class _TranslateState extends State<TranslatableView> implements lnc.Observer {
     if (record.folded) {
       return null;
     }
-    String? format = record.getString('format', null);
+    String? format = record.getString('format');
     String text = record.text ?? '';
     if (format == 'markdown' && text.isNotEmpty) {
       return RichTextView(sender: widget.sender, text: text,

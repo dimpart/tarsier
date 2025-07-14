@@ -43,7 +43,7 @@ class PlaylistManager with Logging {
         continue;
       }
       page = HtmlUri.parseUri(item['page']);
-      time = Converter.getDateTime(item['time'], null);
+      time = Converter.getDateTime(item['time']);
       if (page == null || time == null) {
         assert(false, 'play item error: $item');
         continue;
@@ -60,7 +60,7 @@ class PlaylistManager with Logging {
       return true;
     }
     Uri? page = HtmlUri.parseUri(season['page']);
-    DateTime? time = Converter.getDateTime(season['time'], null);
+    DateTime? time = Converter.getDateTime(season['time']);
     if (page == null || time == null) {
       assert(false, 'season error: $season');
       return true;
@@ -99,7 +99,7 @@ class PlaylistManager with Logging {
     }
     DateTime now = DateTime.now();
     DateTime expiredTime;
-    int? expires = content.getInt('expires', null);
+    int? expires = content.getInt('expires');
     if (expires != null && expires > 8) {
       expiredTime = time.add(Duration(seconds: expires));
     } else {

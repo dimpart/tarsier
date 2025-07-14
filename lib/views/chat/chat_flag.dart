@@ -2,7 +2,6 @@ import 'package:flutter/cupertino.dart';
 
 import 'package:dim_flutter/dim_flutter.dart';
 import 'package:lnc/notification.dart' as lnc;
-import 'package:lnc/time.dart';
 
 
 class ChatSendFlag extends StatefulWidget {
@@ -106,7 +105,7 @@ class _SendState extends State<ChatSendFlag> implements lnc.Observer {
     } else if (signature.length > 8) {
       signature = signature.substring(signature.length - 8);
     }
-    String? sig = iMsg.getString('signature', null);
+    String? sig = iMsg.getString('signature');
     if (sig == null) {
       Log.warning('signature not found');
       return false;
@@ -194,7 +193,7 @@ class _SendState extends State<ChatSendFlag> implements lnc.Observer {
     GlobalVariable shared = GlobalVariable();
     ID sender = widget.iMsg.sender;
     int sn = widget.iMsg.content.sn;
-    String? signature = widget.iMsg.getString('signature', null);
+    String? signature = widget.iMsg.getString('signature');
     List<String> traces = await shared.database.getTraces(sender, sn, signature);
     Log.info('got ${traces.length} traces for message: $sender, $sn, $signature');
     // count respond

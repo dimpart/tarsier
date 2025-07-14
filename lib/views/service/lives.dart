@@ -116,7 +116,7 @@ class _LiveSourceListState extends State<LiveSourceListPage> with Logging implem
       logError('lives content error: $content');
       await _query();
     } else {
-      int? expires = content.getInt('expires', null);
+      int? expires = content.getInt('expires');
       if (expires == null || expires <= 8) {
         expires = kLiveQueryExpires.inSeconds;
       }
@@ -328,12 +328,12 @@ class _LiveSourceState extends State<_LiveSourceItem> {
   String get title {
     TVBox tvBox = widget.tvBox;
     // get "title"
-    String? text = tvBox.getString('title', null);
+    String? text = tvBox.getString('title');
     if (text != null && text.isNotEmpty) {
       return text;
     }
     // get "name (count/total)"
-    String? name = tvBox.getString('name', null);
+    String? name = tvBox.getString('name');
     String count = _counter(tvBox);
     if (name == null || name.isEmpty) {
       return '$count channels';
@@ -363,7 +363,7 @@ class _LiveSourceState extends State<_LiveSourceItem> {
   String get subtitle {
     TVBox tvBox = widget.tvBox;
     // get "subtitle"
-    String? text = tvBox.getString('subtitle', null);
+    String? text = tvBox.getString('subtitle');
     if (text != null && text.isNotEmpty) {
       return text;
     }

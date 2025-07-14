@@ -71,7 +71,7 @@ abstract class ContentViewUtils {
     required OnWebShare? onWebShare,
     required OnVideoShare? onVideoShare,
   }) {
-    var format = content.getString('format', null);
+    var format = content.getString('format');
     bool mine = sender == currentUser?.identifier;
     // bool plain = mine || format != 'markdown';
     bool plain = format != 'markdown';

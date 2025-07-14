@@ -557,7 +557,7 @@ class _HistoryDataSource {
     Log.debug('sort and refreshing ${history.length} message(s)');
     List<InstantMessage> array = [];
     for (var his in history) {
-      if (his.content.getBool('hidden', false) == true) {
+      if (his.content.getBool('hidden') == true) {
         continue;
       }
       array.add(his);

@@ -23,15 +23,15 @@ import 'users.dart';
 abstract class ServiceInfo extends Dictionary {
   ServiceInfo(super.dict);
 
-  String get type => getString('type', '')!;
+  String get type => getString('type') ?? '';
 
   ID get identifier => ID.parse(this['ID'])!;
 
-  String get title => getString('title', '')!;
+  String get title => getString('title') ?? '';
 
-  String? get subtitle => getString('subtitle', null);
+  String? get subtitle => getString('subtitle');
 
-  String? get provider => getString('provider', null);
+  String? get provider => getString('provider');
 
   PortableNetworkFile? get icon => PortableNetworkFile.parse(this['icon']);
 
@@ -108,7 +108,7 @@ class _ServiceFactory {
   ServiceInfo? parseService(Map service) {
     _OpenService callback;
     // check service type
-    String st = Converter.getString(service['type'], '')!;
+    String? st = Converter.getString(service['type']);
     switch (st) {
 
       // chat box

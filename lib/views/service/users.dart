@@ -119,7 +119,7 @@ class _SearchState extends State<UserListPage> with Logging implements lnc.Obser
       logError('active users content error: $content');
       await _query();
     } else {
-      int? expires = content.getInt('expires', null);
+      int? expires = content.getInt('expires');
       if (expires == null || expires <= 8) {
         expires = kActiveUsersQueryExpires.inSeconds;
       }

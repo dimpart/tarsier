@@ -107,7 +107,7 @@ class _WebSiteState extends State<WebSitePage> with Logging implements lnc.Obser
       logError('sites content error: $content');
       await _query();
     } else {
-      int? expires = content.getInt('expires', null);
+      int? expires = content.getInt('expires');
       if (expires == null || expires <= 8) {
         expires = kHomepageQueryExpires.inSeconds;
       }

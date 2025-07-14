@@ -150,7 +150,7 @@ abstract class ContentViewHelper {
 
   static Widget getTextContentView(BuildContext ctx, Content content, Envelope envelope) {
     ID sender = envelope.sender;
-    String? format = content.getString('format', null);
+    String? format = content.getString('format');
     String text = DefaultMessageBuilder().getText(content, sender);
     // action - onWebShare
     onWebShare(url, {required title, required desc, required icon}) =>
