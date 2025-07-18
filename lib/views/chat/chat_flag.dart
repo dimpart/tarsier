@@ -9,6 +9,9 @@ class ChatSendFlag extends StatefulWidget {
 
   final InstantMessage iMsg;
 
+  bool get isGroupChat =>
+      iMsg.group != null || iMsg.receiver.isGroup;
+
   @override
   State<StatefulWidget> createState() => _SendState();
 
@@ -63,7 +66,9 @@ class _SendState extends State<ChatSendFlag> implements lnc.Observer {
         // if match this message, refresh its status
         Log.debug('refreshing status: $signature');
         String? text = userInfo['text'];
-        if (text != null && text.startsWith('Message is blocked')) {
+        bool isBlocked = text != null && text.startsWith('Message is blocked');
+        // TODO: show blocked count for group chat?
+        if (isBlocked && !widget.isGroupChat) {
           _flags[sn] = _MsgStatus.kBlocked;
         } else {
           // clear to reload
@@ -125,33 +130,17 @@ class _SendState extends State<ChatSendFlag> implements lnc.Observer {
     _MsgStatus? current = _flags[sn];
     if (current == _MsgStatus.kBlocked) {
       Log.warning('message is blocked');
-      if (mounted) {
-        setState(() {
-        });
-      }
     } else if (current == _MsgStatus.kReceived) {
       Log.warning('message already received, ignore: $sn, $mta');
     } else if (mta == widget.iMsg.receiver) {
       current = _MsgStatus.kReceived;
       _flags[sn] = current;
-      if (mounted) {
-        setState(() {
-        });
-      }
     } else if (mta.type == EntityType.STATION) {
       current = _MsgStatus.kSent;
       _flags[sn] = current;
-      if (mounted) {
-        setState(() {
-        });
-      }
     } else if (await _checkMember(mta)) {
       current = _MsgStatus.kReceived;
       _flags[sn] = current;
-      if (mounted) {
-        setState(() {
-        });
-      }
     }
     if (current == null || current == _MsgStatus.kDefault ||
         current == _MsgStatus.kEncrypted ||
@@ -163,12 +152,12 @@ class _SendState extends State<ChatSendFlag> implements lnc.Observer {
         if (time.millisecondsSinceEpoch < expired) {
           current = _MsgStatus.kExpired;
           _flags[sn] = current;
-          if (mounted) {
-            setState(() {
-            });
-          }
         }
       }
+    }
+    if (mounted) {
+      setState(() {
+      });
     }
     return current ?? _MsgStatus.kDefault;
   }

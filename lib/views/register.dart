@@ -19,7 +19,7 @@ class _RegisterInfo {
 
   bool importing = false;
 
-  bool agreed = false;
+  bool agreed = true;
 
   String nickname = '';
   String avatarURL = '';

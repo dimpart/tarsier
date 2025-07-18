@@ -335,7 +335,7 @@ abstract class _MarkdownUtils {
         // show image
         Log.info('preview image: $url');
         var imageContent = FileContent.image(url: url,
-          password: Password.plainKey,
+          password: Password.kPlainKey,
         );
         _previewImage(context, imageContent);
       } else if (type == _MimeType.video) {
@@ -425,7 +425,7 @@ abstract class _MarkdownUtils {
       Log.error('image url error: $url');
       return _errorImage(url, title: title, alt: alt);
     }
-    var plain = Password.plainKey;
+    var plain = Password.kPlainKey;
     var imageContent = FileContent.image(url: url, password: plain);
     var pnf = PortableNetworkFile.parse(imageContent.toMap());
     // check file type
