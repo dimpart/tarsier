@@ -51,7 +51,7 @@ class _AccountState extends State<AccountPage> {
 
   Future<void> _reload() async {
     GlobalVariable shared = GlobalVariable();
-    SharedFacebook facebook = shared.facebook;
+    ClientFacebook facebook = shared.facebook;
     ID identifier = widget.user.identifier;
     _nickname = await facebook.getName(identifier);
     var pnf = await facebook.getAvatar(identifier);

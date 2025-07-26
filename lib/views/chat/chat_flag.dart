@@ -148,7 +148,7 @@ class _SendState extends State<ChatSendFlag> implements lnc.Observer {
       // kDefault, kEncrypted, kWaiting
       DateTime? time = widget.iMsg.time;
       if (time != null) {
-        int expired = Time.currentTimeMilliseconds - 300 * 1000;
+        int expired = TimeUtils.currentTimeMilliseconds - 300 * 1000;
         if (time.millisecondsSinceEpoch < expired) {
           current = _MsgStatus.kExpired;
           _flags[sn] = current;

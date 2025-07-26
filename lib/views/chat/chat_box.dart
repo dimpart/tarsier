@@ -236,7 +236,7 @@ class _ChatBoxState extends State<ChatBox> implements lnc.Observer {
 
 }
 
-class _HistoryAdapter with SectionAdapterMixin {
+class _HistoryAdapter with SectionAdapterMixin, Logging {
   _HistoryAdapter(Conversation conversation, {required _HistoryDataSource dataSource})
       : _conversation = conversation, _dataSource = dataSource;
 
@@ -428,17 +428,26 @@ class _HistoryAdapter with SectionAdapterMixin {
   );
 
   Widget _getContentView(BuildContext ctx, Content content, Envelope envelope) {
-    if (content is NameCard) {
-      return ContentViewHelper.getNameCardView(ctx, content, envelope);
-    } else if (content is PageContent) {
-      return ContentViewHelper.getPageContentView(ctx, content, envelope);
-    } else if (content is ImageContent) {
-      var messages = _dataSource.allMessages;
-      return ContentViewHelper.getImageContentView(ctx, content, envelope, messages);
-    } else if (content is VideoContent) {
-      return ContentViewHelper.getVideoContentView(ctx, content, envelope);
-    } else if (content is AudioContent) {
-      return ContentViewHelper.getAudioContentView(ctx, content, envelope);
+    try {
+      if (content is NameCard) {
+        return ContentViewHelper.getNameCardView(ctx, content, envelope);
+      } else if (content is PageContent) {
+        return ContentViewHelper.getPageContentView(ctx, content, envelope);
+      } else if (content is ImageContent) {
+        var messages = _dataSource.allMessages;
+        return ContentViewHelper.getImageContentView(ctx, content, envelope, messages);
+      } else if (content is VideoContent) {
+        return ContentViewHelper.getVideoContentView(ctx, content, envelope);
+      } else if (content is AudioContent) {
+        return ContentViewHelper.getAudioContentView(ctx, content, envelope);
+      }
+    } catch (e, st) {
+      logError('failed to get content view (type=${content.type}), sender: ${envelope.sender}, error: $e, $st');
+      var text = content['text'];
+      if (text == null) {
+        content['format'] = 'markdown';
+        content['text'] = '## Message error\n$e';
+      }
     }
     // other message content
     return ContentViewHelper.getTextContentView(ctx, content, envelope);
