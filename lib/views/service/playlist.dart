@@ -6,6 +6,7 @@ import 'package:dim_flutter/dim_flutter.dart';
 import 'package:lnc/notification.dart' as lnc;
 
 import '../chat/chat_box.dart';
+import 'base.dart';
 import 'play_item.dart';
 import 'play_manager.dart';
 
@@ -14,12 +15,12 @@ class PlaylistPage extends StatefulWidget {
   const PlaylistPage(this.chat, this.info, {super.key});
 
   final Conversation chat;
-  final Map info;
+  final ServiceInfo info;
 
   String get title => info['title'] ?? 'Playlist'.tr;
   String? get keywords => info['keywords'];
 
-  static void open(BuildContext context, Conversation chat, Map info) => showPage(
+  static void open(BuildContext context, Conversation chat, ServiceInfo info) => showPage(
     context: context,
     builder: (context) => PlaylistPage(chat, info),
   );
@@ -65,8 +66,8 @@ class _PlaylistState extends State<PlaylistPage> with Logging implements lnc.Obs
     } else if (name == NotificationNames.kChatBoxClosed) {
       var bot = userInfo?['ID'];
       if (bot == widget.chat.identifier) {
-        // query to update playlist
-        _query(null, isRefresh: true);
+        // force to refresh
+        _query();
       }
     }
   }
@@ -111,34 +112,38 @@ class _PlaylistState extends State<PlaylistPage> with Logging implements lnc.Obs
     var content = await pm.getPlaylistContent(widget.title, widget.chat.identifier);
     if (content == null) {
       // query for new records
-      logInfo('query playlist first: ${widget.title}');
-      await _query(null, isRefresh: true);
+      logInfo('query playlist first: "${widget.title}"');
     } else {
-      logInfo('query playlist again: ${widget.title}');
-      await _query(content, isRefresh: false);
+      logInfo('query playlist again: "${widget.title}"');
       // refresh with content loaded
       await _refreshPlaylist(content, isRefresh: false);
     }
+    // query to update content
+    await _query(content);
   }
-  // query for new records
-  Future<Content?> _query(Content? content, {required bool isRefresh}) async {
+
+  // query service bot to refresh content
+  Future<void> _query([Content? old]) async => await widget.info.query(old, () {
     String title = widget.title;
     String? keywords = widget.keywords;
-    Map extra = {
-      'title': title,
-      'keywords': keywords,
-    };
-    var pm = PlaylistManager();
-    var query = await pm.queryPlaylist(content, extra, widget.chat.identifier, isRefresh: isRefresh);
-    if (query != null) {
-      _queryTag = query.sn;
-      if (mounted) {
-        setState(() {
-        });
-      }
+    // build command
+    var content = CustomizedContent.create(
+      app: 'chat.dim.video',
+      mod: 'playlist',
+      act: 'request',
+    );
+    _queryTag = content.sn;
+    logInfo('query playlist with tag: $_queryTag');
+    if (mounted) {
+      setState(() {
+      });
     }
-    return query;
-  }
+    content['tag'] = _queryTag;
+    content['title'] = title;
+    content['keywords'] = keywords;
+    content['hidden'] = true;
+    return content;
+  });
 
   @override
   void initState() {
@@ -219,8 +224,8 @@ class _PlaylistState extends State<PlaylistPage> with Logging implements lnc.Obs
         });
       }
     });
-    // query
-    _query(null, isRefresh: true);
+    // force to refresh
+    _query();
   }
 
   Widget _searchBtn(BuildContext context) => IconButton(

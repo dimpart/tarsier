@@ -9,18 +9,19 @@ import '../../sharing/share_contact.dart';
 import '../../sharing/share_page.dart';
 import '../../sharing/share_video.dart';
 import '../../widgets/text.dart';
+import 'base.dart';
 
 
 class WebSitePage extends StatefulWidget {
   const WebSitePage(this.chat, this.info, {super.key});
 
   final Conversation chat;
-  final Map info;
+  final ServiceInfo info;
 
   String get title => info['title'] ?? 'Index Page'.tr;
   String? get keywords => info['keywords'];
 
-  static void open(BuildContext context, Conversation chat, Map info) => showPage(
+  static void open(BuildContext context, Conversation chat, ServiceInfo info) => showPage(
     context: context,
     builder: (context) => WebSitePage(chat, info),
   );
@@ -40,8 +41,6 @@ class _WebSiteState extends State<WebSitePage> with Logging implements lnc.Obser
 
   int _queryTag = 9527;  // show CupertinoActivityIndicator
   Content? _content;
-
-  static const Duration kHomepageQueryExpires = Duration(minutes: 32);
 
   @override
   void dispose() {
@@ -97,43 +96,24 @@ class _WebSiteState extends State<WebSitePage> with Logging implements lnc.Obser
     var content = await handler.getContent(widget.chat.identifier, 'homepage', widget.title);
     if (content == null) {
       // query for new records
-      logInfo('query sites first');
-      await _query();
-      return;
-    }
-    // check record time
-    var time = content.time;
-    if (time == null) {
-      logError('sites content error: $content');
-      await _query();
+      logInfo('query homepage first: "${widget.title}"');
     } else {
-      int? expires = content.getInt('expires');
-      if (expires == null || expires <= 8) {
-        expires = kHomepageQueryExpires.inSeconds;
-      }
-      int later = time.millisecondsSinceEpoch + expires * 1000;
-      var now = DateTime.now().millisecondsSinceEpoch;
-      if (now > later) {
-        logInfo('query sites again');
-        await _query();
-      }
+      logInfo('query homepage again: "${widget.title}"');
+      // refresh with content loaded
+      await _refreshHomepage(content, isRefresh: false);
     }
-    // refresh with content loaded
-    await _refreshHomepage(content, isRefresh: false);
+    // query to update content
+    await _query(content);
   }
-  // query for new records
-  Future<void> _query() async {
-    GlobalVariable shared = GlobalVariable();
-    SharedMessenger? messenger = shared.messenger;
-    if (messenger == null) {
-      logError('messenger not set, not connect yet?');
-      return;
-    }
+
+  // query service bot to refresh content
+  Future<void> _query([Content? old]) async => await widget.info.query(old, () {
     String title = widget.title;
     String? keywords = widget.keywords;
     // build command
     var content = TextContent.create(keywords ?? title);
     _queryTag = content.sn;
+    logInfo('query homepage with tag: $_queryTag');
     if (mounted) {
       setState(() {
       });
@@ -142,11 +122,8 @@ class _WebSiteState extends State<WebSitePage> with Logging implements lnc.Obser
     content['title'] = title;
     content['keywords'] = keywords;
     content['hidden'] = true;
-    // TODO: check visa.key
-    ID bot = widget.chat.identifier;
-    logInfo('query homepage with tag: $_queryTag, keywords: $keywords, title: "$title"');
-    await messenger.sendContent(content, sender: null, receiver: bot);
-  }
+    return content;
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -257,7 +234,7 @@ class _WebSiteState extends State<WebSitePage> with Logging implements lnc.Obser
         });
       }
     });
-    // query
+    // force to refresh
     _query();
   }
 

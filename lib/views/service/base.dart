@@ -38,6 +38,8 @@ abstract class ServiceInfo extends Dictionary {
   /// onTap
   bool open(BuildContext context);
 
+  Future<Content?> query(Content? old, Content Function() create);
+
   //
   //  Conveniences
   //
@@ -114,7 +116,7 @@ class _ServiceFactory {
       // chat box
       case 'ChatBox':
       case 'ChatBot':
-        callback = (ctx, bot, info) => ChatBox.open(ctx, bot, info);
+        callback = (ctx, bot, info) => ChatBox.open(ctx, bot, info.toMap());
         break;
 
       // active users
@@ -150,12 +152,14 @@ class _ServiceFactory {
 
 }
 
-typedef _OpenService = void Function(BuildContext ctx, ContactInfo bot, Map info);
+typedef _OpenService = void Function(BuildContext ctx, ContactInfo bot, ServiceInfo info);
 
-class _ServiceItem extends ServiceInfo {
+class _ServiceItem extends ServiceInfo with Logging {
   _ServiceItem(super.dict, this._callback);
 
   final _OpenService _callback;
+
+  static const Duration kQueryExpires = Duration(minutes: 16);
 
   @override
   bool open(BuildContext context) {
@@ -164,8 +168,45 @@ class _ServiceItem extends ServiceInfo {
     if (bot == null) {
       return false;
     }
-    _callback(context, bot, toMap());
+    _callback(context, bot, this);
     return true;
+  }
+
+  bool _isContentExpired(Content content) {
+    DateTime? time = content.time;
+    if (time == null) {
+      assert(false, 'content error: $content');
+      return true;
+    }
+    DateTime now = DateTime.now();
+    DateTime expiredTime;
+    int? seconds = content.getInt('expires');
+    if (seconds != null && seconds > 8) {
+      expiredTime = time.add(Duration(seconds: seconds));
+    } else {
+      expiredTime = time.add(kQueryExpires);
+    }
+    return now.isAfter(expiredTime);
+  }
+
+  @override
+  Future<Content?> query(Content? old, Content Function() create) async {
+    GlobalVariable shared = GlobalVariable();
+    SharedMessenger? messenger = shared.messenger;
+    if (messenger == null) {
+      logError('messenger not ready');
+      return null;
+    } else if (old == null) {
+      logWarning('force to refresh service content');
+    } else if (!_isContentExpired(old)) {
+      logInfo('content not expired');
+      return null;
+    }
+    // TODO: check visa.key
+    logInfo('query service bot: $identifier');
+    var content = create();
+    await messenger.sendContent(content, sender: null, receiver: identifier);
+    return content;
   }
 
 }

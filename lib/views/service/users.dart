@@ -6,17 +6,18 @@ import 'package:dim_flutter/dim_flutter.dart';
 import 'package:lnc/notification.dart' as lnc;
 
 import '../contact/profile.dart';
+import 'base.dart';
 
 class UserListPage extends StatefulWidget {
   const UserListPage(this.chat, this.info, {super.key});
 
   final Conversation chat;
-  final Map info;
+  final ServiceInfo info;
 
   String get title => info['title'] ?? 'Users'.tr;
   String? get keywords => info['keywords'];
 
-  static void open(BuildContext context, Conversation chat, Map info) => showPage(
+  static void open(BuildContext context, Conversation chat, ServiceInfo info) => showPage(
     context: context,
     builder: (context) => UserListPage(chat, info),
   );
@@ -44,8 +45,6 @@ class _SearchState extends State<UserListPage> with Logging implements lnc.Obser
   String? _description;
 
   String get description => _description ?? '';
-
-  static const Duration kActiveUsersQueryExpires = Duration(minutes: 32);
 
   @override
   void dispose() {
@@ -109,43 +108,24 @@ class _SearchState extends State<UserListPage> with Logging implements lnc.Obser
     var content = await handler.getContent(widget.chat.identifier, 'users', widget.title);
     if (content == null) {
       // query for new records
-      logInfo('query active users first');
-      await _query();
-      return;
-    }
-    // check record time
-    var time = content.time;
-    if (time == null) {
-      logError('active users content error: $content');
-      await _query();
+      logInfo('query active users first: "${widget.title}"');
     } else {
-      int? expires = content.getInt('expires');
-      if (expires == null || expires <= 8) {
-        expires = kActiveUsersQueryExpires.inSeconds;
-      }
-      int later = time.millisecondsSinceEpoch + expires * 1000;
-      var now = DateTime.now().millisecondsSinceEpoch;
-      if (now > later) {
-        logInfo('query active users again');
-        await _query();
-      }
+      logInfo('query active users again: "${widget.title}"');
+      // refresh with content loaded
+      await _refreshActiveUsers(content, isRefresh: false);
     }
-    // refresh with content loaded
-    await _refreshActiveUsers(content, isRefresh: false);
+    // query to update content
+    await _query(content);
   }
-  // query for new records
-  Future<void> _query() async {
-    GlobalVariable shared = GlobalVariable();
-    SharedMessenger? messenger = shared.messenger;
-    if (messenger == null) {
-      logError('messenger not set, not connect yet?');
-      return;
-    }
+
+  // query service bot to refresh content
+  Future<void> _query([Content? old]) async => await widget.info.query(old, () {
     String title = widget.title;
     String? keywords = widget.keywords;
     // build command
     var content = TextContent.create(keywords ?? title);
     _queryTag = content.sn;
+    logInfo('query active users with tag: $_queryTag');
     if (mounted) {
       setState(() {
       });
@@ -154,11 +134,8 @@ class _SearchState extends State<UserListPage> with Logging implements lnc.Obser
     content['title'] = title;
     content['keywords'] = keywords;
     content['hidden'] = true;
-    // TODO: check visa.key
-    ID bot = widget.chat.identifier;
-    logInfo('query active users with tag: $_queryTag, keywords: $keywords, title: "$title", bot: $bot');
-    await messenger.sendContent(content, sender: null, receiver: bot);
-  }
+    return content;
+  });
 
   @override
   void initState() {
@@ -201,7 +178,7 @@ class _SearchState extends State<UserListPage> with Logging implements lnc.Obser
         });
       }
     });
-    // query
+    // force to refresh
     _query();
   }
 

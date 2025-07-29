@@ -17,9 +17,7 @@ class PlaylistManager with Logging {
 
   final Map<Uri, DateTime> _videoInfoCreatedTimes = {};
   final Map<Uri, DateTime> _videoInfoQueryExpired = {};
-  DateTime? _playlistQueryExpired;
 
-  static Duration kPlaylistQueryExpires = const Duration(minutes: 32);
   static Duration kVideoInfoQueryExpires = const Duration(minutes: 5);
 
   Future<Content?> getPlaylistContent(String title, ID bot) async {
@@ -85,40 +83,6 @@ class PlaylistManager with Logging {
     }
     // update next query time
     _videoInfoQueryExpired[page] = now.add(kVideoInfoQueryExpires);
-    return true;
-  }
-
-  bool _isPlaylistExpired(Content? content) {
-    if (content == null) {
-      return true;
-    }
-    DateTime? time = content.time;
-    if (time == null) {
-      assert(false, 'playlist error: $content');
-      return true;
-    }
-    DateTime now = DateTime.now();
-    DateTime expiredTime;
-    int? expires = content.getInt('expires');
-    if (expires != null && expires > 8) {
-      expiredTime = time.add(Duration(seconds: expires));
-    } else {
-      expiredTime = time.add(kPlaylistQueryExpires);
-    }
-    return now.isAfter(expiredTime);
-  }
-
-  bool _checkPlaylistQueryExpired(bool isRefresh) {
-    DateTime now = DateTime.now();
-    DateTime? nextTime = _playlistQueryExpired;
-    if (isRefresh) {
-      // force to query
-    } else if (nextTime != null && nextTime.isAfter(now)) {
-      // not reach the next query time yet
-      return false;
-    }
-    // update next query time
-    _playlistQueryExpired = now.add(kPlaylistQueryExpires);
     return true;
   }
 
@@ -254,56 +218,6 @@ class PlaylistManager with Logging {
     query['hidden'] = true;
     // TODO: check visa.key
     logInfo('send to query video info: $page');
-    await messenger.sendContent(query, sender: null, receiver: bot);
-    return query;
-  }
-
-  ///  Check & query playlist
-  ///
-  /// @param content   - old content
-  /// @param extra     - extra params
-  /// @param bot       - service bot
-  /// @param isRefresh - force to refresh
-  /// @return query content
-  Future<Content?> queryPlaylist(Content? content, Map extra, ID bot, {
-    required bool isRefresh
-  }) async {
-    var messenger = this.messenger;
-    if (messenger == null) {
-      logError('messenger not ready');
-      return null;
-    }
-    //
-    //  check content time
-    //
-    if (!_isPlaylistExpired(content)) {
-      var playlist = content?['playlist'];
-      logInfo('playlist not expired, size: ${playlist?.length}');
-      return null;
-    }
-    //
-    //  check query expired
-    //
-    if (!_checkPlaylistQueryExpired(isRefresh)) {
-      var playlist = content?['playlist'];
-      logInfo('query playlist not expired, size: ${playlist?.length}');
-      return null;
-    }
-    //
-    //  query the bot
-    //
-    var query = CustomizedContent.create(
-      app: 'chat.dim.video',
-      mod: 'playlist',
-      act: 'request',
-    );
-    query['tag'] = query.sn;
-    query['hidden'] = true;
-    extra.forEach((key, value) {
-      query[key] = value;
-    });
-    // TODO: check visa.key
-    logInfo('send to query playlist with tag: ${query.sn}, extra: $extra');
     await messenger.sendContent(query, sender: null, receiver: bot);
     return query;
   }

@@ -31,7 +31,7 @@ dependencies:
   flutter:
     sdk: flutter
 
-  lnc: 1.2.0
+  lnc: 1.2.1
 
   dim_flutter:
     path: '../../dimchat/demo-flutter/dim_flutter'

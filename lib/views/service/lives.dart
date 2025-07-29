@@ -6,18 +6,19 @@ import 'package:dim_flutter/dim_flutter.dart';
 import 'package:lnc/notification.dart' as lnc;
 
 import '../../sharing/share_video.dart';
+import 'base.dart';
 
 
 class LiveSourceListPage extends StatefulWidget {
   const LiveSourceListPage(this.chat, this.info, {super.key});
 
   final Conversation chat;
-  final Map info;
+  final ServiceInfo info;
 
   String get title => info['title'] ?? 'Live Stream Sources'.tr;
   String? get keywords => info['keywords'];
 
-  static void open(BuildContext context, Conversation chat, Map info) => showPage(
+  static void open(BuildContext context, Conversation chat, ServiceInfo info) => showPage(
     context: context,
     builder: (context) => LiveSourceListPage(chat, info),
   );
@@ -45,8 +46,6 @@ class _LiveSourceListState extends State<LiveSourceListPage> with Logging implem
   String? _description;
 
   String get description => _description ?? '';
-
-  static const Duration kLiveQueryExpires = Duration(minutes: 32);
 
   @override
   void dispose() {
@@ -106,43 +105,24 @@ class _LiveSourceListState extends State<LiveSourceListPage> with Logging implem
     var content = await handler.getContent(widget.chat.identifier, 'lives', widget.title);
     if (content == null) {
       // query for new records
-      logInfo('query lives first');
-      await _query();
-      return;
-    }
-    // check record time
-    var time = content.time;
-    if (time == null) {
-      logError('lives content error: $content');
-      await _query();
+      logInfo('query live streams first: "${widget.title}"');
     } else {
-      int? expires = content.getInt('expires');
-      if (expires == null || expires <= 8) {
-        expires = kLiveQueryExpires.inSeconds;
-      }
-      int later = time.millisecondsSinceEpoch + expires * 1000;
-      var now = DateTime.now().millisecondsSinceEpoch;
-      if (now > later) {
-        logInfo('query lives again');
-        await _query();
-      }
+      logInfo('query live streams again: "${widget.title}"');
+      // refresh with content loaded
+      await _refreshLives(content, isRefresh: false);
     }
-    // refresh with content loaded
-    await _refreshLives(content, isRefresh: false);
+    // query to update content
+    await _query(content);
   }
-  // query for new records
-  Future<void> _query() async {
-    GlobalVariable shared = GlobalVariable();
-    SharedMessenger? messenger = shared.messenger;
-    if (messenger == null) {
-      logError('messenger not set, not connect yet?');
-      return;
-    }
+
+  // query service bot to refresh content
+  Future<void> _query([Content? old]) async => await widget.info.query(old, () {
     String title = widget.title;
     String? keywords = widget.keywords;
     // build command
     var content = TextContent.create(keywords ?? title);
     _queryTag = content.sn;
+    logInfo('query live streams with tag: $_queryTag');
     if (mounted) {
       setState(() {
       });
@@ -151,11 +131,8 @@ class _LiveSourceListState extends State<LiveSourceListPage> with Logging implem
     content['title'] = title;
     content['keywords'] = keywords;
     content['hidden'] = true;
-    // TODO: check visa.key
-    ID bot = widget.chat.identifier;
-    logInfo('query lives with tag: $_queryTag, keywords: $keywords, title: "$title"');
-    await messenger.sendContent(content, sender: null, receiver: bot);
-  }
+    return content;
+  });
 
   @override
   void initState() {
@@ -198,7 +175,7 @@ class _LiveSourceListState extends State<LiveSourceListPage> with Logging implem
         });
       }
     });
-    // query
+    // force to refresh
     _query();
   }
 
