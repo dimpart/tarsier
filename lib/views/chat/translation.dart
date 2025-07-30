@@ -50,9 +50,9 @@ class _TranslateState extends State<TranslatableView> implements lnc.Observer {
   @override
   Future<void> onReceiveNotification(lnc.Notification notification) async {
     String name = notification.name;
-    Map? info = notification.userInfo;
+    Map? userInfo = notification.userInfo;
     if (name == NotificationNames.kTranslateUpdated) {
-      TranslateContent? content = info?['content'];
+      TranslateContent? content = userInfo?['content'];
       if (content != null && widget.matchContent(content)) {
         int? tag = content.tag;
         if (tag != null) {
@@ -61,7 +61,7 @@ class _TranslateState extends State<TranslatableView> implements lnc.Observer {
         await _reload();
       }
     } else if (name == NotificationNames.kTranslatorReady) {
-      ID? bot = info?['translator'];
+      ID? bot = userInfo?['translator'];
       if (bot != null) {
         await _reload();
       }

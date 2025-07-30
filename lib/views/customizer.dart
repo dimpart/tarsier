@@ -410,9 +410,9 @@ class _MyAccountState extends State<_MyAccountSection> implements lnc.Observer {
   @override
   Future<void> onReceiveNotification(lnc.Notification notification) async {
     String name = notification.name;
-    Map? info = notification.userInfo;
+    Map? userInfo = notification.userInfo;
     assert(name == NotificationNames.kDocumentUpdated, 'notification error: $notification');
-    ID? identifier = info?['ID'];
+    ID? identifier = userInfo?['ID'];
     GlobalVariable shared = GlobalVariable();
     User? user = await shared.facebook.currentUser;
     if (identifier == null) {

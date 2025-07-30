@@ -38,7 +38,7 @@ class _TitleState extends State<ChatTitleView> implements lnc.Observer {
   @override
   Future<void> onReceiveNotification(lnc.Notification notification) async {
     String name = notification.name;
-    Map? info = notification.userInfo;
+    Map? userInfo = notification.userInfo;
     if (name == NotificationNames.kServerStateChanged) {
       GlobalVariable shared = GlobalVariable();
       int state = shared.terminal.sessionStateOrder;
@@ -48,7 +48,7 @@ class _TitleState extends State<ChatTitleView> implements lnc.Observer {
         });
       }
     } else if (name == NotificationNames.kDocumentUpdated) {
-      ID? identifier = info?['ID'];
+      ID? identifier = userInfo?['ID'];
       if (identifier == widget.info.identifier) {
         if (mounted) {
           setState(() {
@@ -57,7 +57,7 @@ class _TitleState extends State<ChatTitleView> implements lnc.Observer {
         }
       }
     } else if (name == NotificationNames.kMembersUpdated) {
-      ID? identifier = info?['ID'];
+      ID? identifier = userInfo?['ID'];
       if (identifier == widget.info.identifier) {
         await widget.info.reloadData();
         if (mounted) {

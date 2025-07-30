@@ -25,7 +25,7 @@ abstract class ServiceInfo extends Dictionary {
 
   String get type => getString('type') ?? '';
 
-  ID get identifier => ID.parse(this['ID'])!;
+  ID get identifier => ID.parse(this['did']) ?? ID.parse(this['ID'])!;
 
   String get title => getString('title') ?? '';
 
@@ -82,7 +82,8 @@ abstract class ServiceInfo extends Dictionary {
       return null;
     }
     // check bot ID
-    var bot = ID.parse(info['ID']);
+    var bot = ID.parse(info['did']);
+    bot ??= ID.parse(info['ID']);
     if (bot?.type != EntityType.BOT) {
       Log.error('service bot error: $info');
       return null;

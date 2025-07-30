@@ -56,7 +56,9 @@ class _SendState extends State<ChatSendFlag> implements lnc.Observer {
       ID? sender = userInfo['sender'];
       int? sn = userInfo['sn'];
       String? signature = userInfo['signature'];
-      ID? mta = ID.parse(userInfo['mta']?['ID']);
+      Map? info = userInfo['mta'];
+      ID? mta = ID.parse(info?['did']);
+      mta ??= ID.parse(info?['ID']);
       Log.debug('checking status: $signature, $mta');
       // delay a while to wait the list updated
       await Future.delayed(const Duration(milliseconds: 256));
@@ -193,9 +195,12 @@ class _SendState extends State<ChatSendFlag> implements lnc.Observer {
   }
   int _countOfUsers(List<String> traces) {
     Set<ID> responses = {};
+    Map? info;
     ID? mta;
     for (String json in traces) {
-      mta = ID.parse(JSONMap.decode(json)?['ID']);
+      info = JSONMap.decode(json);
+      mta = ID.parse(info?['did']);
+      mta ??= ID.parse(info?['ID']);
       if (mta == null) {
         Log.error('trace error: $json');
       } else if (mta.type == EntityType.STATION) {
@@ -215,10 +220,13 @@ class _SendState extends State<ChatSendFlag> implements lnc.Observer {
 
   Future<_MsgStatus> _refreshStatus(List<String> traces) async {
     int sn = widget.iMsg.content.sn;
+    Map? info;
     ID? mta;
     _MsgStatus status = _MsgStatus.kDefault;
     for (String json in traces) {
-      mta = ID.parse(JSONMap.decode(json)?['ID']);
+      info = JSONMap.decode(json);
+      mta = ID.parse(info?['did']);
+      mta ??= ID.parse(info?['ID']);
       if (mta == null) {
         Log.error('trace error: $json');
       } else {

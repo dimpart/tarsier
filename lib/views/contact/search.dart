@@ -52,9 +52,9 @@ class _SearchState extends State<SearchPage> implements lnc.Observer {
   @override
   Future<void> onReceiveNotification(lnc.Notification notification) async {
     String name = notification.name;
-    Map? info = notification.userInfo;
+    Map? userInfo = notification.userInfo;
     if (name == NotificationNames.kSearchUpdated) {
-      await _reload(info?['cmd']);
+      await _reload(userInfo?['cmd']);
     }
   }
 

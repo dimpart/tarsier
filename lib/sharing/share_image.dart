@@ -28,6 +28,7 @@ abstract class ShareImage {
         List traces = content['traces'] ?? [];
         traces = [...traces, {
           'ID': sender.toString(),
+          'did': sender.toString(),
           'time': content.getDouble('time', 0),
         }];
         PickChatPage.open(ctx,
