@@ -123,27 +123,19 @@ class _PlaylistState extends State<PlaylistPage> with Logging implements lnc.Obs
   }
 
   // query service bot to refresh content
-  Future<void> _query([Content? old]) async => await widget.info.query(old, () {
-    String title = widget.title;
-    String? keywords = widget.keywords;
-    // build command
-    var content = CustomizedContent.create(
-      app: 'chat.dim.video',
-      mod: 'playlist',
-      act: 'request',
-    );
+  Future<void> _query([Content? old]) async {
+    var content = await widget.info.request(old);
+    if (content == null) {
+      // old content not expired yet
+      return;
+    }
     _queryTag = content.sn;
     logInfo('query playlist with tag: $_queryTag');
     if (mounted) {
       setState(() {
       });
     }
-    content['tag'] = _queryTag;
-    content['title'] = title;
-    content['keywords'] = keywords;
-    content['hidden'] = true;
-    return content;
-  });
+  }
 
   @override
   void initState() {

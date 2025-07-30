@@ -38,7 +38,7 @@ abstract class ServiceInfo extends Dictionary {
   /// onTap
   bool open(BuildContext context);
 
-  Future<Content?> query(Content? old, Content Function() create);
+  Future<Content?> request(Content? old);
 
   //
   //  Conveniences
@@ -190,7 +190,7 @@ class _ServiceItem extends ServiceInfo with Logging {
   }
 
   @override
-  Future<Content?> query(Content? old, Content Function() create) async {
+  Future<Content?> request(Content? old) async {
     GlobalVariable shared = GlobalVariable();
     SharedMessenger? messenger = shared.messenger;
     if (messenger == null) {
@@ -202,11 +202,26 @@ class _ServiceItem extends ServiceInfo with Logging {
       logInfo('content not expired');
       return null;
     }
+    // query params
+    var app = getString('app');
+    var mod = getString('mod');
+    if (app == null || mod == null) {
+      logError('service info error: ${toMap()}');
+      return null;
+    }
+    var keywords = getString('keywords');
+    // build query command
+    var query = CustomizedContent.create(app: app, mod: mod, act: 'request');
+    query['tag'] = query.sn;
+    query['hidden'] = true;
+    query['title'] = title;
+    if (keywords != null) {
+      query['keywords'] = keywords;
+    }
     // TODO: check visa.key
-    logInfo('query service bot: $identifier');
-    var content = create();
-    await messenger.sendContent(content, sender: null, receiver: identifier);
-    return content;
+    logInfo('query service bot: $identifier, $query');
+    await messenger.sendContent(query, sender: null, receiver: identifier);
+    return query;
   }
 
 }
