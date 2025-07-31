@@ -74,6 +74,7 @@ abstract class ServiceInfo extends Dictionary {
     if (service == null) {
       return null;
     } else if (service is ServiceInfo) {
+      // exactly
       return service;
     }
     Map? info = Wrapper.getMap(service);
@@ -82,7 +83,7 @@ abstract class ServiceInfo extends Dictionary {
       return null;
     }
     // check bot ID
-    var bot = ID.parse(info['did']);
+    ID? bot = ID.parse(info['did']);
     bot ??= ID.parse(info['ID']);
     if (bot?.type != EntityType.BOT) {
       Log.error('service bot error: $info');
@@ -92,13 +93,16 @@ abstract class ServiceInfo extends Dictionary {
     var type = info['type'];
     var title = info['title'];
     if (title is! String || title.isEmpty) {
-      Log.warning('service ignored: $info');
+      Log.warning('ignore service without title: $info');
       return null;
     } else if (type is! String || type.isEmpty) {
-      Log.warning('service ignored: $info');
+      Log.warning('ignore service without type: $info');
+      return null;
+    } else if (info['icon'] == null) {
+      Log.warning('ignore service without icon: $info');
       return null;
     }
-    Log.info('fetch service: $type, title: $title');
+    Log.info('fetch service: "$title", type=$type, bot=$bot');
     return _serviceFactory.parseService(info);
   }
 

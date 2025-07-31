@@ -38,11 +38,10 @@ class _BotListState extends State<ServiceListPage> {
   late final _BotListAdapter _adapter;
 
   Future<void> _load() async {
-    if (await _adapter.loadData()) {
-      if (mounted) {
-        setState(() {
-        });
-      }
+    bool ok = await _adapter.loadData();
+    if (ok && mounted) {
+      setState(() {
+      });
     }
   }
 
@@ -94,8 +93,10 @@ class _BotListAdapter with SectionAdapterMixin, Logging {
     if (array.isEmpty) {
       return false;
     }
+    List<ServiceInfo> items = ServiceInfo.convert(array);
+    logInfo('refresh ${items.length}/${array.length} services');
     _services.clear();
-    _services.addAll(ServiceInfo.convert(array));
+    _services.addAll(items);
     return true;
   }
 
