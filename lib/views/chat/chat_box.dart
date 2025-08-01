@@ -446,7 +446,7 @@ class _HistoryAdapter with SectionAdapterMixin, Logging {
       var text = content['text'];
       if (text == null) {
         content['format'] = 'markdown';
-        content['text'] = '## Message error\n$e';
+        content['text'] = '## Message Error\n${content.runtimeType}\n\n**Reason**: $e';
       }
     }
     // other message content
