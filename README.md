@@ -1,14 +1,18 @@
-# Tarsier
+# Tarsier - Secure Chat
 
-[![GitHub License](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/dimpart/tarsier/master/LICENSE)
-[![Version](https://img.shields.io/badge/alpha-1.0.0-red.svg)](https://github.com/dimpart/tarsier/archive/master.zip)
+[![License](https://img.shields.io/github/license/dimpart/tarsier)](https://raw.githubusercontent.com/dimpart/tarsier/master/LICENSE)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/dimpart/tarsier/pulls)
 [![Platform](https://img.shields.io/badge/Platform-Flutter%203-brightgreen.svg)](https://github.com/dimpart/tarsier/wiki)
-[![GitHub Issues](https://img.shields.io/github/issues/dimpart/tarsier.svg)](https://github.com/dimpart/tarsier/issues)
-[![GitHub Forks](https://img.shields.io/github/forks/dimpart/tarsier.svg)](https://github.com/dimpart/tarsier/network)
-[![GitHub Stars](https://img.shields.io/github/stars/dimpart/tarsier.svg)](https://github.com/dimpart/tarsier/stargazers)
+[![Issues](https://img.shields.io/github/issues/dimpart/tarsier.svg)](https://github.com/dimpart/tarsier/issues)
+[![Repo Size](https://img.shields.io/github/repo-size/dimpart/tarsier)](https://github.com/dimpart/tarsier/archive/refs/heads/main.zip)
+[![Tags](https://img.shields.io/github/tag/dimpart/tarsier)](https://github.com/dimpart/tarsier/tags)
 
-Secure chat application, powered by [DIM-Flutter](https://github.com/dimchat/demo-flutter).
+[![Watchers](https://img.shields.io/github/watchers/dimpart/tarsier)](https://github.com/dimpart/tarsier/watchers)
+[![Forks](https://img.shields.io/github/forks/dimpart/tarsier.svg)](https://github.com/dimpart/tarsier/network)
+[![Stars](https://img.shields.io/github/stars/dimpart/tarsier.svg)](https://github.com/dimpart/tarsier/stargazers)
+[![Followers](https://img.shields.io/github/followers/dimpart)](https://github.com/orgs/dimpart/followers)
+
+Secure chat application, powered by [DIM-Flutter](https://github.com/dimpart/demo-flutter).
 
 ## Getting started
 
@@ -17,14 +21,10 @@ Secure chat application, powered by [DIM-Flutter](https://github.com/dimchat/dem
 ```
 cd ~/Documents/
 mkdir github.com; cd github.com/
+mkdir dimpart; cd dimpart/
 
 # requirements
-mkdir dimchat; cd dimchat/
-git clone https://github.com/dimchat/demo-flutter.git
-cd ..
-
-# project source codes
-mkdir dimpart; cd dimpart/
+git clone https://github.com/dimpart/demo-flutter.git
 git clone https://github.com/dimpart/tarsier.git
 ```
 
@@ -133,7 +133,7 @@ If nothing unexpected happens, your iOS app should be able to run now!
 
 ### 3. Test Windows
 
-3.1. Edit ```dimchat/demo-flutter/dim_flutter/pubspec.yaml```
+3.1. Edit ```dimpart/demo-flutter/dim_flutter/pubspec.yaml```
 
 ```
 dependencies:
@@ -150,7 +150,7 @@ dependencies:
   castscreen: ^1.0.2
 ```
 
-3.2. Edit ```dimchat/demo-flutter/dim_flutter/lib/src/common/platform.dart```
+3.2. Edit ```dimpart/demo-flutter/dim_flutter/lib/src/common/platform.dart```
 
 ```
 import 'dart:io' show Platform;
