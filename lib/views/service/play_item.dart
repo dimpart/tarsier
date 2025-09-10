@@ -149,9 +149,8 @@ class _PlayItemState extends State<PlaylistItem> with Logging implements lnc.Obs
   Widget build(BuildContext context) {
     Season season = widget.info;
     String? format = season.getString('format');
-    String? text = season.getString('text');
-    if (format == 'markdown' && text != null) {
-      return _richTextView(context, text);
+    if (format == 'markdown') {
+      return _richTextView(context, season);
     } else {
       return _loadingView(widget.info.name);
     }
@@ -175,9 +174,11 @@ class _PlayItemState extends State<PlaylistItem> with Logging implements lnc.Obs
     return view;
   }
 
-  Widget _richTextView(BuildContext ctx, String text) {
-    var sender = widget.chat.identifier;
-    Widget view = RichTextView(sender: sender, text: text,
+  Widget _richTextView(BuildContext ctx, Season season) {
+    String text = MessageTemplate.getText(season.toMap());
+    var bot = widget.chat.identifier;
+    Widget view = RichTextView(sender: bot, text: text,
+      onTapLink: (text, {required href, required title}) => _SeasonRefresh().updateSeason(season, bot) || true,
       onWebShare: (url, {required title, required desc, required icon}) =>
           ShareWebPage.shareWebPage(ctx, url, title: title, desc: desc, icon: icon),
       onVideoShare: (playingItem) => ShareVideo.shareVideo(ctx, playingItem),
@@ -195,11 +196,61 @@ class _PlayItemState extends State<PlaylistItem> with Logging implements lnc.Obs
       onLongPress: () => Alert.actionSheet(ctx, null, null,
         // forward
         Alert.action(AppIcons.shareIcon, 'Forward Rich Text'),
-            () => ShareTextMessage.forwardTextMessage(ctx, content, sender),
+            () => ShareTextMessage.forwardTextMessage(ctx, content, bot),
       ),
+      // onTap: () => _SeasonRefresh().updateSeason(season, bot),
       child: view,
     );
     return view;
+  }
+
+}
+
+
+class _SeasonRefresh with Logging {
+  factory _SeasonRefresh() => _instance;
+  static final _SeasonRefresh _instance = _SeasonRefresh._internal();
+  _SeasonRefresh._internal();
+
+  final Map<String, DateTime> _queryExpired = {};
+
+  final queryExpires = const Duration(minutes: 30);
+
+  bool updateSeason(Season season, ID bot) {
+    DateTime now = DateTime.now();
+    //
+    //  1. check season created time
+    //
+    DateTime? time = season.time;
+    if (time == null) {
+      assert(false, 'season error: $season');
+    } else if (time.add(queryExpires).isAfter(now)) {
+      logInfo('season not expired yet: "${season.name}"');
+      return false;
+    }
+    //
+    //  2. check query time
+    //
+    String keywords = season.getString('keywords') ?? season.name;
+    DateTime? expired = _queryExpired[keywords];
+    if (expired == null) {
+      logInfo('update season: "${season.name}"');
+    } else if (expired.isBefore(now)) {
+      logInfo('update season again: "${season.name}"');
+    } else {
+      logInfo('query not expired yet: "${season.name}"');
+      return false;
+    }
+    _queryExpired[keywords] = now.add(queryExpires);
+    //
+    //  3. query from the bot
+    //
+    logInfo('querying season "$keywords" from $bot');
+    var query = TextContent.create(keywords);
+    query['hidden'] = true;
+    GlobalVariable shared = GlobalVariable();
+    shared.emitter.sendContent(query, receiver: bot);
+    return true;
   }
 
 }

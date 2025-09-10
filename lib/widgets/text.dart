@@ -16,6 +16,7 @@ class TextPreviewPage extends StatefulWidget {
     required this.text,
     required this.format,
     required this.sender,
+    required this.onTapLink,
     required this.onWebShare,
     required this.onVideoShare,
   });
@@ -23,6 +24,7 @@ class TextPreviewPage extends StatefulWidget {
   final String text;
   final String? format;
   final ID sender;
+  final OnTapLink? onTapLink;
   final OnWebShare? onWebShare;
   final OnVideoShare? onVideoShare;
 
@@ -30,6 +32,7 @@ class TextPreviewPage extends StatefulWidget {
     required ID sender,
     required String text,
     required String? format,
+    /*required */OnTapLink? onTapLink,
     required OnWebShare? onWebShare,
     required OnVideoShare? onVideoShare,
   }) => showPage(
@@ -38,6 +41,7 @@ class TextPreviewPage extends StatefulWidget {
       text: text,
       format: format,
       sender: sender,
+      onTapLink: onTapLink,
       onWebShare: onWebShare,
       onVideoShare: onVideoShare,
     ),
@@ -92,7 +96,7 @@ class _TextPreviewState extends State<TextPreviewPage> {
           ),
         ],
       ),
-      onTap: () => closePage(context),
+      // onTap: () => closePage(context),
     ),
   );
 
@@ -149,6 +153,7 @@ class _TextPreviewState extends State<TextPreviewPage> {
   Widget _richText() => RichTextView(
     sender: widget.sender,
     text: widget.text,
+    onTapLink: widget.onTapLink,
     onWebShare: widget.onWebShare,
     onVideoShare: widget.onVideoShare,
   );
@@ -190,12 +195,14 @@ class RichTextView extends StatefulWidget {
   const RichTextView({super.key,
     required this.sender,
     required this.text,
+    /*required */this.onTapLink,
     required this.onWebShare,
     required this.onVideoShare,
   });
 
   final ID sender;
   final String text;
+  final OnTapLink? onTapLink;
   final OnWebShare? onWebShare;
   final OnVideoShare? onVideoShare;
 
@@ -206,18 +213,25 @@ class RichTextView extends StatefulWidget {
 
 class _RichTextState extends State<RichTextView> {
 
+  void _openLink(String text, String? href, String title) {
+    var onTapLink = widget.onTapLink;
+    if (onTapLink == null || onTapLink(text, href: href, title: title)) {
+      _MarkdownUtils.openLink(context,
+        sender: widget.sender,
+        text: text, href: href, title: title,
+        onWebShare: widget.onWebShare,
+        onVideoShare: widget.onVideoShare,
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) => MarkdownBody(
     data: widget.text,
     selectable: true,
     extensionSet: md.ExtensionSet.gitHubWeb,
     syntaxHighlighter: SyntaxManager().getHighlighter(),
-    onTapLink: (text, href, title) => _MarkdownUtils.openLink(context,
-      sender: widget.sender,
-      text: text, href: href, title: title,
-      onWebShare: widget.onWebShare,
-      onVideoShare: widget.onVideoShare,
-    ),
+    onTapLink: (text, href, title) => _openLink(text, href, title),
     imageBuilder: (url, title, alt) => _MarkdownUtils.buildImage(context,
       url: url, title: title, alt: alt,
     ),
@@ -319,6 +333,7 @@ abstract class _MarkdownUtils {
             text: plain,
             format: 'markdown',
             sender: sender,
+            onTapLink: null,
             onWebShare: onWebShare, onVideoShare: onVideoShare,
           );
         }
@@ -477,3 +492,8 @@ abstract class _MarkdownUtils {
   }
 
 }
+
+
+typedef OnTapLink = bool Function(String text, {
+  required String? href, required String title,
+});
