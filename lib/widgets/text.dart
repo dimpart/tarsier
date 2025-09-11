@@ -213,7 +213,7 @@ class RichTextView extends StatefulWidget {
 
 class _RichTextState extends State<RichTextView> {
 
-  void _openLink(String text, String? href, String title) {
+  void _openLink(BuildContext context, String text, String? href, String title) {
     var onTapLink = widget.onTapLink;
     if (onTapLink == null || onTapLink(text, href: href, title: title)) {
       _MarkdownUtils.openLink(context,
@@ -231,7 +231,7 @@ class _RichTextState extends State<RichTextView> {
     selectable: true,
     extensionSet: md.ExtensionSet.gitHubWeb,
     syntaxHighlighter: SyntaxManager().getHighlighter(),
-    onTapLink: (text, href, title) => _openLink(text, href, title),
+    onTapLink: (text, href, title) => _openLink(context, text, href, title),
     imageBuilder: (url, title, alt) => _MarkdownUtils.buildImage(context,
       url: url, title: title, alt: alt,
     ),

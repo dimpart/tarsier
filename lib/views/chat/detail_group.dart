@@ -400,12 +400,12 @@ class _ChatDetailState extends State<GroupChatDetailPage> implements lnc.Observe
 
 void _reportGroupChat(BuildContext context, GroupInfo info) {
   String text = 'Report Object: "@title"\n'
-      'Group ID: @id\n'
+      'Group ID: @gid\n'
       '\n'
       'Reason: ...\n'
       '(Screenshots will be attached below)'.trParams({
     'title': info.title,
-    'id': info.identifier.toString(),
+    'gid': info.identifier.toString(),
   });
   // open chat box to report
   CustomerService.report(context, text);

@@ -8,24 +8,33 @@ import '../chat/chat_box.dart';
 
 class CustomerService {
 
-  static ContactInfo? webmaster;
+  static ContactInfo? _director;
 
   // protected
-  static ContactInfo? getWebmaster() {
-    var info = webmaster;
-    if (info != null) {
-      return info;
+  static ContactInfo? getDirector() {
+    var info = _director;
+    if (info == null) {
+      // get first manager
+      Config config = Config();
+      var managers = config.managers;
+      if (managers.isNotEmpty) {
+        info = ContactInfo.fromID(managers.first);
+        _director = info;
+      }
     }
+    return info;
+  }
+
+  static bool isDirector(ID user) => user == getDirector()?.identifier;
+
+  static bool isManager(ID user) {
     Config config = Config();
-    var admin = config.webmaster;
-    if (admin == null) {
-      return null;
-    }
-    return webmaster = ContactInfo.fromID(admin);
+    var managers = config.managers;
+    return managers.contains(user);
   }
 
   static void report(BuildContext context, String text) {
-    var admin = getWebmaster();
+    var admin = getDirector();
     if (admin == null) {
       Alert.show(context, 'Error', 'Customer service not found'.tr);
       return;

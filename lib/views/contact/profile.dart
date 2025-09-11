@@ -9,6 +9,7 @@ import '../../sharing/share_contact.dart';
 import '../../widgets/text.dart';
 import '../chat/chat_box.dart';
 import '../service/base.dart';
+import '../service/report.dart';
 
 
 class ProfilePage extends StatefulWidget {
@@ -265,6 +266,7 @@ class _ProfileState extends State<ProfilePage> with Logging implements lnc.Obser
         additionalDividerMargin: 32,
         children: [
           /// Block
+          if (widget.info.isBlocked || !CustomerService.isManager(widget.info.identifier))
           CupertinoListTile(
             backgroundColor: backgroundColor,
             backgroundColorActivated: backgroundColorActivated,

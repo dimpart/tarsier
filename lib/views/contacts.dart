@@ -1,3 +1,5 @@
+import 'dart:collection';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_section_list/flutter_section_list.dart';
@@ -86,7 +88,9 @@ class _ContactListState extends State<ContactListPage> implements lnc.Observer {
     if (contacts.isEmpty) {
       // check default contacts
       Config config = Config();
-      List<ID> candidates = config.contacts;
+      Set<ID> candidates = HashSet();
+      candidates.addAll(config.managers);
+      candidates.addAll(config.contacts);
       Log.warning('default contacts: $candidates');
       for (ID item in candidates) {
         await database.addContact(item, user: user.identifier);

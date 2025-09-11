@@ -183,7 +183,7 @@ class _ChatDetailState extends State<ChatDetailPage> implements lnc.Observer {
           /// clear history
           _clearButton(context, textColor: dangerousTextColor, backgroundColor: backgroundColor),
           /// report
-          if (widget.info != CustomerService.webmaster)
+          if (!CustomerService.isDirector(widget.info.identifier))
           _reportButton(context, textColor: dangerousTextColor, backgroundColor: backgroundColor),
         ],
       ),
@@ -238,12 +238,12 @@ class _ChatDetailState extends State<ChatDetailPage> implements lnc.Observer {
 
 void _reportContact(BuildContext context, ContactInfo info) {
   String text = 'Report Object: "@title"\n'
-      'ID: @id\n'
+      'ID: @did\n'
       '\n'
       'Reason: ...\n'
       '(Screenshots will be attached below)'.trParams({
     'title': info.title,
-    'id': info.identifier.toString(),
+    'did': info.identifier.toString(),
   });
   // open chat box to report
   CustomerService.report(context, text);
