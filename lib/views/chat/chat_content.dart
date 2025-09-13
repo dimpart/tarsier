@@ -18,6 +18,7 @@ abstract class ContentViewHelper {
   static Widget _recallAction() => Alert.action(AppIcons.recallIcon, 'Recall Message');
 
   static Widget getNameCardView(BuildContext ctx, NameCard content, Envelope envelope) {
+    ID identifier = content.identifier;
     ID sender = envelope.sender;
     // action - forward
     forwardNameCard() => ShareNameCard.forwardNameCard(ctx, content, sender);
@@ -35,7 +36,7 @@ abstract class ContentViewHelper {
       canRecall ? recallNameCard : deleteMessage,
     );
     // action - onTap
-    openNameCard() => ProfilePage.open(ctx, content.identifier);
+    openNameCard() => ProfilePage.open(ctx, identifier);
     // OK
     return ContentViewUtils.getNameCardView(content,
       onTap: openNameCard,

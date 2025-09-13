@@ -127,19 +127,28 @@ class _WebSiteState extends State<WebSitePage> with Logging implements lnc.Obser
     var page = _content;
     if (page == null) {
       // body empty
-    } else if (page['format'] == 'html') {
+    } else if (page['format'] == 'html' || page['HTML'] != null) {
       // web page
-      var sender = widget.chat.identifier;
-      String text = DefaultMessageBuilder().getText(page, sender);
-      body = Browser.view(context, HtmlUri.blank, html: text);
+      body = _htmlView(context, page);
       if (_queryTag == 0) {
         return body;
       }
       // TODO: show refreshing indicator
       return body;
+    } else if (page['URL'] != null) {
+      // web page
+      body = _webView(context, page);
+      if (body != null) {
+        return body;
+      }
+      // error
+      var url = page['URL'];
+      body = Text('Failed to open URL: $url');
+      body = _wrapTextView(body);
     } else {
       // plaintext, markdown, ...
-      body = _body(context, page);
+      body = _textView(context, page);
+      body = _wrapTextView(body);
     }
     if (body == null) {
       // first loading
@@ -268,27 +277,41 @@ class _WebSiteState extends State<WebSitePage> with Logging implements lnc.Obser
     );
   }
 
-  Widget _body(BuildContext ctx, Content page) {
-    var sender = widget.chat.identifier;
-    var format = page['format'];
-    if (format is String) {
-      format = format.toLowerCase();
+  Widget? _webView(BuildContext ctx, Content page) {
+    Uri? url = HtmlUri.parseUri(page.getString('URL'));
+    if (url == null) {
+      return null;
     }
+    return Browser.view(context, url);
+  }
+
+  Widget _htmlView(BuildContext ctx, Content page) {
+    var sender = widget.chat.identifier;
+    String? html = page.getString('HTML');
+    html ??= DefaultMessageBuilder().getText(page, sender);
+    return Browser.view(context, HtmlUri.blank, html: html);
+  }
+
+  Widget _textView(BuildContext ctx, Content page) {
+    var sender = widget.chat.identifier;
     String text = DefaultMessageBuilder().getText(page, sender);
-    Widget? view;
-    if (format == 'markdown') {
+    if (page['format'] == 'markdown') {
       // show RichText
-      view = RichTextView(sender: sender, text: text,
+      return RichTextView(sender: sender, text: text,
         onWebShare: (url, {required title, required desc, required icon}) =>
             ShareWebPage.shareWebPage(ctx, url, title: title, desc: desc, icon: icon),
         onVideoShare: (playingItem) => ShareVideo.shareVideo(ctx, playingItem),
       );
     } else {
-      view = Text(text,);
+      // show plaintext
+      return Text(text,);
     }
-    view = Container(
+  }
+
+  Widget _wrapTextView(Widget body) {
+    Widget view = Container(
       padding: Styles.textMessagePadding,
-      child: view,
+      child: body,
     );
     return buildScrollView(
       enableScrollbar: true,
