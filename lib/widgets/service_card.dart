@@ -2,12 +2,12 @@
  *
  *  DIM-SDK : Decentralized Instant Messaging Software Development Kit
  *
- *                               Written in 2023 by Moky <albert.moky@gmail.com>
+ *                               Written in 2025 by Moky <albert.moky@gmail.com>
  *
  * =============================================================================
  * The MIT License (MIT)
  *
- * Copyright (c) 2023 Albert Moky
+ * Copyright (c) 2025 Albert Moky
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -29,16 +29,17 @@
  * =============================================================================
  */
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
 
 import 'package:dim_flutter/dim_flutter.dart';
 
+import '../views/service/base.dart';
 
-/// NameCardView
-class NameCardView extends StatelessWidget {
-  const NameCardView(this.content, {this.onTap, this.onLongPress, super.key});
 
-  final NameCard content;
+/// ServiceCardView
+class ServiceCardView extends StatelessWidget {
+  const ServiceCardView(this.info, {this.onTap, this.onLongPress, super.key});
+
+  final ServiceInfo info;
   final GestureTapCallback? onTap;
   final GestureLongPressCallback? onLongPress;
 
@@ -49,55 +50,82 @@ class NameCardView extends StatelessWidget {
     child: _widget(context),
   );
 
-  static Widget avatarImage(NameCard content, {double? width, double? height, BoxFit? fit}) {
-    width ??= 48;
-    height ??= 48;
-    var factory = AvatarFactory();
-    ID identifier = content.identifier;
-    var avatar = content.avatar;
-    if (avatar == null) {
-      return factory.getAvatarView(identifier, width: width, height: height, fit: fit);
-    }
-    var view = factory.getImageView(identifier, avatar, width: width, height: height, fit: fit);
-    return ClipRRect(
-      borderRadius: BorderRadius.all(
-        Radius.elliptical(width / 8, height / 8),
-      ),
-      child: view,
-    );
-  }
-
   Widget _widget(BuildContext context) {
-    var avatar = avatarImage(content, width: 48, height: 48,);
-    var title = Text(content.name,
-      maxLines: 1,
-      style: Styles.pageTitleTextStyle,
-    );
-    var subtitle = Text(content.identifier.toString(),
-      maxLines: 1,
-      style: Styles.pageDescTextStyle,
-    );
+    var icon = iconView(info, width: 48, height: 48,);
+    var title = _title(info);
+    var subtitle = _subtitle(info);
     return Container(
       color: Styles.colors.pageMessageBackgroundColor,
       padding: Styles.pageMessagePadding,
       width: 220,
       child: Row(
         children: [
-          avatar,
+          icon,
           const SizedBox(width: 8,),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 title,
-                const SizedBox(height: 4,),
-                subtitle,
+                if (subtitle != null)
+                  const SizedBox(height: 4,),
+                if (subtitle != null)
+                  subtitle,
               ],
             ),
           ),
           const SizedBox(width: 8,),
         ],
       ),
+    );
+  }
+
+  Widget _title(ServiceInfo info) {
+    String title = info.title;
+    return Text(title,
+      maxLines: 1,
+      style: Styles.pageTitleTextStyle,
+    );
+  }
+
+  Widget? _subtitle(ServiceInfo info) {
+    String? subtitle = info.subtitle;
+    if (subtitle == null || subtitle.isEmpty) {
+      subtitle = info.provider;
+      if (subtitle == null || subtitle.isEmpty) {
+        return null;
+      }
+    }
+    return Text(subtitle,
+      maxLines: 1,
+      style: Styles.pageDescTextStyle,
+    );
+  }
+
+  static Widget iconView(ServiceInfo info, {double? width, double? height, BoxFit? fit}) {
+    width ??= 48;
+    height ??= 48;
+    var pnf = info.icon;
+    if (pnf == null) {
+      return SizedBox(width: width, height: height);
+    }
+    var factory = NetworkImageFactory();
+    Widget view = factory.getImageView(pnf);
+    // view = factory.getImageView(pnf, fit: BoxFit.cover);
+    // view = SizedBox.expand(child: view,);
+    view = Container(
+      width: width,
+      height: height,
+      color: CupertinoColors.white,
+      padding: const EdgeInsets.all(4),
+      alignment: Alignment.center,
+      child: view,
+    );
+    return ClipRRect(
+      borderRadius: BorderRadius.all(
+        Radius.elliptical(width / 8, height / 8),
+      ),
+      child: view,
     );
   }
 

@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 
 import 'package:dim_flutter/dim_flutter.dart';
 
+import '../views/service/base.dart';
 import 'name_card.dart';
+import 'service_card.dart';
 import 'text.dart';
 import 'web_page.dart';
 
@@ -140,7 +142,15 @@ abstract class ContentViewUtils {
   static Widget getNameCardView(NameCard content, {
     required GestureTapCallback? onTap,
     required GestureLongPressCallback? onLongPress,
-  }) => NameCardView(content: content,
+  }) => NameCardView(content,
+    onTap: onTap,
+    onLongPress: onLongPress,
+  );
+
+  static Widget getServiceCardView(ServiceInfo info, {
+    required GestureTapCallback? onTap,
+    required GestureLongPressCallback? onLongPress,
+  }) => ServiceCardView(info,
     onTap: onTap,
     onLongPress: onLongPress,
   );

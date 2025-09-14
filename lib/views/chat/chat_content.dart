@@ -10,6 +10,7 @@ import '../../sharing/share_video.dart';
 import '../../widgets/message.dart';
 import '../../widgets/text.dart';
 import '../contact/profile.dart';
+import '../service/base.dart';
 
 
 abstract class ContentViewHelper {
@@ -18,6 +19,10 @@ abstract class ContentViewHelper {
   static Widget _recallAction() => Alert.action(AppIcons.recallIcon, 'Recall Message');
 
   static Widget getNameCardView(BuildContext ctx, NameCard content, Envelope envelope) {
+    ServiceInfo? info = ServiceInfo.parse(content['service']);
+    if (info != null) {
+      return _getServiceCardView(ctx, info, content, envelope);
+    }
     ID identifier = content.identifier;
     ID sender = envelope.sender;
     // action - forward
@@ -40,6 +45,35 @@ abstract class ContentViewHelper {
     // OK
     return ContentViewUtils.getNameCardView(content,
       onTap: openNameCard,
+      onLongPress: actionSheet,
+    );
+  }
+
+  static Widget _getServiceCardView(BuildContext ctx, ServiceInfo info, NameCard content, Envelope envelope) {
+    ID bot = info.identifier;
+    ID identifier = content.identifier;
+    ID sender = envelope.sender;
+    assert(bot == identifier, 'NameCard ID not matched: $bot, $identifier');
+    // action - forward
+    forwardNameCard() => ShareNameCard.forwardNameCard(ctx, content, sender);
+    // action - delete/recall
+    deleteMessage() => _deleteMessage(ctx, content, envelope);
+    recallNameCard() => _recallNameCard(ctx, content, envelope);
+    // action - onLongPress
+    bool canRecall = _canRecall(content, sender);
+    actionSheet() => Alert.actionSheet(ctx, null, null,
+      // forward
+      Alert.action(AppIcons.shareIcon, 'Forward Name Card'),
+      forwardNameCard,
+      // delete/recall
+      canRecall ? _recallAction() : _deleteAction(),
+      canRecall ? recallNameCard : deleteMessage,
+    );
+    // action - onTap
+    openServiceCard() => info.open(ctx);
+    // OK
+    return ContentViewUtils.getNameCardView(content,
+      onTap: openServiceCard,
       onLongPress: actionSheet,
     );
   }
