@@ -63,7 +63,7 @@ abstract class ContentViewHelper {
     bool canRecall = _canRecall(content, sender);
     actionSheet() => Alert.actionSheet(ctx, null, null,
       // forward
-      Alert.action(AppIcons.shareIcon, 'Forward Name Card'),
+      Alert.action(AppIcons.shareIcon, 'Forward Service'),
       forwardNameCard,
       // delete/recall
       canRecall ? _recallAction() : _deleteAction(),
@@ -72,7 +72,7 @@ abstract class ContentViewHelper {
     // action - onTap
     openServiceCard() => info.open(ctx);
     // OK
-    return ContentViewUtils.getNameCardView(content,
+    return ContentViewUtils.getServiceCardView(info,
       onTap: openServiceCard,
       onLongPress: actionSheet,
     );

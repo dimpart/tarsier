@@ -5,6 +5,7 @@ import 'package:flutter_section_list/flutter_section_list.dart';
 import 'package:dim_flutter/dim_flutter.dart';
 import 'package:lnc/notification.dart' as lnc;
 
+import '../../sharing/share_service.dart';
 import '../../sharing/share_video.dart';
 import 'base.dart';
 
@@ -143,12 +144,25 @@ class _LiveSourceListState extends State<LiveSourceListPage> with Logging implem
       backgroundColor: Styles.colors.appBardBackgroundColor,
       // backgroundColor: Styles.themeBarBackgroundColor,
       middle: StatedTitleView.from(context, () => widget.title),
-      trailing: _refreshBtn(),
+      trailing: _trailing(context),
     ),
     child: buildSectionListView(
       enableScrollbar: true,
       adapter: _adapter,
     ),
+  );
+
+  Widget _trailing(BuildContext context) => Row(
+    mainAxisSize: MainAxisSize.min,
+    children: [
+      _shareBtn(context),
+      _refreshBtn(),
+    ],
+  );
+
+  Widget _shareBtn(BuildContext ctx) => IconButton(
+    icon: const Icon(AppIcons.shareIcon, size: 16),
+    onPressed: _refreshing || _queryTag > 0 ? null : () => ShareService.shareService(ctx, widget.info),
   );
 
   Widget _refreshBtn() => IconButton(

@@ -5,6 +5,7 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:dim_flutter/dim_flutter.dart';
 import 'package:lnc/notification.dart' as lnc;
 
+import '../../sharing/share_service.dart';
 import '../chat/chat_box.dart';
 import 'base.dart';
 import 'play_item.dart';
@@ -182,18 +183,24 @@ class _PlaylistState extends State<PlaylistPage> with Logging implements lnc.Obs
         backgroundColor: Styles.colors.appBardBackgroundColor,
         // backgroundColor: Styles.themeBarBackgroundColor,
         middle: StatedTitleView.from(context, () => widget.title),
-        trailing: _trailing(_refreshBtn(), _searchBtn(context)),
+        trailing: _trailing(context),
       ),
       child: body,
     );
   }
 
-  Widget _trailing(Widget btn1, Widget btn2) => Row(
+  Widget _trailing(BuildContext context) => Row(
     mainAxisSize: MainAxisSize.min,
     children: [
-      btn1,
-      btn2,
+      _shareBtn(context),
+      _refreshBtn(),
+      _searchBtn(context),
     ],
+  );
+
+  Widget _shareBtn(BuildContext ctx) => IconButton(
+    icon: const Icon(AppIcons.shareIcon, size: 16),
+    onPressed: _refreshing || _queryTag > 0 ? null : () => ShareService.shareService(ctx, widget.info),
   );
 
   Widget _refreshBtn() => IconButton(

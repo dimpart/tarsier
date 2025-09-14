@@ -19,10 +19,7 @@ abstract class ShareNameCard {
     PickChatPage.open(ctx,
       onPicked: (chat) => Alert.confirm(ctx, 'Confirm Forward',
         _forwardNameCardPreview(content, chat),
-        okAction: () => _sendContact(chat.identifier,
-          identifier: content.identifier, name: content.name, avatar: content.avatar?.url.toString(),
-          traces: traces,
-        ).then((ok) {
+        okAction: () => _sendContact(chat.identifier, content, traces: traces).then((ok) {
           if (!ctx.mounted) {
             Log.warning('context unmounted: $ctx');
           } else if (ok) {
@@ -52,18 +49,6 @@ abstract class ShareNameCard {
 }
 
 
-Row forwardPreview(Widget from, Widget to) => Row(
-  mainAxisAlignment: MainAxisAlignment.center,
-  children: [
-    from,
-    const SizedBox(width: 16,),
-    const Icon(AppIcons.forwardIcon, size: 16,),
-    const SizedBox(width: 16,),
-    to,
-  ],
-);
-
-
 Widget _forwardNameCardPreview(NameCard content, Conversation chat) {
   Widget to = previewEntity(chat);
   Widget from;
@@ -80,16 +65,25 @@ Widget _forwardNameCardPreview(NameCard content, Conversation chat) {
   return forwardPreview(from, to);
 }
 
-Future<bool> _sendContact(ID receiver,
-    {required ID identifier, required String name, String? avatar,
-      required List traces}) async {
-  NameCard content = NameCard.create(identifier, name, PortableNetworkFile.parse(avatar));
+Future<bool> _sendContact(ID receiver, NameCard info, {required List traces}) async {
+  NameCard content = NameCard.create(info.identifier, info.name, info.avatar);
+  info.forEach((key, value) {
+    if (!_fixedNameCardFields.contains(key)) {
+      Log.info('copy key: $key');
+      content[key] = value;
+    }
+  });
   content['traces'] = traces;
-  Log.debug('forward name card to receiver: $receiver, $content');
+  Log.info('forward name card to receiver: $receiver, $content');
   GlobalVariable shared = GlobalVariable();
   await shared.emitter.sendContent(content, receiver: receiver);
   return true;
 }
+List<String> _fixedNameCardFields = [
+  'type', 'sn', 'time', 'group',
+  'ID', 'did', 'name', 'avatar',
+  'traces',
+];
 
 Widget _previewText(String text) => SizedBox(
   width: 64,

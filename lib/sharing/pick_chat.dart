@@ -116,3 +116,15 @@ class _PickChatCellState extends State<_PickChatCell> {
   );
 
 }
+
+
+Row forwardPreview(Widget from, Widget to) => Row(
+  mainAxisAlignment: MainAxisAlignment.center,
+  children: [
+    from,
+    const SizedBox(width: 16,),
+    const Icon(AppIcons.forwardIcon, size: 16,),
+    const SizedBox(width: 16,),
+    to,
+  ],
+);
