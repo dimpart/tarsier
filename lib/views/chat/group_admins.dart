@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_section_list/flutter_section_list.dart';
 
 import 'package:dim_flutter/dim_flutter.dart';
-import 'package:lnc/notification.dart' as lnc;
+import 'package:dim_flutter/lnc.dart' as lnc;
 
 import '../contact/profile.dart';
 

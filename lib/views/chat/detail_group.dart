@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import 'package:dim_flutter/dim_flutter.dart';
-import 'package:lnc/notification.dart' as lnc;
+import 'package:dim_flutter/lnc.dart' as lnc;
 
 import '../service/report.dart';
 import 'detail_participants.dart';

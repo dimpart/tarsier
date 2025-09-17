@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
 import 'package:dim_flutter/dim_flutter.dart';
-import 'package:lnc/notification.dart' as lnc;
+import 'package:dim_flutter/lnc.dart' as lnc;
 
 import '../../sharing/share_service.dart';
 import '../chat/chat_box.dart';

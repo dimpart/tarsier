@@ -31,8 +31,6 @@ dependencies:
   flutter:
     sdk: flutter
 
-  lnc: 1.2.1
-
   dim_flutter:
     path: '../demo-flutter/dim_flutter'
 

@@ -1,9 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 
-import 'package:lnc/notification.dart' as lnc;
-
 import 'package:dim_flutter/dim_flutter.dart';
+import 'package:dim_flutter/lnc.dart' as lnc;
 
 
 class ChatInputTray extends StatefulWidget {
