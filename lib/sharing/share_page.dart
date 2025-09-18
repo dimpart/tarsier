@@ -3,7 +3,6 @@ import 'package:flutter/widgets.dart';
 import 'package:dim_flutter/dim_flutter.dart';
 
 import 'pick_chat.dart';
-import 'share_contact.dart';
 
 
 abstract class ShareWebPage {

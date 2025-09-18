@@ -5,7 +5,6 @@ import 'package:flutter/widgets.dart';
 import 'package:dim_flutter/dim_flutter.dart';
 
 import 'pick_chat.dart';
-import 'share_contact.dart';
 
 
 abstract class ShareImage {
@@ -112,7 +111,7 @@ Future<bool> _sendImage(ID receiver,
     Log.error('failed to load image: $path');
     return false;
   } else {
-    Log.debug('forwarding image to $receiver: "$filename", traces: $traces');
+    Log.info('forwarding image to $receiver: "$filename", traces: $traces');
   }
   var pnf = PortableNetworkFile.parse(thumbnail);
   // send image content with traces

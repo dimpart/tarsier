@@ -1,9 +1,9 @@
 import 'dart:collection';
 
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 
 import 'package:dim_flutter/dim_flutter.dart';
-import 'package:flutter/material.dart';
 
 import '../contact/profile.dart';
 

@@ -3,7 +3,6 @@ import 'package:flutter/widgets.dart';
 import 'package:dim_flutter/dim_flutter.dart';
 
 import 'pick_chat.dart';
-import 'share_contact.dart';
 
 
 abstract class ShareVideo {
@@ -82,6 +81,7 @@ Widget _forwardVideoPreview(VideoContent content, Conversation chat) {
 Future<bool> _sendVideo(ID receiver,
     {required Uri url, String? filename, String? title, String? snapshot}) async {
   var pnf = PortableNetworkFile.parse(snapshot);
+  Log.info('forwarding video to $receiver: "$filename"');
   // send image content with traces
   GlobalVariable shared = GlobalVariable();
   await shared.emitter.sendMovie(url,

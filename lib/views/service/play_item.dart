@@ -78,7 +78,7 @@ class _PlayItemState extends State<PlaylistItem> with Logging implements lnc.Obs
     String name = notification.name;
     Map? userInfo = notification.userInfo;
     if (name == NotificationNames.kVideoItemUpdated) {
-      logInfo('video item updated: $name');
+      // logInfo('video item updated: $name');
       var content = userInfo?['cmd'];
       Map? season = userInfo?['season'];
       if (season?['page'] == widget.info['page']) {

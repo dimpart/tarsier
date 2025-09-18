@@ -8,7 +8,6 @@ import 'package:markdown/markdown.dart' as md;
 import 'package:dim_flutter/dim_flutter.dart';
 
 import '../sharing/pick_chat.dart';
-import '../sharing/share_contact.dart';
 
 
 class TextPreviewPage extends StatefulWidget {

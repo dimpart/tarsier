@@ -3,7 +3,6 @@ import 'package:flutter/widgets.dart';
 import 'package:dim_flutter/dim_flutter.dart';
 
 import 'pick_chat.dart';
-import 'share_contact.dart';
 
 
 abstract class ShareTextMessage {
@@ -79,7 +78,7 @@ Future<bool> _sendText(ID receiver, {required TextContent content, required List
   });
   // update traces & send out
   forward['traces'] = traces;
-  Log.warning('forward text message to receiver: $receiver, $forward');
+  Log.info('forward text message to receiver: $receiver, $forward');
   GlobalVariable shared = GlobalVariable();
   await shared.emitter.sendContent(forward, receiver: receiver);
   return true;
