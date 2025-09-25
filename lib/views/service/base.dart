@@ -230,3 +230,18 @@ class _ServiceItem extends ServiceInfo with Logging {
   }
 
 }
+
+
+typedef CheckCondition = bool Function();
+
+Future<bool> untilConditionTrue(CheckCondition cond, {Duration? timeout}) async {
+  Duration delay = const Duration(milliseconds: 256);
+  int cnt = (timeout?.inMilliseconds) ?? (1000 * 32);
+  for (; cnt > 0; cnt -= 256) {
+    if (cond()) {
+      return true;
+    }
+    await Future.delayed(delay);
+  }
+  return false;
+}

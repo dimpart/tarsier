@@ -106,8 +106,8 @@ class _PlayItemState extends State<PlaylistItem> with Logging implements lnc.Obs
 
   Future<void> _load() async {
     Season season = widget.info;
-    String? name = season['name'];
-    Uri? page = HtmlUri.parseUri(season['page']);
+    String name = season.name;
+    Uri? page = season.page;
     if (page == null) {
       assert(false, 'season error: $season');
       return;
@@ -139,11 +139,11 @@ class _PlayItemState extends State<PlaylistItem> with Logging implements lnc.Obs
     return await man.queryVideoInfo(content, page, bot);
   }
 
-  @override
-  void initState() {
-    super.initState();
-    _load();
-  }
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   _load();
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -152,6 +152,7 @@ class _PlayItemState extends State<PlaylistItem> with Logging implements lnc.Obs
     if (format == 'markdown') {
       return _richTextView(context, season);
     } else {
+      _load();
       return _loadingView(widget.info.name);
     }
   }

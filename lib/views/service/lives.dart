@@ -48,6 +48,15 @@ class _LiveSourceListState extends State<LiveSourceListPage> with Logging implem
 
   String get description => _description ?? '';
 
+  /// loading after enter
+  bool get isLoading => !(_queryTag == 0 || _refreshing);
+
+  /// waiting for update
+  bool get isQuerying => _queryTag != 0; // && _queryTag != 9527;
+
+  /// refreshed or timeout
+  bool get isRefreshFinished => _queryTag == 0;
+
   @override
   void dispose() {
     var nc = lnc.NotificationCenter();
@@ -144,49 +153,29 @@ class _LiveSourceListState extends State<LiveSourceListPage> with Logging implem
       backgroundColor: Styles.colors.appBardBackgroundColor,
       // backgroundColor: Styles.themeBarBackgroundColor,
       middle: StatedTitleView.from(context, () => widget.title),
-      trailing: _trailing(context),
+      trailing: _shareBtn(context),
     ),
-    child: buildSectionListView(
-      enableScrollbar: true,
-      adapter: _adapter,
+    child: RefreshIndicator(
+      onRefresh: _refreshList,
+      child: buildSectionListView(
+        enableScrollbar: true,
+        adapter: _adapter,
+      ),
     ),
-  );
-
-  Widget _trailing(BuildContext context) => Row(
-    mainAxisSize: MainAxisSize.min,
-    children: [
-      _shareBtn(context),
-      _refreshBtn(),
-    ],
   );
 
   Widget _shareBtn(BuildContext ctx) => IconButton(
-    icon: const Icon(AppIcons.shareIcon, size: 16),
-    onPressed: _refreshing || _queryTag > 0 ? null : () => ShareService.shareService(ctx, widget.info),
+    icon: const Icon(AppIcons.shareIcon, size: Styles.navigationBarIconSize),
+    onPressed: isQuerying ? null : () => ShareService.shareService(ctx, widget.info),
   );
 
-  Widget _refreshBtn() => IconButton(
-    icon: const Icon(AppIcons.refreshIcon, size: 16),
-    onPressed: _refreshing || _queryTag > 0 ? null : () => _refreshList(),
-  );
-
-  void _refreshList() {
-    // disable the refresh button to avoid refresh frequently
-    if (mounted) {
-      setState(() {
-        _refreshing = true;
-      });
-    }
-    // enable the refresh button after 5 seconds
-    Future.delayed(const Duration(seconds: 5)).then((value) {
-      if (mounted) {
-        setState(() {
-          _refreshing = false;
-        });
-      }
-    });
+  Future<void> _refreshList() async {
+    _refreshing = true;
     // force to refresh
-    _query();
+    await _query();
+    // waiting for response
+    await untilConditionTrue(() => isRefreshFinished);
+    _refreshing = false;
   }
 
 }
@@ -207,7 +196,7 @@ class _LiveSourceAdapter with SectionAdapterMixin {
   bool shouldSectionHeaderStick(int section) => true;
 
   @override
-  bool shouldExistSectionHeader(int section) => state._queryTag > 0;
+  bool shouldExistSectionHeader(int section) => state.isLoading;
 
   @override
   bool shouldExistSectionFooter(int section) => state.description.isNotEmpty;

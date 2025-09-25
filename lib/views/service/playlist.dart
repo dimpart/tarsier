@@ -46,6 +46,15 @@ class _PlaylistState extends State<PlaylistPage> with Logging implements lnc.Obs
 
   int _queryTag = 9527;  // show CupertinoActivityIndicator
 
+  /// loading after enter
+  bool get isLoading => !(_queryTag == 0 || _refreshing);
+
+  /// waiting for update
+  bool get isQuerying => _queryTag != 0; // && _queryTag != 9527;
+
+  /// refreshed or timeout
+  bool get isRefreshFinished => _queryTag == 0;
+
   @override
   void dispose() {
     var nc = lnc.NotificationCenter();
@@ -145,29 +154,39 @@ class _PlaylistState extends State<PlaylistPage> with Logging implements lnc.Obs
   }
 
   @override
-  Widget build(BuildContext context) {
-    Widget? body;
+  Widget build(BuildContext context) => CupertinoPageScaffold(
+    backgroundColor: Styles.colors.scaffoldBackgroundColor,
+    navigationBar: CupertinoNavigationBar(
+      backgroundColor: Styles.colors.appBardBackgroundColor,
+      // backgroundColor: Styles.themeBarBackgroundColor,
+      middle: StatedTitleView.from(context, () => widget.title),
+      trailing: _trailing(context),
+    ),
+    child: RefreshIndicator(
+      onRefresh: _refreshList,
+      child: _body(context),
+    ),
+  );
+
+  Widget _body(BuildContext context) {
     int itemCount = _dataSource.getItemCount(0);
     if (itemCount == 0) {
       // body empty
-    } else {
-      double width = MediaQuery.of(context).size.width;
-      int axisCount = width ~/ 192;
-      body = MasonryGridView.count(
-        crossAxisCount: axisCount,
-        mainAxisSpacing: 4,
-        crossAxisSpacing: 4,
-        itemCount: itemCount,
-        itemBuilder: (context, index) {
-          var item = _dataSource.getItem(0, index);
-          return PlaylistItem(widget.chat, item);
-        },
-      );
+      return const Center(child: CupertinoActivityIndicator());
     }
-    if (body == null) {
-      // first loading
-      body = const Center(child: CupertinoActivityIndicator());
-    } else if (_queryTag > 0) {
+    double width = MediaQuery.of(context).size.width;
+    int axisCount = width ~/ 192;
+    Widget body = MasonryGridView.count(
+      crossAxisCount: axisCount,
+      mainAxisSpacing: 4,
+      crossAxisSpacing: 4,
+      itemCount: itemCount,
+      itemBuilder: (context, index) {
+        var item = _dataSource.getItem(0, index);
+        return PlaylistItem(widget.chat, item);
+      },
+    );
+    if (isLoading) {
       // refreshing
       body = Stack(
         alignment: Alignment.topCenter,
@@ -177,60 +196,35 @@ class _PlaylistState extends State<PlaylistPage> with Logging implements lnc.Obs
         ],
       );
     }
-    return CupertinoPageScaffold(
-      backgroundColor: Styles.colors.scaffoldBackgroundColor,
-      navigationBar: CupertinoNavigationBar(
-        backgroundColor: Styles.colors.appBardBackgroundColor,
-        // backgroundColor: Styles.themeBarBackgroundColor,
-        middle: StatedTitleView.from(context, () => widget.title),
-        trailing: _trailing(context),
-      ),
-      child: body,
-    );
+    return body;
   }
 
   Widget _trailing(BuildContext context) => Row(
     mainAxisSize: MainAxisSize.min,
     children: [
       _shareBtn(context),
-      _refreshBtn(),
       _searchBtn(context),
     ],
   );
 
-  Widget _shareBtn(BuildContext ctx) => IconButton(
-    icon: const Icon(AppIcons.shareIcon, size: 16),
-    onPressed: _refreshing || _queryTag > 0 ? null : () => ShareService.shareService(ctx, widget.info),
-  );
-
-  Widget _refreshBtn() => IconButton(
-    icon: const Icon(AppIcons.refreshIcon, size: 16),
-    onPressed: _refreshing || _queryTag > 0 ? null : () => _refreshList(),
-  );
-
-  void _refreshList() {
-    // disable the refresh button to avoid refresh frequently
-    if (mounted) {
-      setState(() {
-        _refreshing = true;
-      });
-    }
-    // enable the refresh button after 5 seconds
-    Future.delayed(const Duration(seconds: 5)).then((value) {
-      if (mounted) {
-        setState(() {
-          _refreshing = false;
-        });
-      }
-    });
-    // force to refresh
-    _query();
-  }
-
   Widget _searchBtn(BuildContext context) => IconButton(
-    icon: const Icon(AppIcons.searchIcon, size: 16),
+    icon: const Icon(AppIcons.searchIcon, size: Styles.navigationBarIconSize),
     onPressed: () => ChatBox.open(context, widget.chat, widget.info),
   );
+
+  Widget _shareBtn(BuildContext ctx) => IconButton(
+    icon: const Icon(AppIcons.shareIcon, size: Styles.navigationBarIconSize),
+    onPressed: isQuerying ? null : () => ShareService.shareService(ctx, widget.info),
+  );
+
+  Future<void> _refreshList() async {
+    _refreshing = true;
+    // force to refresh
+    await _query();
+    // waiting for response
+    await untilConditionTrue(() => isRefreshFinished);
+    _refreshing = false;
+  }
 
 }
 

@@ -41,6 +41,15 @@ class _WebSiteState extends State<WebSitePage> with Logging implements lnc.Obser
   int _queryTag = 9527;  // show CupertinoActivityIndicator
   Content? _content;
 
+  /// loading after enter
+  bool get isLoading => !(_queryTag == 0 || _refreshing);
+
+  /// waiting for update
+  bool get isQuerying => _queryTag != 0; // && _queryTag != 9527;
+
+  /// refreshed or timeout
+  bool get isRefreshFinished => _queryTag == 0;
+
   @override
   void dispose() {
     var nc = lnc.NotificationCenter();
@@ -121,24 +130,41 @@ class _WebSiteState extends State<WebSitePage> with Logging implements lnc.Obser
   }
 
   @override
-  Widget build(BuildContext context) {
-    Widget? body;
+  Widget build(BuildContext context) => Scaffold(
+    backgroundColor: Styles.colors.scaffoldBackgroundColor,
+    appBar: CupertinoNavigationBar(
+      backgroundColor: Styles.colors.appBardBackgroundColor,
+      // backgroundColor: Styles.themeBarBackgroundColor,
+      middle: StatedTitleView.from(context, () => widget.title),
+      trailing: _shareBtn(context, _content),
+    ),
+    body: RefreshIndicator(
+      onRefresh: _refreshList,
+      child: buildScrollView(
+        enableScrollbar: true,
+        child: _body(context),
+      ),
+    ),
+  );
+
+  Widget _body(BuildContext context) {
+    Widget body;
     var page = _content;
     if (page == null) {
       // body empty
+      return const Center(child: CupertinoActivityIndicator());
     } else if (page['format'] == 'html' || page['HTML'] != null) {
       // web page
       body = _htmlView(context, page);
-      if (_queryTag == 0) {
-        return body;
+      if (isQuerying) {
+        // TODO: show refreshing indicator
       }
-      // TODO: show refreshing indicator
       return body;
     } else if (page['URL'] != null) {
       // web page
-      body = _webView(context, page);
-      if (body != null) {
-        return body;
+      Widget? web = _webView(context, page);
+      if (web != null) {
+        return web;
       }
       // error
       var url = page['URL'];
@@ -149,10 +175,7 @@ class _WebSiteState extends State<WebSitePage> with Logging implements lnc.Obser
       body = _textView(context, page);
       body = _wrapTextView(body);
     }
-    if (body == null) {
-      // first loading
-      body = const Center(child: CupertinoActivityIndicator());
-    } else if (_queryTag > 0) {
+    if (isLoading) {
       // refreshing
       body = Stack(
         alignment: Alignment.topCenter,
@@ -162,88 +185,20 @@ class _WebSiteState extends State<WebSitePage> with Logging implements lnc.Obser
         ],
       );
     }
-
-    return Scaffold(
-      backgroundColor: Styles.colors.scaffoldBackgroundColor,
-      appBar: CupertinoNavigationBar(
-        backgroundColor: Styles.colors.appBardBackgroundColor,
-        // backgroundColor: Styles.themeBarBackgroundColor,
-        middle: StatedTitleView.from(context, () => widget.title),
-        trailing: _trailing(_refreshBtn(), _shareBtn(context, page)),
-      ),
-      body: buildScrollView(
-        enableScrollbar: true,
-        child: body,
-      ),
-    );
-    // var colors = Styles.colors;
-    // return Scaffold(
-    //   backgroundColor: colors.scaffoldBackgroundColor,
-    //   // A ScrollView that creates custom scroll effects using slivers.
-    //   body: CustomScrollView(
-    //     // A list of sliver widgets.
-    //     slivers: <Widget>[
-    //       CupertinoSliverNavigationBar(
-    //         backgroundColor: colors.appBardBackgroundColor,
-    //         // This title is visible in both collapsed and expanded states.
-    //         // When the "middle" parameter is omitted, the widget provided
-    //         // in the "largeTitle" parameter is used instead in the collapsed state.
-    //         largeTitle: Text(widget.title,
-    //           style: Styles.titleTextStyle,
-    //         ),
-    //         trailing: _shareBtn(context, page),
-    //       ),
-    //       // This widget fills the remaining space in the viewport.
-    //       // Drag the scrollable area to collapse the CupertinoSliverNavigationBar.
-    //       SliverFillRemaining(
-    //         hasScrollBody: false,
-    //         fillOverscroll: true,
-    //         child: body,
-    //       ),
-    //     ],
-    //   ),
-    // );
+    return body;
   }
 
-  Widget _trailing(Widget btn1, Widget? btn2) {
-    if (btn2 == null) {
-      return btn1;
-    }
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        btn2,
-        btn1,
-      ],
-    );
-  }
-
-  Widget _refreshBtn() => IconButton(
-    icon: const Icon(AppIcons.refreshIcon, size: 16),
-    onPressed: _refreshing || _queryTag > 0 ? null : () => _refreshList(),
-  );
-
-  void _refreshList() {
-    // disable the refresh button to avoid refresh frequently
-    if (mounted) {
-      setState(() {
-        _refreshing = true;
-      });
-    }
-    // enable the refresh button after 5 seconds
-    Future.delayed(const Duration(seconds: 5)).then((value) {
-      if (mounted) {
-        setState(() {
-          _refreshing = false;
-        });
-      }
-    });
+  Future<void> _refreshList() async {
+    _refreshing = true;
     // force to refresh
-    _query();
+    await _query();
+    // waiting for response
+    await untilConditionTrue(() => isRefreshFinished);
+    _refreshing = false;
   }
 
   Widget? _shareBtn(BuildContext ctx, Content? page) {
-    if (_queryTag > 0) {
+    if (isQuerying) {
       return null;
     }
     String? text = page?['text'];
@@ -263,7 +218,6 @@ class _WebSiteState extends State<WebSitePage> with Logging implements lnc.Obser
       icon: const Icon(
         AppIcons.shareIcon,
         size: Styles.navigationBarIconSize,
-        // color: Styles.avatarColor,
       ),
       onPressed: () => PickChatPage.open(ctx,
         onPicked: (chat) => Alert.confirm(ctx, 'Confirm Forward',
