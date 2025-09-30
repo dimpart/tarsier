@@ -62,7 +62,7 @@ abstract class ContentViewUtils {
   static Widget getNameLabel(BuildContext context, ID sender) => Container(
     margin: Styles.messageSenderNameMargin,
     constraints: const BoxConstraints(maxWidth: 256),
-    child: ContactInfo.fromID(sender)!.getNameLabel(true,
+    child: ContactInfo.fromID(sender)!.getNameLabel(
       style: Styles.messageSenderNameTextStyle,
     ),
   );

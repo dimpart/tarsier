@@ -632,18 +632,13 @@ class _ProfileTableState extends State<_ProfileTableCell> implements lnc.Observe
   @override
   Widget build(BuildContext context) => CupertinoTableCell(
     leading: widget.info.getImage(),
-    title: _title(),
+    title: widget.info.getNameLabel(),
     subtitle: _subtitle(),
     additionalInfo: _timeLabel(widget.info.lastActiveTime),
     trailing: widget.trailing,
     onTap: () => ProfilePage.open(context, widget.info.identifier),
     onLongPress: widget.onLongPress,
   );
-
-  Widget _title() {
-    bool remarks = widget.info.isNotFriend;
-    return widget.info.getNameLabel(remarks);
-  }
 
   Widget? _subtitle() {
     String desc;
