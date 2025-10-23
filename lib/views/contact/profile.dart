@@ -641,15 +641,16 @@ class _ProfileTableState extends State<_ProfileTableCell> implements lnc.Observe
   );
 
   Widget? _subtitle() {
-    String desc;
-    if (widget.info.isNotFriend) {
+    ContactRemark cr = widget.info.remark;
+    String desc = cr.description;
+    if (desc.isNotEmpty) {
+      // show description
+    } else if (widget.info.isNotFriend) {
+      // show ID
       desc = widget.info.identifier.toString();
     } else {
-      ContactRemark cr = widget.info.remark;
-      desc = cr.alias;
-      if (desc.isEmpty) {
-        return null;
-      }
+      // show nothing
+      return null;
     }
     return Text(desc);
   }
