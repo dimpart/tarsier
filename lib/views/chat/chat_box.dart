@@ -54,9 +54,10 @@ class _ChatBoxState extends State<ChatBox> implements lnc.Observer {
   void initState() {
     super.initState();
     _init();
+    _refresh();
   }
 
-  void _init() async {
+  Future<void> _init() async {
     await _reload();
     // set opened widget for disable updating unread count
     widget.info.widget = widget;
@@ -65,7 +66,12 @@ class _ChatBoxState extends State<ChatBox> implements lnc.Observer {
     await clerk.clearUnread(widget.info);
   }
 
-  void _reset() async {
+  Future<bool> _refresh() async {
+    var chat = widget.info;
+    return await chat.refreshDocuments();
+  }
+
+  Future<void> _reset() async {
     // clear badge
     Amanuensis clerk = Amanuensis();
     await clerk.clearUnread(widget.info);

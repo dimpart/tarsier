@@ -119,13 +119,9 @@ class _ProfileState extends State<ProfilePage> with Logging implements lnc.Obser
     }
   }
 
-  Future<void> _refresh() async {
-    var shared = GlobalVariable();
-    var facebook = shared.facebook;
-    ID identifier = widget.info.identifier;
-    List<Document> docs = await facebook.getDocuments(identifier);
-    logInfo('refreshing ${docs.length} document(s) "${widget.info.name}" $identifier');
-    await facebook.entityChecker?.queryDocuments(identifier, docs);
+  Future<bool> _refresh() async {
+    var contact = widget.info;
+    return await contact.refreshDocuments();
   }
 
   @override
@@ -623,10 +619,16 @@ class _ProfileTableState extends State<_ProfileTableCell> implements lnc.Observe
     }
   }
 
+  Future<bool> _refresh() async {
+    var contact = widget.info;
+    return await contact.refreshDocuments();
+  }
+
   @override
   void initState() {
     super.initState();
     _reload();
+    _refresh();
   }
 
   @override
