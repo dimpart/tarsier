@@ -22,8 +22,8 @@ void main() async {
   /// TODO: set distribution channel name
 
   // Set log level
-  Log.level = Log.DEVELOP;
-  // Log.level = Log.kRelease;
+  Log.level = Log.RELEASE;
+  // Log.level = Log.DEVELOP;
   if (DevicePlatform.isIOS) {
     Log.colorful = false;
     Log.showTime = false;

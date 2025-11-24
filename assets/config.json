@@ -6,7 +6,9 @@
   "founder": "moky@anywhere",
   "owner": "anyone@anywhere",
 
-  "webmaster": "0x952718A18C6b21abb593D84203282fe1c21773D6",
+  "managers": [
+    "0x952718A18C6b21abb593D84203282fe1c21773D6"
+  ],
 
   "contacts": [
     "0x952718A18C6b21abb593D84203282fe1c21773D6"
@@ -23,16 +25,38 @@
   "services": [
     {
       "type": "UserList",
-      "ID": "usher@2wtScvzSouByJm8v7Whbuui1YLZPBHT6wv",
+      "did": "usher@2wtScvzSouByJm8v7Whbuui1YLZPBHT6wv",
+      "app": "chat.dim.session",
+      "mod": "users",
       "keywords": "active users",
       "title": "Call Me Maybe",
       "subtitle": "Don't be shy",
       "icon": "https://uxwing.com/wp-content/themes/uxwing/download/arts-graphic-shapes/stars-color-icon.png"
+    },
+    {
+      "type": "ChatBot",
+      "did": "ChatGPT@2yiWdbVHhUhN3uTScP9p3qi2V2zvGWbSxK",
+      "input_mode": "text only",
+      "title": "Chat GPT",
+      "subtitle": "Open AI",
+      "provider": "OpenAI",
+      "icon": "https://uxwing.com/wp-content/themes/uxwing/download/brands-and-social-media/openai-icon.png"
+    },
+    {
+      "type": "ChatBot",
+      "did": "Gemini@2iqbZy3zcETL19V3Sonaeqxfk4S49zpakG",
+      "input_mode": "text only",
+      "title": "Gemini",
+      "subtitle": "Google AI",
+      "provider": "Google",
+      "icon": "https://uxwing.com/wp-content/themes/uxwing/download/brands-and-social-media/google-gemini-icon.png"
     }
   ],
 
   "stations": [
-    {"host": "134.185.88.109", "port":9394, "desc": "US"}
+    {"host": "134.185.88.109", "port":9394, "desc": "SG"},
+    {"host": "193.123.232.100", "port":9394, "desc": "KR"},
+    {"host": "170.106.141.194", "port":9394, "desc": "US"}
   ],
 
   "upload": {
