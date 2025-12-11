@@ -634,13 +634,29 @@ class _ProfileTableState extends State<_ProfileTableCell> implements lnc.Observe
   @override
   Widget build(BuildContext context) => CupertinoTableCell(
     leading: widget.info.getImage(),
-    title: widget.info.getNameLabel(),
+    title: widget.info.getNameLabel(style: _textStyle()),
     subtitle: _subtitle(),
     additionalInfo: _timeLabel(widget.info.lastActiveTime),
     trailing: widget.trailing,
     onTap: () => ProfilePage.open(context, widget.info.identifier),
     onLongPress: widget.onLongPress,
   );
+
+  TextStyle? _textStyle() {
+    ContactStatus status = widget.info.status;
+    Color? color;
+    if (status == ContactStatus.online) {
+      color = CupertinoColors.systemGreen;
+    } else if (status == ContactStatus.active) {
+      color = CupertinoColors.systemBlue;
+    } else if (status == ContactStatus.invalid) {
+      color = CupertinoColors.systemGrey;
+    }
+    return color == null ? null : TextStyle(
+      color: color,
+      decoration: TextDecoration.none,
+    );
+  }
 
   Widget? _subtitle() {
     ContactRemark cr = widget.info.remark;
@@ -661,7 +677,10 @@ class _ProfileTableState extends State<_ProfileTableCell> implements lnc.Observe
     if (time == null) {
       return null;
     }
-    return Text(TimeUtils.getTimeString(time));
+    return Text(
+      TimeUtils.getTimeString(time),
+      style: _textStyle(),
+    );
   }
 
 }
