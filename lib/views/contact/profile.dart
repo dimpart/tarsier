@@ -634,7 +634,7 @@ class _ProfileTableState extends State<_ProfileTableCell> implements lnc.Observe
   @override
   Widget build(BuildContext context) => CupertinoTableCell(
     leading: widget.info.getImage(),
-    title: widget.info.getNameLabel(style: _textStyle()),
+    title: widget.info.getNameLabel(style: _textStyle(highlighted: false)),
     subtitle: _subtitle(),
     additionalInfo: _timeLabel(widget.info.lastActiveTime),
     trailing: widget.trailing,
@@ -642,17 +642,24 @@ class _ProfileTableState extends State<_ProfileTableCell> implements lnc.Observe
     onLongPress: widget.onLongPress,
   );
 
-  TextStyle? _textStyle() {
+  TextStyle? _textStyle({bool highlighted = true}) {
     ContactStatus status = widget.info.status;
     Color? color;
-    if (status == ContactStatus.online) {
-      color = CupertinoColors.systemGreen;
+    if (status == ContactStatus.invalid) {
+      color = Styles.colors.invalidContactColor;
+    // } else if (status == ContactStatus.init) {
+    //   color = Styles.colors.invalidContactColor;
+    } else if (!highlighted) {
+      // don't highlight the title
+      return null;
+    } else if (status == ContactStatus.online) {
+      color = Styles.colors.onlineContactColor;
     } else if (status == ContactStatus.active) {
-      color = CupertinoColors.systemBlue;
-    } else if (status == ContactStatus.invalid) {
-      color = CupertinoColors.systemGrey;
+      color = Styles.colors.activeContactColor;
+    } else {
+      return null;
     }
-    return color == null ? null : TextStyle(
+    return TextStyle(
       color: color,
       decoration: TextDecoration.none,
     );

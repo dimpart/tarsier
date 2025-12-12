@@ -258,7 +258,7 @@ class _ChatTableCellState extends State<_ChatTableCell> implements lnc.Observer 
   Widget build(BuildContext context) => CupertinoTableCell(
     leadingSize: 72,
     leading: _leading(widget.info),
-    title: widget.info.getNameLabel(),
+    title: widget.info.getNameLabel(style: _titleStyle(widget.info)),
     subtitle: _lastMessage(widget.info),
     additionalInfo: _timeLabel(widget.info),
     // trailing: const CupertinoListTileChevron(),
@@ -274,6 +274,20 @@ class _ChatTableCellState extends State<_ChatTableCell> implements lnc.Observer 
       );
       },
   );
+
+  TextStyle _titleStyle(Conversation info) {
+    Color? color;
+    if (info is ContactInfo) {
+      ContactStatus status = info.status;
+      if (status == ContactStatus.invalid) {
+        color = Styles.colors.invalidContactColor;
+      }
+    }
+    return color == null ? Styles.titleTextStyle : TextStyle(
+      color: color,
+      decoration: TextDecoration.none,
+    );
+  }
 
   void _removeConversation(BuildContext context, ID chat) {
     Log.warning('removing $chat');

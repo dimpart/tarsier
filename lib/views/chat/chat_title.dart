@@ -5,13 +5,11 @@ import 'package:dim_flutter/lnc.dart' as lnc;
 
 
 class ChatTitleView extends StatefulWidget {
-  const ChatTitleView(this.info, {required this.style, super.key});
+  const ChatTitleView(this.info, {super.key});
 
   final Conversation info;
-  final TextStyle style;
 
-  static ChatTitleView from(BuildContext context, Conversation info) =>
-      ChatTitleView(info, style: Styles.titleTextStyle);
+  static from(BuildContext ctx, Conversation info) => ChatTitleView(info);
 
   @override
   State<StatefulWidget> createState() => _TitleState();
@@ -93,7 +91,7 @@ class _TitleState extends State<ChatTitleView> implements lnc.Observer {
   @override
   Widget build(BuildContext context) => Text(
     _titleWithState(widget.info),
-    style: widget.style,
+    style: _titleStyle(widget.info),
   );
 
 }
@@ -116,4 +114,20 @@ String _titleWithState(Conversation info) {
     return info.title;
   }
   return '$name ($sub)';
+}
+
+TextStyle _titleStyle(Conversation info) {
+  Color? color;
+  if (info is ContactInfo) {
+    ContactStatus status = info.status;
+    if (status == ContactStatus.invalid) {
+      color = Styles.colors.invalidContactColor;
+    } else if (status == ContactStatus.online) {
+      color = Styles.colors.onlineContactColor;
+    }
+  }
+  return color == null ? Styles.titleTextStyle : TextStyle(
+    color: color,
+    decoration: TextDecoration.none,
+  );
 }
