@@ -33,7 +33,13 @@ void main() async {
     Log.showTime = true;
     Log.showCaller = true;
   }
-  bool debug = Log.level != Log.RELEASE;
+
+  // debugShowCheckedModeBanner
+  bool debug = false;
+  assert((){
+    debug = Log.level != Log.RELEASE;
+    return true;
+  }());
 
   // Check Brightness & Language
   await initFacade();

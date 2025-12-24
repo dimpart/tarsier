@@ -376,12 +376,13 @@ class _ProfileState extends State<ProfilePage> with Logging implements lnc.Obser
       child: body,
     );
     body = SizedBox(
-      height: 320,
+      height: 400,
       child: body,
     );
     return FrostedGlassPage.show(context,
       title: 'Client Info'.tr,
       body: body,
+      width: 300,
     );
   }
 
