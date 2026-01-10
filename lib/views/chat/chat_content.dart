@@ -199,6 +199,7 @@ abstract class ContentViewHelper {
       sender: sender,
       onWebShare: onWebShare,
       onVideoShare: onVideoShare,
+      showBiggerText: true,
     );
     // action - delete
     deleteMessage() => _deleteMessage(ctx, content, envelope);

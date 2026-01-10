@@ -18,6 +18,7 @@ class TextPreviewPage extends StatefulWidget {
     required this.onTapLink,
     required this.onWebShare,
     required this.onVideoShare,
+    required this.showBiggerText,
   });
 
   final String text;
@@ -26,6 +27,7 @@ class TextPreviewPage extends StatefulWidget {
   final OnTapLink? onTapLink;
   final OnWebShare? onWebShare;
   final OnVideoShare? onVideoShare;
+  final bool showBiggerText;
 
   static void open(BuildContext ctx, {
     required ID sender,
@@ -34,6 +36,7 @@ class TextPreviewPage extends StatefulWidget {
     /*required */OnTapLink? onTapLink,
     required OnWebShare? onWebShare,
     required OnVideoShare? onVideoShare,
+    bool showBiggerText = false,
   }) => showPage(
     context: ctx,
     builder: (context) => TextPreviewPage(
@@ -43,6 +46,7 @@ class TextPreviewPage extends StatefulWidget {
       onTapLink: onTapLink,
       onWebShare: onWebShare,
       onVideoShare: onVideoShare,
+      showBiggerText: showBiggerText,
     ),
   );
 
@@ -141,21 +145,24 @@ class _TextPreviewState extends State<TextPreviewPage> {
     padding: const EdgeInsets.fromLTRB(32, 32, 32, 64),
     alignment: AlignmentDirectional.centerStart,
     color: Styles.colors.textMessageBackgroundColor,
-    child: _previewing ? _richText() : _plainText(),
+    child: widget.showBiggerText ? Builder(builder: (context) {
+      return MediaQuery(
+        data: MediaQuery.of(context).copyWith(
+          textScaler: TextScaler.linear(textScaleFactor),
+        ),
+        child: _richText(),
+      );
+    }) : _richText(),
   );
-  Widget _plainText() => SelectableText(
-    widget.text,
-    style: const TextStyle(
-      fontSize: 22,
-    ),
-  );
-  Widget _richText() => RichTextView(
+  final double textScaleFactor = 1.5;
+
+  Widget _richText() => _previewing ? RichTextView(
     sender: widget.sender,
     text: widget.text,
     onTapLink: widget.onTapLink,
     onWebShare: widget.onWebShare,
     onVideoShare: widget.onVideoShare,
-  );
+  ) : SelectableText(widget.text);
 
 }
 
