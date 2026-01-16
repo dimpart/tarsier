@@ -318,13 +318,14 @@ class _AccountState extends State<AccountPage> {
       return false;
     }
     // 2. get visa document for current user
-    Visa? visa = await user.visa
+    List<Document> docs = await user.documents
         .onError((error, stackTrace) {
           if (context.mounted) {
             Alert.show(context, 'Error', 'Failed to get visa'.tr);
           }
-          return null;
+          return [];
         });
+    Visa? visa = DocumentUtils.lastVisa(docs);
     if (visa == null) {
       // FIXME: query from station or create a new one?
       assert(false, 'user error: $user');
@@ -352,7 +353,7 @@ class _AccountState extends State<AccountPage> {
     assert(sig != null, 'failed to sign visa: $visa, $user');
     // 5. save it
     var archivist = shared.facebook.archivist;
-    bool? ok = await archivist?.saveDocument(visa)
+    bool? ok = await archivist?.saveDocument(visa, user.identifier)
         .onError((error, stackTrace) {
           if (context.mounted) {
             Alert.show(context, 'Error', 'Failed to save visa'.tr);

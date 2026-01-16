@@ -145,7 +145,8 @@ class _SearchState extends State<SearchPage> implements lnc.Observer {
     command['tag'] = _searchTag;
     // check visa.key
     ID? bot = ClientFacebook.ans?.identifier("archivist");
-    if (bot == null || await shared.facebook.getPublicKeyForEncryption(bot) == null) {
+    List<Document>? docs = bot == null ? null : await shared.facebook.getDocuments(bot);
+    if (docs == null || docs.isEmpty) {
       // TODO: query station with 'ans'/'document' command for bot ID
       bot = ID.parse("archivist@anywhere");
     }

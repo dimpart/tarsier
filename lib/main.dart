@@ -229,7 +229,12 @@ Future<PortableNetworkFile?> _getAvatar() async {
   GlobalVariable shared = GlobalVariable();
   User? user = await shared.facebook.currentUser;
   assert(user != null, 'current user not found');
-  Visa? visa = await user?.visa;
+  List<Document>? docs = await user?.documents;
+  if (docs == null || docs.isEmpty) {
+    assert(false, 'failed to get documents: $user');
+    return null;
+  }
+  Visa? visa = DocumentUtils.lastVisa(docs);
   assert(visa != null, 'visa not found: $user');
   return visa?.avatar;
 }
