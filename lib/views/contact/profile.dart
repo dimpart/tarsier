@@ -382,7 +382,7 @@ class _ProfileState extends State<ProfilePage> with Logging implements lnc.Obser
     return FrostedGlassPage.show(context,
       title: 'Client Info'.tr,
       body: body,
-      width: 300,
+      width: 308,
     );
   }
 

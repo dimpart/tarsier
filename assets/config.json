@@ -18,10 +18,6 @@
     "Gemini@2iqbZy3zcETL19V3Sonaeqxfk4S49zpakG"
   ],
 
-  "assistants": [
-
-  ],
-
   "services": [
     {
       "type": "UserList",
@@ -68,7 +64,7 @@
     ],
     "file": [
       {
-        "url": "http://106.52.25.169:8081/upload/{ID}/file?md5={MD5}&salt={SALT}",
+        "url": "http://tfs.dim.chat:8081/upload/{ID}/file?md5={MD5}&salt={SALT}",
         "enigma": "123456"
       }
     ]
