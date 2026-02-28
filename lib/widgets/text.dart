@@ -8,6 +8,7 @@ import 'package:markdown/markdown.dart' as md;
 import 'package:dim_flutter/dim_flutter.dart';
 
 import '../sharing/pick_chat.dart';
+import 'text_link.dart';
 
 
 class TextPreviewPage extends StatefulWidget {
@@ -219,16 +220,22 @@ class RichTextView extends StatefulWidget {
 
 class _RichTextState extends State<RichTextView> {
 
-  void _openLink(BuildContext context, String text, String? href, String title) {
+  bool _openLink(BuildContext context, String text, String? href, String title) {
     var onTapLink = widget.onTapLink;
     if (onTapLink == null || onTapLink(text, href: href, title: title)) {
-      _MarkdownUtils.openLink(context,
-        sender: widget.sender,
-        text: text, href: href, title: title,
-        onWebShare: widget.onWebShare,
-        onVideoShare: widget.onVideoShare,
-      );
+      // 1. widget.onTapLink not defined
+      // 2. widget.onTapLink return true
+    } else {
+      // widget.onTapLink return false to stop opening link
+      return false;
     }
+    _MarkdownUtils.openLink(context,
+      sender: widget.sender,
+      text: text, href: href, title: title,
+      onWebShare: widget.onWebShare,
+      onVideoShare: widget.onVideoShare,
+    );
+    return true;
   }
 
   @override
@@ -237,7 +244,14 @@ class _RichTextState extends State<RichTextView> {
     selectable: true,
     extensionSet: md.ExtensionSet.gitHubWeb,
     syntaxHighlighter: SyntaxManager().getHighlighter(),
-    onTapLink: (text, href, title) => _openLink(context, text, href, title),
+    onTapLink: (text, href, title) {
+      _openLink(context, text, href, title);
+    },
+    builders: {
+      'a': LinkElementBuilder(onTapLink: (text, {required href, required title}) {
+        return _openLink(context, text, href, title);
+      }),
+    },
     imageBuilder: (url, title, alt) => _MarkdownUtils.buildImage(context,
       url: url, title: title, alt: alt,
     ),
@@ -498,8 +512,3 @@ abstract class _MarkdownUtils {
   }
 
 }
-
-
-typedef OnTapLink = bool Function(String text, {
-  required String? href, required String title,
-});
