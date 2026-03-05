@@ -33,7 +33,7 @@ abstract class ServiceInfo extends Dictionary {
 
   String? get provider => getString('provider');
 
-  PortableNetworkFile? get icon => PortableNetworkFile.parse(this['icon']);
+  TransportableFile? get icon => TransportableFile.parse(this['icon']);
 
   /// onTap
   bool open(BuildContext context);

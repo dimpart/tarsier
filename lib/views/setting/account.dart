@@ -347,7 +347,7 @@ class _AccountState extends State<AccountPage> {
     visa.name = nickname;
     // set avatar URL
     String? url = _avatarUrl?.toString();
-    visa.avatar = PortableNetworkFile.parse(url);
+    visa.avatar = TransportableFile.parse(url);
     // 4. sign it
     Uint8List? sig = visa.sign(sKey);
     assert(sig != null, 'failed to sign visa: $visa, $user');

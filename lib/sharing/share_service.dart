@@ -41,7 +41,7 @@ abstract class ShareService {
 Widget _shareServicePreview(ServiceInfo info, Conversation chat) {
   Widget to = previewEntity(chat);
   Widget from;
-  PortableNetworkFile? icon = info.icon;
+  TransportableFile? icon = info.icon;
   if (icon != null) {
     from = ServiceCardView.iconView(info);
   } else {
@@ -71,7 +71,7 @@ Future<bool> _sendService(ID receiver, ServiceInfo info) async {
     return false;
   }
   String name = visa.name ?? info.title;
-  PortableNetworkFile? avatar = visa.avatar;
+  TransportableFile? avatar = visa.avatar;
   // send service info in a NameCard
   NameCard content = NameCard.create(identifier, name, avatar);
   content.setMap('service', info);

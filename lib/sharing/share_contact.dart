@@ -52,7 +52,7 @@ abstract class ShareNameCard {
 Widget _forwardNameCardPreview(NameCard content, Conversation chat) {
   Widget to = previewEntity(chat);
   Widget from;
-  PortableNetworkFile? avatar = content.avatar;
+  var avatar = content.avatar;
   if (avatar != null) {
     from = NameCardView.avatarImage(content);
   } else {

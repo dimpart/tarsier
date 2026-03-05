@@ -462,7 +462,7 @@ abstract class _MarkdownUtils {
     }
     var plain = Password.kPlainKey;
     var imageContent = FileContent.image(url: url, password: plain);
-    var pnf = PortableNetworkFile.parse(imageContent.toMap());
+    var pnf = TransportableFile.parse(imageContent.toMap());
     // check file type
     _MimeType? type = _checkFileType(url.path);
     if (type == null && (url.hasQuery || url.hasFragment)) {

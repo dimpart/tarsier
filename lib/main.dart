@@ -225,7 +225,7 @@ class _SystemChecker with Logging {
 
 }
 
-Future<PortableNetworkFile?> _getAvatar() async {
+Future<TransportableFile?> _getAvatar() async {
   GlobalVariable shared = GlobalVariable();
   User? user = await shared.facebook.currentUser;
   assert(user != null, 'current user not found');

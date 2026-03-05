@@ -65,7 +65,7 @@ abstract class ShareImage {
 
 
 Future<String?> _pathFromContent(ImageContent content) async {
-  PortableNetworkFile? pnf = PortableNetworkFile.parse(content);
+  var pnf = TransportableFile.parse(content);
   if (pnf == null) {
     assert(false, 'failed to parse PNF: $content');
     return null;
@@ -113,7 +113,7 @@ Future<bool> _sendImage(ID receiver,
   } else {
     Log.info('forwarding image to $receiver: "$filename", traces: $traces');
   }
-  var pnf = PortableNetworkFile.parse(thumbnail);
+  var pnf = TransportableFile.parse(thumbnail);
   // send image content with traces
   GlobalVariable shared = GlobalVariable();
   await shared.emitter.sendPicture(jpeg, filename: filename, thumbnail: pnf, extra: {

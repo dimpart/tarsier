@@ -319,15 +319,14 @@ void _sendImage(BuildContext context, Conversation chat) =>
       Log.info('picked image: $path');
     }, onRead: (path, jpeg) => adjustImage(jpeg, 2048, (Uint8List data) async {
       // send adjusted image data with thumbnail
-      String? thumbnail;
+      TransportableFile? thumbnail;
       Uint8List? small = await ImageUtils.compressThumbnail(data);
       if (small != null) {
-        var ted = TransportableData.create(small);
-        thumbnail = ted.toString();
+        var ted = EmbedData.image(small);
+        thumbnail = TransportableFile.createFromData(ted, 'thumbnail.jpg');
       }
-      var pnf = PortableNetworkFile.parse(thumbnail);
       GlobalVariable shared = GlobalVariable();
-      shared.emitter.sendPicture(data, filename: 'image.jpeg', thumbnail: pnf,
+      shared.emitter.sendPicture(data, filename: 'image.jpeg', thumbnail: thumbnail,
         receiver: chat.identifier,);
     }));
 
