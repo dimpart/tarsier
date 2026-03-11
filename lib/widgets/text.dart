@@ -246,14 +246,24 @@ class _RichTextState extends State<RichTextView> {
     syntaxHighlighter: SyntaxManager().getHighlighter(),
     onTapLink: (text, href, title) {
       _openLink(context, text, href, title);
+      setState(() {
+        sharedLinksManager.onTap(href);
+      });
     },
     builders: {
-      'a': LinkElementBuilder(onTapLink: (text, {required href, required title}) {
-        return _openLink(context, text, href, title);
-      }),
+      'a': LinkElementBuilder(
+        onTapLink: (text, {
+          required href,
+          required title,
+        }) => _openLink(context, text, href, title),
+      ),
     },
-    imageBuilder: (url, title, alt) => _MarkdownUtils.buildImage(context,
-      url: url, title: title, alt: alt,
+    // imageBuilder: (url, title, alt) => _MarkdownUtils.buildImage(context,
+    //   url: url, title: title, alt: alt,
+    // ),
+    sizedImageBuilder: (cfg) => _MarkdownUtils.buildImage(context,
+      url: cfg.uri, title: cfg.title, alt: cfg.alt,
+      width: cfg.width, height: cfg.height,
     ),
   );
 
@@ -442,6 +452,8 @@ abstract class _MarkdownUtils {
     required Uri url,
     required String? title,
     required String? alt,
+    double? width,
+    double? height,
   }) {
     String scheme = url.scheme;
     if (scheme == 'data') {
@@ -451,7 +463,7 @@ abstract class _MarkdownUtils {
         Log.error('failed to decode text body: $url');
         return _errorImage(url, title: title, alt: alt);
       }
-      Widget imageView = ImageUtils.memoryImage(data);
+      Widget imageView = ImageUtils.memoryImage(data, width: width, height: height);
       return Container(
         constraints: const BoxConstraints(maxHeight: 256),
         child: imageView,
@@ -471,12 +483,12 @@ abstract class _MarkdownUtils {
     Widget imageView;
     if (type != _MimeType.image) {
       Log.warning('unknown image url: $url');
-      imageView = ImageUtils.networkImage(url.toString());
+      imageView = ImageUtils.networkImage(url.toString(), width: width, height: height);
     } else if (pnf == null) {
       assert(false, 'should not happen: $url => $imageContent');
-      imageView = ImageUtils.networkImage(url.toString());
+      imageView = ImageUtils.networkImage(url.toString(), width: width, height: height);
     } else {
-      imageView = NetworkImageFactory().getImageView(pnf);
+      imageView = NetworkImageFactory().getImageView(pnf, width: width, height: height);
     }
     return GestureDetector(
       onDoubleTap: () => _previewImage(context, imageContent),

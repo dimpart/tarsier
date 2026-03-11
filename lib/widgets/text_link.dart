@@ -13,18 +13,31 @@ typedef OnTapLink = bool Function(String text, {
 
 
 class LinkElementBuilder extends MarkdownElementBuilder {
-  LinkElementBuilder({this.onTapLink});
+  LinkElementBuilder({required this.onTapLink});
 
-  OnTapLink? onTapLink;
+  final OnTapLink onTapLink;
 
   @override
-  Widget? visitElementAfter(md.Element element, TextStyle? preferredStyle) {
+  Widget? visitElementAfterWithContext(BuildContext context, md.Element element, TextStyle? preferredStyle, TextStyle? parentStyle) {
+    final children = element.children;
+    if (children == null || children.isEmpty) {
+      // empty link
+      return null;
+    }
+    for (var child in children) {
+      if (child is md.Text) {
+        continue;
+      }
+      // not a pure text link, ignore it
+      return super.visitElementAfterWithContext(context, element, preferredStyle, parentStyle);
+    }
+    // build active text link
     final text = element.textContent;
     final href = element.attributes['href'];
     final title = element.attributes['title'] ?? "";
     return _ActiveLink(text: text, href: href, title: title,
       onTapLink: onTapLink,
-      textStyle: preferredStyle,
+      textStyle: preferredStyle ?? parentStyle,
     );
   }
 
@@ -33,7 +46,7 @@ class LinkElementBuilder extends MarkdownElementBuilder {
 class _ActiveLink extends StatefulWidget {
   const _ActiveLink({
     required this.text, required this.href, required this.title,
-    this.onTapLink,
+    required this.onTapLink,
     this.textStyle,
   });
 
@@ -41,7 +54,7 @@ class _ActiveLink extends StatefulWidget {
   final String? href;
   final String title;
 
-  final OnTapLink? onTapLink;
+  final OnTapLink onTapLink;
   final TextStyle? textStyle;
 
   @override
@@ -58,7 +71,7 @@ class _ActiveLinkState extends State<_ActiveLink> {
     var title = widget.title;
     final onTapLink = widget.onTapLink;
     var textStyle = widget.textStyle;
-    if (isVisited(href)) {
+    if (sharedLinksManager.isVisited(href)) {
       textStyle = textStyle?.copyWith(
         color: CupertinoColors.systemPurple,
       );
@@ -73,22 +86,18 @@ class _ActiveLinkState extends State<_ActiveLink> {
     // );
     return GestureDetector(
       onTap: () {
-        var man = _SharedLinksManager();
-        man.onTap(href);
-        if (onTapLink != null) {
-          onTapLink(text, href: href, title: title);
-        }
-        setState(() {});
+        onTapLink(text, href: href, title: title);
+        setState(() {
+          sharedLinksManager.onTap(href);
+        });
       },
       child: view,
     );
   }
 
-  bool isVisited(String? href) {
-    var man = _SharedLinksManager();
-    return man.isVisited(href);
-  }
 }
+
+final sharedLinksManager = _SharedLinksManager();
 
 class _SharedLinksManager {
   factory _SharedLinksManager() => _instance;
