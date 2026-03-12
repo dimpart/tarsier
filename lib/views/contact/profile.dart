@@ -62,11 +62,14 @@ class _ProfileState extends State<ProfilePage> with Logging implements lnc.Obser
   }
 
   final FocusNode _focusNode = FocusNode();
+  final FocusNode _memoFocusNode = FocusNode();
   String? _alias;
+  String? _memo;
 
   @override
   void dispose() {
     _focusNode.dispose();
+    _memoFocusNode.dispose();
     var nc = lnc.NotificationCenter();
     nc.removeObserver(this, NotificationNames.kMuteListUpdated);
     nc.removeObserver(this, NotificationNames.kBlockListUpdated);
@@ -210,6 +213,14 @@ class _ProfileState extends State<ProfilePage> with Logging implements lnc.Obser
               width: 160,
               child: _remarkTextField(context),
             ),
+          ),
+          /// Memo
+          buildAdaptiveListTile(context,
+            backgroundColor: backgroundColor,
+            backgroundColorActivated: backgroundColorActivated,
+            padding: Styles.settingsSectionItemPadding,
+            title: Text('Memo'.tr, style: TextStyle(color: primaryTextColor)),
+            additionalInfo: _memoTextField(context),
           ),
         ],
       ),
@@ -447,6 +458,23 @@ class _ProfileState extends State<ProfilePage> with Logging implements lnc.Obser
     onSubmitted: (value) => _changeAlias(context),
   );
 
+  Widget _memoTextField(BuildContext context) => CupertinoTextField(
+    textAlign: TextAlign.end,
+    textAlignVertical: TextAlignVertical.top,
+    controller: TextEditingController(text: widget.info.remark.description),
+    placeholder: 'Please input memo'.tr,
+    decoration: Styles.textFieldDecoration,
+    style: Styles.textFieldStyle,
+    focusNode: _memoFocusNode,
+    onChanged: (value) => _memo = value,
+    onTapOutside: (event) => _changeMemo(context),
+    onSubmitted: (value) => _changeMemo(context),
+    maxLines: 10,
+    minLines: 1,
+    expands: false,
+    padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+  );
+
   void _changeAlias(BuildContext context) {
     _focusNode.unfocus();
     // get alias value
@@ -458,9 +486,30 @@ class _ProfileState extends State<ProfilePage> with Logging implements lnc.Obser
     } else if (remark.alias == text) {
       logWarning('alias not change: $remark');
       return;
+    } else {
+      text = text.trim();
     }
     setState(() {
       widget.info.setRemark(context: context, alias: text);
+    });
+  }
+
+  void _changeMemo(BuildContext context) {
+    _memoFocusNode.unfocus();
+    // get memo value
+    String? text = _memo;
+    ContactRemark remark = widget.info.remark;
+    if (text == null) {
+      // nothing input
+      return;
+    } else if (remark.description == text) {
+      logWarning('memo not change: $remark');
+      return;
+    } else {
+      text = text.trim();
+    }
+    setState(() {
+      widget.info.setRemark(context: context, description: text);
     });
   }
 
@@ -671,6 +720,9 @@ class _ProfileTableState extends State<_ProfileTableCell> implements lnc.Observe
     String desc = cr.description;
     if (desc.isNotEmpty) {
       // show description
+      desc = desc.replaceAll(RegExp(r'[\n\r]'), ' ');
+      desc = desc.replaceAll(RegExp(r'\s+'), ' ');
+      desc = desc.trim();
     } else if (widget.info.isNotFriend) {
       // show ID
       desc = widget.info.identifier.toString();
