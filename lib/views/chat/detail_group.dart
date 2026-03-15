@@ -47,15 +47,19 @@ class _ChatDetailState extends State<GroupChatDetailPage> implements lnc.Observe
     nc.addObserver(this, NotificationNames.kAdministratorsUpdated);
   }
 
+  final TextEditingController _nameTextEditingController = TextEditingController();
+  final TextEditingController _aliasTextEditingController = TextEditingController();
   final FocusNode _nameFocusNode = FocusNode();
-  final FocusNode _remarkFocusNode = FocusNode();
+  final FocusNode _aliasFocusNode = FocusNode();
   String? _name;  // group name
   String? _alias;
 
   @override
   void dispose() {
+    _nameTextEditingController.dispose();
+    _aliasTextEditingController.dispose();
     _nameFocusNode.dispose();
-    _remarkFocusNode.dispose();
+    _aliasFocusNode.dispose();
     var nc = lnc.NotificationCenter();
     nc.removeObserver(this, NotificationNames.kAdministratorsUpdated);
     nc.removeObserver(this, NotificationNames.kGroupHistoryUpdated);
@@ -100,8 +104,12 @@ class _ChatDetailState extends State<GroupChatDetailPage> implements lnc.Observe
     }
   }
 
-  Future<void> _reload() async {
+  Future<void> _reload({bool init = false}) async {
     await widget.info.reloadData();
+    if (init) {
+      _nameTextEditingController.text = widget.info.name;
+      _aliasTextEditingController.text = widget.info.remark.alias;
+    }
     if (mounted) {
       setState(() {
       });
@@ -111,7 +119,7 @@ class _ChatDetailState extends State<GroupChatDetailPage> implements lnc.Observe
   @override
   void initState() {
     super.initState();
-    _reload();
+    _reload(init: true);
   }
 
   @override
@@ -209,15 +217,15 @@ class _ChatDetailState extends State<GroupChatDetailPage> implements lnc.Observe
               ),
             ),
           ),
-          /// Remark
+          /// Remark: Alias
           CupertinoListTile(
             backgroundColor: backgroundColor,
             backgroundColorActivated: backgroundColorActivated,
             padding: Styles.settingsSectionItemPadding,
-            title: Text('Remark'.tr, style: TextStyle(color: primaryTextColor)),
+            title: Text('Alias'.tr, style: TextStyle(color: primaryTextColor)),
             additionalInfo: SizedBox(
               width: 240,
-              child: _remarkTextField(context),
+              child: _aliasTextField(context),
             ),
           ),
         ],
@@ -302,7 +310,7 @@ class _ChatDetailState extends State<GroupChatDetailPage> implements lnc.Observe
 
   Widget _nameTextField(BuildContext context) => CupertinoTextField(
     textAlign: TextAlign.end,
-    controller: TextEditingController(text: widget.info.name),
+    controller: _nameTextEditingController,
     placeholder: 'Please input group name'.tr,
     decoration: Styles.textFieldDecoration,
     style: Styles.textFieldStyle,
@@ -330,20 +338,20 @@ class _ChatDetailState extends State<GroupChatDetailPage> implements lnc.Observe
     });
   }
 
-  Widget _remarkTextField(BuildContext context) => CupertinoTextField(
+  Widget _aliasTextField(BuildContext context) => CupertinoTextField(
     textAlign: TextAlign.end,
-    controller: TextEditingController(text: widget.info.remark.alias),
+    controller: _aliasTextEditingController,
     placeholder: 'Please input alias'.tr,
     decoration: Styles.textFieldDecoration,
     style: Styles.textFieldStyle,
-    focusNode: _remarkFocusNode,
+    focusNode: _aliasFocusNode,
     onChanged: (value) => _alias = value,
     onTapOutside: (event) => _changeAlias(context),
     onSubmitted: (value) => _changeAlias(context),
   );
 
   void _changeAlias(BuildContext context) {
-    _remarkFocusNode.unfocus();
+    _aliasFocusNode.unfocus();
     // get alias value
     String? text = _alias;
     ContactRemark remark = widget.info.remark;
@@ -353,6 +361,8 @@ class _ChatDetailState extends State<GroupChatDetailPage> implements lnc.Observe
     } else if (remark.alias == text) {
       Log.warning('group alias not change: $remark');
       return;
+    } else {
+      text = text.trim();
     }
     setState(() {
       widget.info.setRemark(context: context, alias: text);

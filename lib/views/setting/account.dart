@@ -34,6 +34,7 @@ class AccountPage extends StatefulWidget {
 
 class _AccountState extends State<AccountPage> {
 
+  final TextEditingController _textEditingController = TextEditingController();
   final FocusNode _focusNode = FocusNode();
 
   String? _nickname;
@@ -45,6 +46,7 @@ class _AccountState extends State<AccountPage> {
 
   @override
   void dispose() {
+    _textEditingController.dispose();
     _focusNode.dispose();
     super.dispose();
   }
@@ -53,7 +55,9 @@ class _AccountState extends State<AccountPage> {
     GlobalVariable shared = GlobalVariable();
     ClientFacebook facebook = shared.facebook;
     ID identifier = widget.user.identifier;
-    _nickname = await facebook.getName(identifier);
+    String name = await facebook.getName(identifier);
+    _textEditingController.text = name;
+    _nickname = name;
     var pnf = await facebook.getAvatar(identifier);
     if (pnf != null) {
       var loader = AvatarFactory().getImageLoader(pnf);
@@ -205,7 +209,7 @@ class _AccountState extends State<AccountPage> {
     width: 160,
     child: CupertinoTextField(
       textAlign: TextAlign.end,
-      controller: TextEditingController(text: _nickname),
+      controller: _textEditingController,
       placeholder: 'Your nickname'.tr,
       decoration: Styles.textFieldDecoration,
       style: Styles.textFieldStyle,

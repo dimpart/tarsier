@@ -61,14 +61,18 @@ class _ProfileState extends State<ProfilePage> with Logging implements lnc.Obser
     nc.addObserver(this, NotificationNames.kMuteListUpdated);
   }
 
-  final FocusNode _focusNode = FocusNode();
+  final TextEditingController _aliasTextEditingController = TextEditingController();
+  final TextEditingController _memoTextEditingController = TextEditingController();
+  final FocusNode _aliasFocusNode = FocusNode();
   final FocusNode _memoFocusNode = FocusNode();
   String? _alias;
   String? _memo;
 
   @override
   void dispose() {
-    _focusNode.dispose();
+    _aliasTextEditingController.dispose();
+    _memoTextEditingController.dispose();
+    _aliasFocusNode.dispose();
     _memoFocusNode.dispose();
     var nc = lnc.NotificationCenter();
     nc.removeObserver(this, NotificationNames.kMuteListUpdated);
@@ -114,8 +118,12 @@ class _ProfileState extends State<ProfilePage> with Logging implements lnc.Obser
     }
   }
 
-  Future<void> _reload() async {
+  Future<void> _reload({bool init = false}) async {
     await widget.info.reloadData();
+    if (init) {
+      _aliasTextEditingController.text = widget.info.remark.alias;
+      _memoTextEditingController.text = widget.info.remark.description;
+    }
     if (mounted) {
       setState(() {
       });
@@ -130,7 +138,7 @@ class _ProfileState extends State<ProfilePage> with Logging implements lnc.Obser
   @override
   void initState() {
     super.initState();
-    _reload();
+    _reload(init: true);
     _refresh();
   }
 
@@ -203,18 +211,18 @@ class _ProfileState extends State<ProfilePage> with Logging implements lnc.Obser
             title: Text('ID', style: TextStyle(color: primaryTextColor)),
             additionalInfo: _idLabel(context),
           ),
-          /// Remark
+          /// Remark: Alias
           CupertinoListTile(
             backgroundColor: backgroundColor,
             backgroundColorActivated: backgroundColorActivated,
             padding: Styles.settingsSectionItemPadding,
-            title: Text('Remark'.tr, style: TextStyle(color: primaryTextColor)),
+            title: Text('Alias'.tr, style: TextStyle(color: primaryTextColor)),
             additionalInfo: SizedBox(
               width: 160,
-              child: _remarkTextField(context),
+              child: _aliasTextField(context),
             ),
           ),
-          /// Memo
+          /// Remark: Memo
           buildAdaptiveListTile(context,
             backgroundColor: backgroundColor,
             backgroundColorActivated: backgroundColorActivated,
@@ -446,13 +454,13 @@ class _ProfileState extends State<ProfilePage> with Logging implements lnc.Obser
     ),
   );
 
-  Widget _remarkTextField(BuildContext context) => CupertinoTextField(
+  Widget _aliasTextField(BuildContext context) => CupertinoTextField(
     textAlign: TextAlign.end,
-    controller: TextEditingController(text: widget.info.remark.alias),
+    controller: _aliasTextEditingController,
     placeholder: 'Please input alias'.tr,
     decoration: Styles.textFieldDecoration,
     style: Styles.textFieldStyle,
-    focusNode: _focusNode,
+    focusNode: _aliasFocusNode,
     onChanged: (value) => _alias = value,
     onTapOutside: (event) => _changeAlias(context),
     onSubmitted: (value) => _changeAlias(context),
@@ -461,7 +469,7 @@ class _ProfileState extends State<ProfilePage> with Logging implements lnc.Obser
   Widget _memoTextField(BuildContext context) => CupertinoTextField(
     textAlign: TextAlign.end,
     textAlignVertical: TextAlignVertical.top,
-    controller: TextEditingController(text: widget.info.remark.description),
+    controller: _memoTextEditingController,
     placeholder: 'Please input memo'.tr,
     decoration: Styles.textFieldDecoration,
     style: Styles.textFieldStyle,
@@ -476,7 +484,7 @@ class _ProfileState extends State<ProfilePage> with Logging implements lnc.Obser
   );
 
   void _changeAlias(BuildContext context) {
-    _focusNode.unfocus();
+    _aliasFocusNode.unfocus();
     // get alias value
     String? text = _alias;
     ContactRemark remark = widget.info.remark;

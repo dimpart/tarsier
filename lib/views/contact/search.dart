@@ -44,6 +44,7 @@ class _SearchState extends State<SearchPage> implements lnc.Observer {
 
   @override
   void dispose() {
+    _controller.dispose();
     var nc = lnc.NotificationCenter();
     nc.removeObserver(this, NotificationNames.kSearchUpdated);
     super.dispose();
