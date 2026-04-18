@@ -24,6 +24,7 @@ enum _MsgStatus {
   kSent,      // MTA respond
   kBlocked,   // blocked by receiver
   kReceived,  // receiver respond
+  kTimeout,   // failed to delivered
   kExpired;   // failed
 }
 
@@ -150,9 +151,22 @@ class _SendState extends State<ChatSendFlag> implements lnc.Observer {
       // kDefault, kEncrypted, kWaiting
       DateTime? time = widget.iMsg.time;
       if (time != null) {
-        int expired = TimeUtils.currentTimeMilliseconds - 300 * 1000;
+        int expired = TimeUtils.currentTimeMilliseconds - kMsgExpires;
         if (time.millisecondsSinceEpoch < expired) {
           current = _MsgStatus.kExpired;
+          _flags[sn] = current;
+        }
+      }
+    }
+    if (current != _MsgStatus.kBlocked && current != _MsgStatus.kReceived &&
+        current != _MsgStatus.kTimeout) {
+      // kDefault, kEncrypted, kWaiting
+      // kSent, kExpired
+      DateTime? time = widget.iMsg.time;
+      if (time != null) {
+        int timeout = TimeUtils.currentTimeMilliseconds - kMsgTimeout;
+        if (time.millisecondsSinceEpoch < timeout) {
+          current = _MsgStatus.kTimeout;
           _flags[sn] = current;
         }
       }
@@ -163,6 +177,8 @@ class _SendState extends State<ChatSendFlag> implements lnc.Observer {
     }
     return current ?? _MsgStatus.kDefault;
   }
+  static int kMsgExpires = const Duration(minutes: 5).inMilliseconds;
+  static int kMsgTimeout = const Duration(days: 5).inMilliseconds;
 
   Future<bool> _checkMember(ID mta) async {
     ID? group = widget.iMsg.group;
@@ -293,6 +309,9 @@ class _SendState extends State<ChatSendFlag> implements lnc.Observer {
       case _MsgStatus.kReceived: {
         return AppIcons.msgReceivedIcon;
       }
+      case _MsgStatus.kTimeout: {
+        return AppIcons.msgTimeoutIcon;
+      }
       case _MsgStatus.kExpired: {
         return AppIcons.msgExpiredIcon;
       }
@@ -317,6 +336,9 @@ class _SendState extends State<ChatSendFlag> implements lnc.Observer {
       }
       case _MsgStatus.kReceived: {
         return CupertinoColors.systemBlue;
+      }
+      case _MsgStatus.kTimeout: {
+        return CupertinoColors.systemRed;
       }
       case _MsgStatus.kExpired: {
         return CupertinoColors.systemRed;
@@ -350,6 +372,9 @@ class _SendState extends State<ChatSendFlag> implements lnc.Observer {
           });
         }
       }
+      case _MsgStatus.kTimeout: {
+        return 'Message delivery timeout'.tr;
+      }
       case _MsgStatus.kExpired: {
         return 'No response'.tr;
       }
@@ -375,6 +400,10 @@ class _SendState extends State<ChatSendFlag> implements lnc.Observer {
           }
         });
       }
+      return _traceInfo();
+    }
+    if (status == _MsgStatus.kTimeout) {
+      Log.warning('this message cannot be resend again');
       return _traceInfo();
     }
     return GestureDetector(
