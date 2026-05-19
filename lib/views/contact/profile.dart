@@ -485,39 +485,23 @@ class _ProfileState extends State<ProfilePage> with Logging implements lnc.Obser
 
   void _changeAlias(BuildContext context) {
     _aliasFocusNode.unfocus();
-    // get alias value
-    String? text = _alias;
-    ContactRemark remark = widget.info.remark;
-    if (text == null) {
-      // nothing input
-      return;
-    } else if (remark.alias == text) {
-      logWarning('alias not change: $remark');
-      return;
-    } else {
-      text = text.trim();
-    }
-    setState(() {
-      widget.info.setRemark(context: context, alias: text);
-    });
+    _updateRemark(context, _alias?.trim(), _memo?.trim());
   }
-
   void _changeMemo(BuildContext context) {
     _memoFocusNode.unfocus();
-    // get memo value
-    String? text = _memo;
+    _updateRemark(context, _alias?.trim(), _memo?.trim());
+  }
+  void _updateRemark(BuildContext context, String? alias, String? description) {
     ContactRemark remark = widget.info.remark;
-    if (text == null) {
+    if (alias == null && description == null) {
       // nothing input
       return;
-    } else if (remark.description == text) {
-      logWarning('memo not change: $remark');
+    } else if (alias == remark.alias && description == remark.description) {
+      logWarning('alias/memo not change: "$alias", "$description" -> $remark');
       return;
-    } else {
-      text = text.trim();
     }
     setState(() {
-      widget.info.setRemark(context: context, description: text);
+      widget.info.setRemark(context: context, alias: alias, description: description);
     });
   }
 

@@ -338,7 +338,7 @@ class _SendState extends State<ChatSendFlag> implements lnc.Observer {
         return CupertinoColors.systemBlue;
       }
       case _MsgStatus.kTimeout: {
-        return CupertinoColors.systemRed;
+        return CupertinoColors.systemOrange;
       }
       case _MsgStatus.kExpired: {
         return CupertinoColors.systemRed;
