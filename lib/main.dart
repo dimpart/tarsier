@@ -2,12 +2,8 @@ import 'package:flutter/material.dart';
 
 import 'package:dim_flutter/dim_flutter.dart';
 
-import 'views/chats.dart';
-import 'views/customizer.dart';
-import 'views/contacts.dart';
+import 'root.dart';
 import 'views/register.dart';
-import 'views/services.dart';
-import 'views/setting/account.dart';
 
 
 void main() async {
@@ -43,198 +39,87 @@ void main() async {
 
   // Check Brightness & Language
   await initFacade();
-  // Check permission: Storage
-  bool permitted = await PermissionChecker().checkDatabasePermissions();
   // Launch the app
-  if (!permitted) {
-    // not granted for photos/storage, first run?
-    Log.warning('not granted for photos/storage, first run?');
-    launchApp(RegisterPage(), debug: debug);
-  } else {
-    // check current user
-    Log.debug('check current user');
-    GlobalVariable shared = GlobalVariable();
-    User? user = await shared.facebook.currentUser;
-    Log.info('current user: $user');
-    if (user == null) {
-      launchApp(RegisterPage(), debug: debug);
-    } else {
-      launchApp(const _MainPage(), debug: debug);
-    }
-  }
+  launchApp(const _RootRouterPage(), debug: debug);
 }
 
-void changeToMainPage(BuildContext context) {
-  // prevent returning to the register page
-  Navigator.of(context).pushAndRemoveUntil(
-    MaterialPageRoute(builder: (builder) => const _MainPage()),
-    (route) => false,
-  );
-  // // Navigator.pop(...)
-  // closePage(context);
-  // // showCupertinoDialog(...)
-  // showPage(
-  //   context: context,
-  //   builder: (context) => const _MainPage(),
-  // );
-}
 
-class _MainPage extends StatefulWidget {
-  const _MainPage();
+class _RootRouterPage extends StatefulWidget {
+  const _RootRouterPage();
 
   @override
-  State<_MainPage> createState() => _MainPageState();
+  State<_RootRouterPage> createState() => _RootRouterPageState();
 }
 
-class _MainPageState extends State<_MainPage> with WidgetsBindingObserver {
+class _RootRouterPageState extends State<_RootRouterPage> with Logging {
 
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addObserver(this);
-    // system check
-    _SystemChecker().check(context);
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await _handleAppRoute(context);
+    });
+  }
+
+  Future<void> _handleAppRoute(BuildContext context) async {
+    User? user;
+    // Check permission: Storage
+    bool permitted = await PermissionChecker().checkDatabasePermissions();
+    if (permitted) {
+      // check current user
+      logDebug('check current user');
+      GlobalVariable shared = GlobalVariable();
+      user = await shared.facebook.currentUser;
+      logInfo('current user: $user');
+    }
+    // Launch the app
+    if (!context.mounted) {
+      logError('context error: $context');
+    } else if (user != null) {
+      logInfo('open main page');
+      changeToMainPage(context);
+    } else {
+      logInfo('open register page');
+      // changeToRegisterPage
+      changeRootPage(context, (context) => RegisterPage());
+    }
+
   }
 
   @override
-  void dispose() {
-    WidgetsBinding.instance.removeObserver(this);
-    super.dispose();
-  }
-
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    Log.info('didChangeAppLifecycleState: state=$state');
-    GlobalVariable shared = GlobalVariable();
-    shared.terminal.onAppLifecycleStateChanged(state);
-  }
-
-  @override
-  void didChangePlatformBrightness() {
-    super.didChangePlatformBrightness();
-    forceAppUpdate();
-  }
-
-  @override
-  Widget build(BuildContext context) => DefaultTabController(
-    length: 4,
-    initialIndex: AppSettings().getValue('tab_index') ?? 0,
-    child: Scaffold(
-      body: const TabBarView(
-        children: [
-          ChatHistoryPage(),
-          ContactListPage(),
-          ServiceListPage(),
-          SettingsPage(),
-        ],
+  Widget build(BuildContext context) {
+    Widget view = const Center(child: CircularProgressIndicator());
+    view = Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        _logo(),
+        view,
+      ],
+    );
+    return MaterialApp(
+      home: Scaffold(
+        body: view,
+        backgroundColor: Styles.colors.logoBackgroundColor,
       ),
-      bottomNavigationBar: TabBar(
-        labelColor: Styles.colors.activeTabColor,
-        // unselectedLabelColor: Styles.colors.tabColor,
-        tabs: [
-          ChatHistoryPage.tab(),
-          ContactListPage.tab(),
-          ServiceListPage.tab(),
-          SettingsPage.tab(),
-        ],
-        onTap: (index) => AppSettings().setValue('tab_index', index),
-      ),
+    );
+  }
+
+  Widget _logo() => SizedBox(
+    width: 60,
+    height: 60,
+    child: Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _eye(),
+        const SizedBox(width: 6,),
+        _eye(),
+      ],
     ),
   );
+  Widget _eye() => const Icon(Icons.panorama_fish_eye,
+    size: 18,
+    color: Colors.white,
+  );
 
-  // @override
-  // Widget build(BuildContext context) => CupertinoTabScaffold(
-  //   backgroundColor: Styles.colors.scaffoldBackgroundColor,
-  //   tabBar: CupertinoTabBar(
-  //     backgroundColor: Styles.colors.appBardBackgroundColor,
-  //     items: [
-  //       ChatHistoryPage.barItem(),
-  //       ContactListPage.barItem(),
-  //       ServiceListPage.barItem(),
-  //       SettingsPage.barItem(),
-  //     ],
-  //   ),
-  //   tabBuilder: (context, index) {
-  //     Widget page;
-  //     if (index == 0) {
-  //       page = const ChatHistoryPage();
-  //     } else if (index == 1) {
-  //       page = const ContactListPage();
-  //     } else if (index == 2) {
-  //       page = const ServiceListPage();
-  //     } else {
-  //       page = const SettingsPage();
-  //     }
-  //     return CupertinoTabView(
-  //       builder: (context) {
-  //         return page;
-  //       },
-  //     );
-  //   },
-  //   controller: CupertinoTabController(initialIndex: 2),
-  // );
-
-}
-
-
-class _SystemChecker with Logging {
-  factory _SystemChecker() => _instance;
-  static final _SystemChecker _instance = _SystemChecker._internal();
-  _SystemChecker._internal();
-
-  bool _checked = false;
-
-  Future<bool> check(BuildContext context) async {
-    if (_checked) {
-      logWarning('system checked');
-      return false;
-    } else {
-      _checked = true;
-    }
-    // wait a while
-    await Future.delayed(const Duration(seconds: 5));
-    logWarning('system checking');
-    //
-    //  1. test speeds for all stations
-    //
-    logWarning('check station speeds');
-    StationSpeeder speeder = StationSpeeder();
-    await speeder.reload();
-    await speeder.testAll();
-    //
-    //  2. checking for upgrade
-    //
-    if (context.mounted) {
-      logWarning('check app update');
-      NewestManager().checkUpdate(context);
-    }
-    //
-    //  3. checking for avatar
-    //
-    var pnf = await _getAvatar();
-    if (pnf != null) {
-      Log.info('current user avatar: $pnf');
-    } else if (context.mounted) {
-      Alert.confirm(context, 'Pick Image',
-        'Please choose your avatar'.tr,
-        okAction: () => AccountPage.open(context),
-      );
-    }
-    return true;
-  }
-
-}
-
-Future<TransportableFile?> _getAvatar() async {
-  GlobalVariable shared = GlobalVariable();
-  User? user = await shared.facebook.currentUser;
-  assert(user != null, 'current user not found');
-  List<Document>? docs = await user?.documents;
-  if (docs == null || docs.isEmpty) {
-    assert(false, 'failed to get documents: $user');
-    return null;
-  }
-  Visa? visa = DocumentUtils.lastVisa(docs);
-  assert(visa != null, 'visa not found: $user');
-  return visa?.avatar;
 }

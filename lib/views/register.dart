@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 
 import 'package:dim_flutter/dim_flutter.dart';
 
-import '../main.dart';
+import '../root.dart';
 
 
 class RegisterPage extends StatefulWidget {
