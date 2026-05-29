@@ -16,8 +16,8 @@
     [manager initChannels:controller.binaryMessenger];
     
     // query device token
-    DIMPushNotificationController *pnc = [DIMPushNotificationController sharedInstance];
-    [pnc application:application didFinishLaunchingWithOptions:launchOptions];
+    DIMPushNotificationController *apns = [DIMPushNotificationController sharedInstance];
+    [apns application:application didFinishLaunchingWithOptions:launchOptions];
     
     [GeneratedPluginRegistrant registerWithRegistry:self];
     // Override point for customization after application launch.
@@ -40,9 +40,11 @@
 
 - (void)applicationDidBecomeActive:(UIApplication *)application {
     NSLog(@"APNs applicationDidBecomeActive");
+    [super applicationDidBecomeActive:application];
+    
+    // query device token
     DIMPushNotificationController *apns = [DIMPushNotificationController sharedInstance];
     [apns applicationDidBecomeActive:application];
-    [super applicationDidBecomeActive:application];
 }
 
 - (void)applicationWillResignActive:(UIApplication *)application {

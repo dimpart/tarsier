@@ -33,14 +33,22 @@
 		<key>NSAllowsArbitraryLoads</key>
 		<true/>
 	</dict>
+	<key>NSBonjourServices</key>
+	<array>
+		<string>_tarsier_cast._tcp</string>
+	</array>
 	<key>NSCameraUsageDescription</key>
 	<string>Please allow to take photos and send them to friends, or to change your profile picture.</string>
+	<key>NSLocalNetworkUsageDescription</key>
+	<string>App needs access to the local network to discover and connect to nearby devices.</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Please allow to record a voice message and send it to your friend.</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
 	<string>Please allow to save the image to your album.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Please allow to send photos from the album to your friends or to change your profile picture.</string>
+	<key>NSUserNotificationsUsageDescription</key>
+	<string>Notification access is required for incoming message alerts.</string>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	<key>UIBackgroundModes</key>

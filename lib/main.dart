@@ -56,9 +56,7 @@ class _RootRouterPageState extends State<_RootRouterPage> with Logging {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      await _handleAppRoute(context);
-    });
+    WidgetsBinding.instance.addPostFrameCallback((_) => _handleAppRoute(context));
   }
 
   Future<void> _handleAppRoute(BuildContext context) async {
