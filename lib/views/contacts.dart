@@ -480,10 +480,14 @@ class GreetingCounter {
     for (Conversation item in all) {
       await item.reloadData();
     }
-    List<Conversation> strangers = _clerk.strangers;
+    List<ContactInfo> strangers = _clerk.strangers;
     int count = 0;
-    for (Conversation chat in strangers) {
-      if (chat.isMuted) {
+    for (ContactInfo chat in strangers) {
+      await chat.reloadData();
+      if (!chat.isNewFriend) {
+        Log.warning('skip the friend: $chat');
+        continue;
+      } else if (chat.isMuted) {
         Log.warning('skip muted chat: $chat');
         continue;
       }
