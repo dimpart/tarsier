@@ -39,7 +39,7 @@ class ChatBox extends StatefulWidget {
   State<ChatBox> createState() => _ChatBoxState();
 }
 
-class _ChatBoxState extends State<ChatBox> implements lnc.Observer {
+class _ChatBoxState extends State<ChatBox> with Logging implements lnc.Observer {
   _ChatBoxState() {
     _dataSource = _HistoryDataSource();
 
@@ -107,7 +107,7 @@ class _ChatBoxState extends State<ChatBox> implements lnc.Observer {
     } else if (name == NotificationNames.kBlockListUpdated) {
       ID? contact = userInfo?['blocked'];
       contact ??= userInfo?['unblocked'];
-      Log.info('blocked contact updated: $contact');
+      logInfo('blocked contact updated: $contact');
       if (contact == null) {
         // block-list updated
         await _reload();
@@ -123,7 +123,7 @@ class _ChatBoxState extends State<ChatBox> implements lnc.Observer {
     } else if (name == NotificationNames.kGroupHistoryUpdated) {
       ID? chat = userInfo?['ID'];
       if (chat == widget.info.identifier) {
-        Log.info('group history updated: $chat');
+        logInfo('group history updated: $chat');
         await widget.info.reloadData();
         await _reload();
       }
@@ -136,11 +136,18 @@ class _ChatBoxState extends State<ChatBox> implements lnc.Observer {
 
   Future<void> _reload() async {
     GlobalVariable shared = GlobalVariable();
-    ContentViewUtils.currentUser = await shared.facebook.currentUser;
+    User? currentUser = await shared.facebook.currentUser;
+    if (currentUser == null) {
+      logError('current user not found');
+      return;
+    }
+    ContentViewUtils.currentUser = currentUser;
     Conversation info = widget.info;
     var pair = await shared.database.getInstantMessages(info.identifier,
-        limit: ChatBox.maxCountOfMessages);
-    Log.warning('message updated: ${pair.first.length}');
+      user: currentUser.identifier,
+      limit: ChatBox.maxCountOfMessages,
+    );
+    logWarning('message updated: ${pair.first.length}');
     if (mounted) {
       setState(() {
         _dataSource.refresh(pair.first);
@@ -181,7 +188,7 @@ class _ChatBoxState extends State<ChatBox> implements lnc.Observer {
       bool canReview = info.isOwner || info.isAdmin;
       int count = info.invitations.length;
       if (canReview && count > 0) {
-        Log.warning('invitations count: $count');
+        logWarning('invitations count: $count');
         return IconView.fromSpot(icon, count,
           alignment: const AlignmentDirectional(0.8, -0.8),
         );
@@ -562,14 +569,14 @@ class _HistoryAdapter with SectionAdapterMixin, Logging {
 
 }
 
-class _HistoryDataSource {
+class _HistoryDataSource with Logging {
 
   List<InstantMessage> _messages = [];
 
   List<InstantMessage> get allMessages => _messages;
 
   void refresh(List<InstantMessage> history) {
-    Log.debug('sort and refreshing ${history.length} message(s)');
+    logDebug('sort and refreshing ${history.length} message(s)');
     List<InstantMessage> array = [];
     for (var his in history) {
       if (his.content.getBool('hidden') == true) {

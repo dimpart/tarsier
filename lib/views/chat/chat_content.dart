@@ -243,12 +243,18 @@ void _deleteMessage(BuildContext ctx, Content content, Envelope envelope) {
   // confirm deletion
   Alert.confirm(ctx, 'Confirm Delete', 'Sure to delete this message?'.tr, okAction: () {
     GlobalVariable shared = GlobalVariable();
-    shared.database.removeInstantMessage(chat, envelope, content).then((ok) {
-      if (ok) {
-        Log.info('message deleted.');
-      } else {
-        Log.warning('failed to delete message.');
+    shared.facebook.currentUser.then((user) {
+      if (user == null) {
+        Log.error('failed to get current user');
+        return;
       }
+      shared.database.removeInstantMessage(chat, envelope, content, user: user.identifier).then((ok) {
+        if (ok) {
+          Log.info('message deleted.');
+        } else {
+          Log.warning('failed to delete message.');
+        }
+      });
     });
   });
 }
