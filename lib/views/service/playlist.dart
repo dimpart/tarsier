@@ -178,8 +178,8 @@ class _PlaylistState extends State<PlaylistPage> with Logging implements lnc.Obs
     int axisCount = width ~/ 192;
     Widget body = MasonryGridView.count(
       crossAxisCount: axisCount,
-      mainAxisSpacing: 4,
-      crossAxisSpacing: 4,
+      mainAxisSpacing: 2,
+      crossAxisSpacing: 2,
       itemCount: itemCount,
       itemBuilder: (context, index) {
         var item = _dataSource.getItem(0, index);

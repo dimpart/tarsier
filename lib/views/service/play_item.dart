@@ -92,12 +92,14 @@ class _PlayItemState extends State<PlaylistItem> with Logging implements lnc.Obs
   Future<bool> _refreshPlayInfo(Content content, {required bool isRefresh}) async {
     var format = content['format'];
     var text = content['text'];
+    var details = content['details'];
     logInfo('refreshing play item with format: $format, size: ${text?.length}, name: "${widget.info.name}"');
     if (format != null && text != null) {
       if (mounted) {
         setState(() {
           widget.info['format'] = format;
           widget.info['text'] = text;
+          widget.info['details'] = details;
         });
       }
     }
@@ -148,13 +150,18 @@ class _PlayItemState extends State<PlaylistItem> with Logging implements lnc.Obs
   @override
   Widget build(BuildContext context) {
     Season season = widget.info;
-    String? format = season.getString('format');
-    if (format == 'markdown') {
-      return _richTextView(context, season);
-    } else {
-      _load();
-      return _loadingView(widget.info.name);
+    // 1. try new UI view
+    Widget? view = _videoItemView(context, season);
+    if (view == null) {
+      // 2. try markdown text view
+      view = _richTextView(context, season);
+      if (view == null) {
+        // 3. not ready
+        _load();
+        view = _loadingView(widget.info.name);
+      }
     }
+    return view;
   }
 
   Widget _loadingView(String name) {
@@ -175,8 +182,21 @@ class _PlayItemState extends State<PlaylistItem> with Logging implements lnc.Obs
     return view;
   }
 
-  Widget _richTextView(BuildContext ctx, Season season) {
+  Widget? _richTextView(BuildContext ctx, Season season) {
+    //
+    //  checking
+    //
+    String? format = season.getString('format');
+    if (format != 'markdown') {
+      return null;
+    }
     String text = MessageTemplate.getText(season.toMap());
+    if (text.isEmpty) {
+      return null;
+    }
+    //
+    //  building
+    //
     var bot = widget.chat.identifier;
     Widget view = RichTextView(sender: bot, text: text,
       onTapLink: (text, {required href, required title}) => _SeasonRefresh().updateSeason(season, bot) || true,
@@ -200,6 +220,102 @@ class _PlayItemState extends State<PlaylistItem> with Logging implements lnc.Obs
             () => ShareTextMessage.forwardTextMessage(ctx, content, bot),
       ),
       // onTap: () => _SeasonRefresh().updateSeason(season, bot),
+      child: view,
+    );
+    return view;
+  }
+
+  Widget? _videoItemView(BuildContext ctx, Season season) {
+    //
+    //  checking
+    //
+    Map? details = season['details'];
+    if (details == null) {
+      logWarning('season details not found: $season');
+      return null;
+    }
+    String? name = details['name'] ?? (season['season']?['name']);
+    String? text = details['text'] ?? (season['replacements']?['text']);
+    if (name == null || name.isEmpty || text == null || text.isEmpty) {
+      logWarning('season details error: $season');
+      return null;
+    }
+    var cover = details['cover'];
+    assert(cover == null || cover.contains('://'), 'season cover error: $cover');
+    var pnf = TransportableFile.parse(cover);
+    //
+    //  building
+    //
+    var bot = widget.chat.identifier;
+    Widget view;
+    if (pnf == null) {
+      // view = Text(name, style: Styles.titleTextStyle);
+      view = Text(name, style: const TextStyle(
+        color: CupertinoColors.link,
+      ));
+      view = Container(
+        padding: const EdgeInsets.all(8),
+        child: view,
+      );
+    } else {
+      // cover image
+      Widget image = NetworkImageFactory().getImageView(pnf, fit: BoxFit.cover);
+      image = SizedBox(
+        width: double.infinity,
+        child: image,
+      );
+      image = ConstrainedBox(
+        constraints: const BoxConstraints(minHeight: 136),
+        child: image,
+      );
+      // title
+      view = Text(name, style: const TextStyle(
+        color: CupertinoColors.white,
+      ));
+      view = Container(
+        width: double.infinity,
+        color: CupertinoColors.systemGrey.withValues(alpha: 0.8),
+        padding: const EdgeInsets.all(8),
+        alignment: Alignment.center,
+        child: view,
+      );
+      // layout
+      view = Stack(
+        alignment: AlignmentDirectional.bottomCenter,
+        children: [
+          image,
+          view,
+        ],
+      );
+    }
+    view = Container(
+      color: Styles.colors.playlistBackgroundColor,
+      alignment: Alignment.center,
+      padding: const EdgeInsets.all(0),
+      child: view,
+    );
+    var content = TextContent.create(text);
+    content['format'] = 'markdown';
+    view = GestureDetector(
+      // gesture to forward rich text
+      onLongPress: () => Alert.actionSheet(ctx, null, null,
+        // forward
+        Alert.action(AppIcons.shareIcon, 'Forward Rich Text'),
+            () => ShareTextMessage.forwardTextMessage(ctx, content, bot),
+      ),
+      // gesture to show video details
+      onTap: () {
+        _SeasonRefresh().updateSeason(season, bot);
+        TextPreviewPage.open(ctx,
+          text: text,
+          format: 'markdown',
+          sender: bot,
+          onTapLink: null,
+          onWebShare: (url, {required title, required desc, required icon}) =>
+              ShareWebPage.shareWebPage(ctx, url, title: title, desc: desc, icon: icon),
+          onVideoShare: (playingItem) => ShareVideo.shareVideo(ctx, playingItem),
+        );
+      },
       child: view,
     );
     return view;

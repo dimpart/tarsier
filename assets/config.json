@@ -76,10 +76,10 @@
       "build": 10001,
       "url": "https://play.google.com/store/apps/details?id=chat.dim.tarsier"
     },
-    "ios-apple": {
+    "ios": {
       "version": "1.0.0",
       "build": 10001,
-      "url": "https://apps.apple.com//app/tarsier-secure-chat/id6449430440?platform=iphone"
+      "url": "https://apps.apple.com//app/tarsier-secure-chat/id6449430440"
     },
     "macos": {
       "version": "1.0.0",

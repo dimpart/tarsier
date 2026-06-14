@@ -358,11 +358,11 @@ class _ProfileState extends State<ProfilePage> with Logging implements lnc.Obser
     // show for debugging
     return GestureDetector(
       child: Text(clientInfo),
-      onDoubleTap: () => _showAppInfo(context, app: app, sys: sys),
+      onDoubleTap: () => _showAppInfo(context, visa, app: app, sys: sys),
     );
   }
 
-  void _showAppInfo(BuildContext context, {dynamic app, dynamic sys}) {
+  void _showAppInfo(BuildContext context, Visa? visa, {dynamic app, dynamic sys}) {
     var text = '';
     // show app info
     if (app is Map) {
@@ -387,6 +387,14 @@ class _ProfileState extends State<ProfilePage> with Logging implements lnc.Obser
       text += '\n';
     } else {
       text += 'visa.sys: $sys\n';
+    }
+    // show registered/updated time
+    var regTime = Converter.getDateTime(visa?.getProperty('created_time'));
+    var updatedTime = visa?.time;
+    if (regTime != null || updatedTime != null) {
+      text += '\n';
+      text += '* created: $regTime\n';
+      text += '* updated: $updatedTime\n';
     }
     Widget body = RichTextView(text: text,
       sender: ID.FOUNDER, onWebShare: null, onVideoShare: null,
