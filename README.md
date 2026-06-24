@@ -140,14 +140,23 @@ dependencies:
 
   ...
 
-  sqflite: ^2.2.6
-  sqflite_common_ffi: ^2.3.3
-#  sqflite_common_ffi_web: ^0.4.2
+  sqflite: 2.4.3
+#  sqflite_android: 2.4.3
+#  sqflite_darwin: 2.4.3
+#  sqflite_platform_interface: 2.4.1
+  sqflite_common_ffi: 2.3.3
+#  sqflite_common_ffi_web: 0.4.2
 
-  fvp: ^0.16.1
-  video_player: ^2.8.3
-  chewie: ^1.8.1
-  castscreen: ^1.0.2
+  fvp: 0.16.1
+  video_player: 2.8.3
+#  video_player_android: 2.5.3
+#  video_player_avfoundation: 2.6.3
+#  video_player_platform_interface: 6.7.0
+  chewie: 1.8.1
+  castscreen: 1.0.2
+
+  ...
+
 ```
 
 3.2. Edit ```dimpart/demo-flutter/dim_flutter/lib/src/common/platform.dart```
@@ -213,4 +222,4 @@ class DevicePlatform {
 If nothing unexpected happens, your desktop app should be able to run now!
 
 ----
-Copyright &copy; 2024 Albert Moky
+Copyright &copy; 2023-2026 Albert Moky

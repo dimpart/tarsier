@@ -1,17 +1,20 @@
 buildscript {
-    ext.kotlin_version = '1.9.23'
+    ext.kotlin_version = '2.2.20'
     repositories {
 
-        maven { url "https://maven.aliyun.com/repository/public/" }
-        maven { url "https://maven.aliyun.com/repository/google/" }
-        maven { url "https://maven.aliyun.com/repository/jcenter/" }
+        maven { url "https://maven.aliyun.com/repository/central" }
+        maven { url "https://maven.aliyun.com/repository/public" }
+        maven { url "https://maven.aliyun.com/repository/google" }
+        maven { url "https://maven.aliyun.com/repository/gradle-plugin" }
+        maven { url "https://repository.mulesoft.org/nexus/content/repositories/public/" }
 
         google()
         mavenCentral()
+        gradlePluginPortal()
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:8.9.1'
+        classpath 'com.android.tools.build:gradle:8.11.2'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath("com.google.gms:google-services:4.4.2")
     }
@@ -20,16 +23,28 @@ buildscript {
 allprojects {
     repositories {
 
-        maven { url "https://maven.aliyun.com/repository/public/" }
-        maven { url "https://maven.aliyun.com/repository/google/" }
-        maven { url "https://maven.aliyun.com/repository/jcenter/" }
-
-        maven { url "https://repo.spring.io/plugins-release/" }
+        maven { url "https://maven.aliyun.com/repository/central" }
+        maven { url "https://maven.aliyun.com/repository/public" }
+        maven { url "https://maven.aliyun.com/repository/google" }
+        maven { url "https://maven.aliyun.com/repository/gradle-plugin" }
         maven { url "https://repository.mulesoft.org/nexus/content/repositories/public/" }
-        maven { url "https://dl.bintray.com/bilibili/maven/" }
 
         google()
         mavenCentral()
+        gradlePluginPortal()
+    }
+}
+
+subprojects {
+
+    afterEvaluate { project ->
+        if (project.hasProperty("android")) {
+            project.android {
+                if (namespace == null) {
+                    namespace project.group
+                }
+            }
+        }
     }
 }
 
