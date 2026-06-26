@@ -51,13 +51,8 @@ class _ExportState extends State<ExportPage> {
         ),
         // This widget fills the remaining space in the viewport.
         // Drag the scrollable area to collapse the CupertinoSliverNavigationBar.
-        SliverFillRemaining(
-          hasScrollBody: false,
-          fillOverscroll: true,
-          child: buildScrollView(
-            enableScrollbar: true,
-            child: _body(context),
-          ),
+        SliverToBoxAdapter(
+          child: _body(context),
         ),
       ],
     ),

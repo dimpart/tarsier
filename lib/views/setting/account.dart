@@ -96,9 +96,7 @@ class _AccountState extends State<AccountPage> {
           ),
           // This widget fills the remaining space in the viewport.
           // Drag the scrollable area to collapse the CupertinoSliverNavigationBar.
-          SliverFillRemaining(
-            hasScrollBody: false,
-            fillOverscroll: true,
+          SliverToBoxAdapter(
             child: _body(context,
               backgroundColor: colors.sectionItemBackgroundColor,
               backgroundColorActivated: colors.sectionItemDividerColor,

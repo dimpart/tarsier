@@ -162,19 +162,14 @@ class _ProfileState extends State<ProfilePage> with Logging implements lnc.Obser
           ),
           // This widget fills the remaining space in the viewport.
           // Drag the scrollable area to collapse the CupertinoSliverNavigationBar.
-          SliverFillRemaining(
-            hasScrollBody: false,
-            fillOverscroll: true,
-            child: buildScrollView(
-              enableScrollbar: true,
-              child: _body(context,
-                backgroundColor: colors.sectionItemBackgroundColor,
-                backgroundColorActivated: colors.sectionItemDividerColor,
-                dividerColor: colors.sectionItemDividerColor,
-                primaryTextColor: colors.primaryTextColor,
-                secondaryTextColor: colors.tertiaryTextColor,
-                dangerousTextColor: CupertinoColors.systemRed,
-              ),
+          SliverToBoxAdapter(
+            child: _body(context,
+              backgroundColor: colors.sectionItemBackgroundColor,
+              backgroundColorActivated: colors.sectionItemDividerColor,
+              dividerColor: colors.sectionItemDividerColor,
+              primaryTextColor: colors.primaryTextColor,
+              secondaryTextColor: colors.tertiaryTextColor,
+              dangerousTextColor: CupertinoColors.systemRed,
             ),
           ),
         ],

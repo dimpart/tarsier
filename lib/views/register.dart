@@ -126,9 +126,7 @@ class _RegisterState extends State<RegisterPage> {
       ),
       // This widget fills the remaining space in the viewport.
       // Drag the scrollable area to collapse the CupertinoSliverNavigationBar.
-      SliverFillRemaining(
-        hasScrollBody: false,
-        fillOverscroll: true,
+      SliverToBoxAdapter(
         child: _form(context),
       ),
     ],

@@ -89,9 +89,7 @@ class _SettingsPageState extends State<SettingsPage> implements lnc.Observer {
           ),
           // This widget fills the remaining space in the viewport.
           // Drag the scrollable area to collapse the CupertinoSliverNavigationBar.
-          SliverFillRemaining(
-            hasScrollBody: false,
-            fillOverscroll: true,
+          SliverToBoxAdapter(
             child: _table(context,
               backgroundColor: colors.sectionItemBackgroundColor,
               backgroundColorActivated: colors.sectionItemDividerColor,
