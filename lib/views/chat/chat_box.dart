@@ -24,13 +24,13 @@ class ChatBox extends StatefulWidget {
   const ChatBox(this.info, this.extra, {super.key});
 
   final Conversation info;
-  final Map? extra;
+  final Mapping? extra;
 
   String get title => extra?['title'] ?? '';
 
   static int maxCountOfMessages = 2048;
 
-  static void open(BuildContext context, Conversation info, Map? extra) => showPage(
+  static void open(BuildContext context, Conversation info, Mapping? extra) => showPage(
     context: context,
     builder: (context) => ChatBox(info, extra),
   );

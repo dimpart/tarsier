@@ -9,7 +9,7 @@ class ChatInputTray extends StatefulWidget {
   const ChatInputTray(this.info, this.extra, {super.key});
 
   final Conversation info;
-  final Map? extra;
+  final Mapping? extra;
 
   String? get text => extra?['text'];
 

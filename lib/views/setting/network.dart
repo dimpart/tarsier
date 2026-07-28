@@ -214,7 +214,7 @@ class _NetworkState extends State<NetworkSettingPage> with Logging implements ln
     //
     //  save into database
     //
-    ID sp = ProviderInfo.GSP;
+    ID sp = ServiceProvider.GSP;
     GlobalVariable shared = GlobalVariable();
     shared.database.addStation(null, host: host, port: port, provider: sp).then((ok) {
       if (ok) {

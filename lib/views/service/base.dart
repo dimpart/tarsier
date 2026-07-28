@@ -58,8 +58,8 @@ abstract class ServiceInfo extends Dictionary {
     return array;
   }
 
-  static List<Map> revert(Iterable<ServiceInfo> services) {
-    List<Map> array = [];
+  static List<Mapping> revert(Iterable<ServiceInfo> services) {
+    List<Mapping> array = [];
     for (var item in services) {
       array.add(item.toMap());
     }
@@ -77,7 +77,7 @@ abstract class ServiceInfo extends Dictionary {
       // exactly
       return service;
     }
-    Map? info = Wrapper.getMap(service);
+    MutableMapping? info = Wrapper.getMap(service);
     if (info == null) {
       assert(false, 'service info error: $service');
       return null;
@@ -112,7 +112,7 @@ final _serviceFactory = _ServiceFactory();
 
 class _ServiceFactory {
 
-  ServiceInfo? parseService(Map service) {
+  ServiceInfo? parseService(Mapping service) {
     _OpenService callback;
     // check service type
     String? st = Converter.getString(service['type']);

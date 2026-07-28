@@ -38,7 +38,8 @@ void main() async {
   }());
 
   // Check Brightness & Language
-  await initFacade();
+  // Load device + package info
+  await SysEnv().beforeLaunchApp();
   // Launch the app
   launchApp(const _RootRouterPage(), debug: debug);
 }
