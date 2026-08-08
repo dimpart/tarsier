@@ -9,14 +9,6 @@ import 'views/register.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  var newest = NewestManager();
-  newest.store = 'Demo';
-  // newest.store = 'Apple';       // appstoreconnect.apple.com
-  // newest.store = 'Google';      // play.google.com
-  // newest.store = 'Amazon';      // developer.amazon.com
-  // newest.store = 'GSP';         // tarsier.dim.chat
-  /// TODO: set distribution channel name
-
   // Set log level
   Log.level = Log.RELEASE;
   // Log.level = Log.DEVELOP;
