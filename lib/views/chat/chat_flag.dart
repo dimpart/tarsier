@@ -19,6 +19,7 @@ class ChatSendFlag extends StatefulWidget {
 
 enum _MsgStatus {
   kDefault,
+  kSync,      // synchronized from other device
   kEncrypted,
   kWaiting,   // sending out, or waiting file data upload
   kSent,      // MTA respond
@@ -238,7 +239,7 @@ class _SendState extends State<ChatSendFlag> implements lnc.Observer {
     int sn = widget.iMsg.content.sn;
     Map? info;
     ID? mta;
-    _MsgStatus status = _MsgStatus.kDefault;
+    _MsgStatus current = _MsgStatus.kDefault;
     for (String json in traces) {
       info = JSONMap.decode(json);
       mta = ID.parse(info?['did']);
@@ -246,13 +247,13 @@ class _SendState extends State<ChatSendFlag> implements lnc.Observer {
       if (mta == null) {
         Log.error('trace error: $json');
       } else {
-        status = await _refresh(sn: sn, mta: mta);
-        if (status == _MsgStatus.kReceived) {
+        current = await _refresh(sn: sn, mta: mta);
+        if (current == _MsgStatus.kReceived) {
           break;
         }
       }
     }
-    return status;
+    return current;
   }
 
   /// load traces to refresh message status,
@@ -260,21 +261,21 @@ class _SendState extends State<ChatSendFlag> implements lnc.Observer {
   Future<void> _reload() async {
     List<String> traces = await _loadTraces();
     // Check memory cache
-    _MsgStatus? status = _flags[widget.iMsg.content.sn];
-    if (status == _MsgStatus.kReceived) {
+    _MsgStatus? current = _flags[widget.iMsg.content.sn];
+    if (current == _MsgStatus.kReceived) {
       // Your friend has received it, no need to update again.
       return;
     }
     // Try to load traces from database
-    status = await _refreshStatus(traces);
-    if (status == _MsgStatus.kReceived) {
+    current = await _refreshStatus(traces);
+    if (current == _MsgStatus.kReceived) {
       // Yes! It's received.
       return;
     }
     // Check after 5 minutes
     await Future.delayed(const Duration(seconds: 308));
-    status = _flags[widget.iMsg.content.sn];
-    if (status == _MsgStatus.kReceived) {
+    current = _flags[widget.iMsg.content.sn];
+    if (current == _MsgStatus.kReceived) {
       // Finally!
       return;
     }
@@ -289,8 +290,25 @@ class _SendState extends State<ChatSendFlag> implements lnc.Observer {
     _reload();
   }
 
-  _MsgStatus get status =>
-      _flags[widget.iMsg.content.sn] ?? _MsgStatus.kDefault;
+  _MsgStatus get status {
+    var current = _flags[widget.iMsg.content.sn] ?? _MsgStatus.kDefault;
+    if (current == _MsgStatus.kDefault || current == _MsgStatus.kExpired) {
+      if (widget.iMsg.syncTerminal != null) {
+        // all status:
+        //    default   - REWRITE
+        //    sync
+        //    encrypted - could not happen
+        //    waiting   - could not happen
+        //    sent
+        //    blocked
+        //    received  - don't rewrite
+        //    timeout   - don't rewrite
+        //    expired   - REWRITE
+        current = _MsgStatus.kSync;
+      }
+    }
+    return current;
+  }
 
   IconData? get flag {
     switch (status) {
@@ -314,6 +332,9 @@ class _SendState extends State<ChatSendFlag> implements lnc.Observer {
       }
       case _MsgStatus.kExpired: {
         return AppIcons.msgExpiredIcon;
+      }
+      case _MsgStatus.kSync: {
+        return AppIcons.msgSyncIcon;
       }
       default: {
         return AppIcons.msgDefaultIcon;
@@ -348,7 +369,7 @@ class _SendState extends State<ChatSendFlag> implements lnc.Observer {
       }
     }
   }
-  String? get text {
+  String get text {
     switch (status) {
       case _MsgStatus.kEncrypted: {
         return 'Waiting to upload'.tr;
@@ -378,6 +399,12 @@ class _SendState extends State<ChatSendFlag> implements lnc.Observer {
       case _MsgStatus.kExpired: {
         return 'No response'.tr;
       }
+      case _MsgStatus.kSync: {
+        var terminal = widget.iMsg.syncTerminal;
+        return 'Synchronized from @terminal'.trParams({
+          'terminal': terminal ?? 'other device',
+        });
+      }
       default: {
         return 'Stranded'.tr;
       }
@@ -388,10 +415,11 @@ class _SendState extends State<ChatSendFlag> implements lnc.Observer {
 
   @override
   Widget build(BuildContext context) {
-    if (status == _MsgStatus.kEncrypted) {
+    var current = status;
+    if (current == _MsgStatus.kEncrypted) {
       return _traceInfo();
     }
-    if (status == _MsgStatus.kReceived) {
+    if (current == _MsgStatus.kReceived) {
       if (widget.iMsg['count_of_responded'] == null) {
         _loadTraces().then((value) {
           if (mounted) {
@@ -402,8 +430,12 @@ class _SendState extends State<ChatSendFlag> implements lnc.Observer {
       }
       return _traceInfo();
     }
-    if (status == _MsgStatus.kTimeout) {
+    if (current == _MsgStatus.kTimeout) {
       Log.warning('this message cannot be resend again');
+      return _traceInfo();
+    }
+    if (current == _MsgStatus.kSync) {
+      Log.warning('sync message cannot be resend again');
       return _traceInfo();
     }
     return GestureDetector(
@@ -414,7 +446,7 @@ class _SendState extends State<ChatSendFlag> implements lnc.Observer {
 
   Widget _traceInfo() {
     Widget view;
-    view = Text('$text', style: TextStyle(
+    view = Text(text, style: TextStyle(
       fontSize: 10,
       color: color,
       overflow: TextOverflow.ellipsis,

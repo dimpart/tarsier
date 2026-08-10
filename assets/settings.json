@@ -1,0 +1,25 @@
+{
+  "store": {
+    "desc": "This section is for setting app distribution channel name. The value of 'name' will be used.",
+
+    "apps.apple.com": "Apple",
+    "play.google.com": "Google",
+
+    "tarsier.dim.chat": "GSP",
+    "test": "Demo",
+
+    "name": "Demo"
+  },
+
+  "enigma": {
+    "desc": "This section is for storing passphrases for uploading file.",
+
+    "secrets": [
+      "12345678",
+      "231028C0FE",
+      "250110C0FFEE",
+
+      {"index": "20201010", "secret": "TW9reSBsb3ZlcyBNYXkgTGVlIGZvcmV2ZXIh"}
+    ]
+  }
+}
