@@ -354,7 +354,7 @@ class _AccountState extends State<AccountPage> {
     Uint8List? sig = visa.sign(sKey);
     assert(sig != null, 'failed to sign visa: $visa, $user');
     // 5. save it
-    var archivist = shared.facebook.archivist;
+    var archivist = shared.facebook.barrack;
     bool? ok = await archivist?.saveDocument(visa, user.identifier)
         .onError((error, stackTrace) {
           if (context.mounted) {

@@ -9,6 +9,7 @@ import 'setting/account.dart';
 import 'setting/account_export.dart';
 import 'setting/brightness.dart';
 import 'setting/burn_after_reading.dart';
+import 'setting/devices.dart';
 import 'setting/language.dart';
 import 'setting/network.dart';
 import 'setting/storage.dart';
@@ -142,6 +143,29 @@ class _SettingsPageState extends State<SettingsPage> implements lnc.Observer {
               builder: (context) => const ExportPage(),
             ),
           ),
+          /// Devices
+          _listTile(
+            leading: AppIcons.devicesIcon, title: 'Devices'.tr,
+            additional: 'Multi-device login'.tr,
+            backgroundColor: backgroundColor,
+            backgroundColorActivated: backgroundColorActivated,
+            primaryTextColor: primaryTextColor,
+            secondaryTextColor: secondaryTextColor,
+            onTap: () => showPage(
+              context: context,
+              builder: (context) => const DeviceListPage(),
+            ),
+          ),
+        ],
+      ),
+      //
+      //  Application
+      //
+      CupertinoListSection(
+        backgroundColor: dividerColor,
+        topMargin: 0,
+        additionalDividerMargin: 32,
+        children: [
           /// Burn After Reading
           _listTile(
             leading: AppIcons.burnIcon, title: 'Burn After Reading'.tr,
@@ -168,16 +192,6 @@ class _SettingsPageState extends State<SettingsPage> implements lnc.Observer {
               builder: (context) => const CacheFileManagePage(),
             ),
           ),
-        ],
-      ),
-      //
-      //  Application
-      //
-      CupertinoListSection(
-        backgroundColor: dividerColor,
-        topMargin: 0,
-        additionalDividerMargin: 32,
-        children: [
           /// Language
           _listTile(
             leading: AppIcons.languageIcon, title: 'Language'.tr,

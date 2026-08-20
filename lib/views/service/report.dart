@@ -39,10 +39,10 @@ class CustomerService {
       Alert.show(context, 'Error', 'Customer service not found'.tr);
       return;
     }
-    ChatBox.open(context, admin, {
+    ChatBox.open(context, admin, <String, dynamic>{
       'title': 'Customer Service'.tr,
       'text': text,
-    });
+    }.asMapping());
   }
 
   static Widget reportButton(BuildContext context, String text) => IconButton(

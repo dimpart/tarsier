@@ -243,7 +243,7 @@ class _LiveDataSource with Logging {
 
   void refresh(Iterable array) {
     List<TVBox> lives = [];
-    Map info;
+    Map<String, dynamic> info;
     Uri? url;
     for (var item in array) {
       // get live url
@@ -259,7 +259,7 @@ class _LiveDataSource with Logging {
         };
       } else if (item is Map) {
         url = HtmlUri.parseUri(item['url']);
-        info = item;
+        info = item as Map<String, dynamic>;
       } else {
         logError('live item error: $item');
         continue;
@@ -269,7 +269,7 @@ class _LiveDataSource with Logging {
         continue;
       }
       // create tv box
-      lives.add(TVBox(url, info));
+      lives.add(TVBox(url, info.asMapping()));
     }
     _sources = lives;
   }
