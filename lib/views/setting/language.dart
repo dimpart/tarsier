@@ -15,13 +15,13 @@ class LanguageSettingPage extends StatefulWidget {
 
 class _LanguageState extends State<LanguageSettingPage> {
 
-  late final _LanguageListAdapter _adapter = _LanguageListAdapter();
+  final _LanguageListAdapter _adapter = _LanguageListAdapter();
 
   @override
   Widget build(BuildContext context) => Scaffold(
     backgroundColor: Styles.colors.scaffoldBackgroundColor,
     appBar: CupertinoNavigationBar(
-      backgroundColor: Styles.colors.appBardBackgroundColor,
+      backgroundColor: Styles.colors.appBarBackgroundColor,
       middle: Text('Language'.tr, style: Styles.titleTextStyle),
     ),
     body: buildSectionListView(
@@ -34,7 +34,7 @@ class _LanguageState extends State<LanguageSettingPage> {
 
 class _LanguageListAdapter with SectionAdapterMixin {
 
-  late final LanguageDataSource _dataSource = LanguageDataSource();
+  final LanguageDataSource _dataSource = LanguageDataSource();
 
   @override
   int numberOfSections() =>
@@ -64,7 +64,7 @@ class _LanguageCell extends StatefulWidget {
 
 class _LanguageCellState extends State<_LanguageCell> {
 
-  late final LanguageDataSource _dataSource = LanguageDataSource();
+  final LanguageDataSource _dataSource = LanguageDataSource();
 
   bool get isSelected => widget.code == _dataSource.getCurrentLanguageCode();
 

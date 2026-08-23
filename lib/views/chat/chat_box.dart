@@ -159,7 +159,7 @@ class _ChatBoxState extends State<ChatBox> with Logging implements lnc.Observer 
   Widget build(BuildContext context) => Scaffold(
     backgroundColor: Styles.colors.scaffoldBackgroundColor,
     appBar: CupertinoNavigationBar(
-      backgroundColor: Styles.colors.appBardBackgroundColor,
+      backgroundColor: Styles.colors.appBarBackgroundColor,
       middle: _title(context),
       trailing: _detailButton(context, widget.info),
     ),
@@ -261,7 +261,7 @@ class _HistoryAdapter with SectionAdapterMixin, Logging {
 
   @override
   Widget getSectionFooter(BuildContext context, int section) => Container(
-    color: Styles.colors.appBardBackgroundColor,
+    color: Styles.colors.appBarBackgroundColor,
     padding: const EdgeInsets.all(16),
     child: Column(
       children: [

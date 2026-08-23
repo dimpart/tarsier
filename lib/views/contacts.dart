@@ -159,7 +159,7 @@ class _ContactListState extends State<ContactListPage> implements lnc.Observer {
   Widget build(BuildContext context) => Scaffold(
     backgroundColor: Styles.colors.scaffoldBackgroundColor,
     appBar: CupertinoNavigationBar(
-      backgroundColor: Styles.colors.appBardBackgroundColor,
+      backgroundColor: Styles.colors.appBarBackgroundColor,
       middle: StatedTitleView.from(context, () => 'Contacts'.tr),
       trailing: SearchPage.searchButton(context),
     ),
@@ -469,7 +469,7 @@ class GreetingCounter {
   static final GreetingCounter _instance = GreetingCounter._internal();
   GreetingCounter._internal();
 
-  late final Amanuensis _clerk = Amanuensis();
+  final Amanuensis _clerk = Amanuensis();
 
   int _count = 0;
 

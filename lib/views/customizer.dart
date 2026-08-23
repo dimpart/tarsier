@@ -80,7 +80,7 @@ class _SettingsPageState extends State<SettingsPage> implements lnc.Observer {
         // A list of sliver widgets.
         slivers: <Widget>[
           CupertinoSliverNavigationBar(
-            backgroundColor: colors.appBardBackgroundColor,
+            backgroundColor: colors.appBarBackgroundColor,
             // This title is visible in both collapsed and expanded states.
             // When the "middle" parameter is omitted, the widget provided
             // in the "largeTitle" parameter is used instead in the collapsed state.

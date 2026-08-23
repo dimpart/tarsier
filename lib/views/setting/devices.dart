@@ -33,7 +33,7 @@ class _DeviceListState extends State<DeviceListPage> with Logging {
   Widget build(BuildContext context) => Scaffold(
     backgroundColor: Styles.colors.scaffoldBackgroundColor,
     appBar: CupertinoNavigationBar(
-      backgroundColor: Styles.colors.appBardBackgroundColor,
+      backgroundColor: Styles.colors.appBarBackgroundColor,
       middle: Text('My Devices'.tr, style: Styles.titleTextStyle),
     ),
     body: buildSectionListView(
@@ -97,15 +97,11 @@ class _DeviceState extends State<_DeviceCell> {
     trailing: _trailing(),
   );
 
-  Widget _icon(Visa visa, {double? size}) {
-    var pnf = visa.avatar;
-    if (pnf != null) {
-      // show avatar
-      var factory = NetworkImageFactory();
-      var loader = factory.getImageLoader(pnf);
-      return PortableImageView(loader, width: size, height: size,);
-    }
-    // show device type
+  Widget _leading() {
+    Visa visa = widget.visa;
+    const double bigSize = 48;
+    const double smallSize = 20;
+    // check device type
     IconData? iconData;
     var sys = visa.getProperty('sys');
     if (sys is Map) {
@@ -123,16 +119,35 @@ class _DeviceState extends State<_DeviceCell> {
         iconData = AppIcons.windowsDeviceIcon;
       }
     }
-    return Icon(iconData ?? AppIcons.unknownDeviceIcon,
-      size: size,
+    iconData ??= AppIcons.unknownDeviceIcon;
+    var pnf = visa.avatar;
+    if (pnf == null) {
+      // show device icon
+      return roundedRectangle(Icon(iconData, size: bigSize));
+    }
+    // show avatar
+    var factory = NetworkImageFactory();
+    var loader = factory.getImageLoader(pnf);
+    Widget avatar = PortableImageView(loader, width: bigSize, height: bigSize,);
+    // put on device icon
+    Widget icon = Container(
+      color: Styles.colors.iconBackgroundColor,
+      child: Icon(iconData, size: smallSize),
+    );
+    return Stack(
+      alignment: const AlignmentDirectional(1.5, 1.0),
+      children: [
+        roundedRectangle(avatar),
+        roundedRectangle(icon),
+      ],
     );
   }
 
-  Widget? _leading() => ClipRRect(
-    borderRadius: const BorderRadius.all(
-      Radius.elliptical(6, 6),
+  Widget roundedRectangle(Widget view, {double radius = 6.0}) => ClipRRect(
+    borderRadius: BorderRadius.all(
+      Radius.elliptical(radius, radius),
     ),
-    child: _icon(widget.visa, size: 48),
+    child: view,
   );
 
   Widget _title() {

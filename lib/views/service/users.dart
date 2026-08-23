@@ -152,7 +152,7 @@ class _SearchState extends State<UserListPage> with Logging implements lnc.Obser
   Widget build(BuildContext context) => CupertinoPageScaffold(
     backgroundColor: Styles.colors.scaffoldBackgroundColor,
     navigationBar: CupertinoNavigationBar(
-      backgroundColor: Styles.colors.appBardBackgroundColor,
+      backgroundColor: Styles.colors.appBarBackgroundColor,
       // backgroundColor: Styles.themeBarBackgroundColor,
       middle: StatedTitleView.from(context, () => widget.title),
     ),
@@ -204,7 +204,7 @@ class _SearchResultAdapter with SectionAdapterMixin {
   Widget getSectionFooter(BuildContext context, int section) {
     String prompt = state.description;
     return Container(
-      color: Styles.colors.appBardBackgroundColor,
+      color: Styles.colors.appBarBackgroundColor,
       padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
       child: Row(
         // crossAxisAlignment: CrossAxisAlignment.start,

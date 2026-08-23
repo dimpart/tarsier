@@ -152,7 +152,7 @@ class _ProfileState extends State<ProfilePage> with Logging implements lnc.Obser
         // A list of sliver widgets.
         slivers: <Widget>[
           CupertinoSliverNavigationBar(
-            backgroundColor: colors.appBardBackgroundColor,
+            backgroundColor: colors.appBarBackgroundColor,
             // This title is visible in both collapsed and expanded states.
             // When the "middle" parameter is omitted, the widget provided
             // in the "largeTitle" parameter is used instead in the collapsed state.

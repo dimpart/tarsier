@@ -84,7 +84,7 @@ class _TextPreviewState extends State<TextPreviewPage> {
   Widget build(BuildContext context) => Scaffold(
     backgroundColor: Styles.colors.scaffoldBackgroundColor,
     appBar: CupertinoNavigationBar(
-      backgroundColor: Styles.colors.appBardBackgroundColor,
+      backgroundColor: Styles.colors.appBarBackgroundColor,
       previousPageTitle: _back,
       trailing: _trailing(_shareBtn(context), _previewing ? _richButton() : _plainButton()),
     ),

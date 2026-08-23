@@ -77,7 +77,7 @@ abstract class ServiceInfo extends Dictionary {
       // exactly
       return service;
     }
-    MutableMapping? info = Wrapper.getMap(service);
+    Map? info = Wrapper.getMap(service);
     if (info == null) {
       assert(false, 'service info error: $service');
       return null;
@@ -103,7 +103,7 @@ abstract class ServiceInfo extends Dictionary {
       return null;
     }
     Log.info('fetch service: "$title", type=$type, bot=$bot');
-    return _serviceFactory.parseService(info);
+    return _serviceFactory.parseService(info.asMapping());
   }
 
 }

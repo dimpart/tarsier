@@ -150,7 +150,7 @@ class _LiveSourceListState extends State<LiveSourceListPage> with Logging implem
   Widget build(BuildContext context) => CupertinoPageScaffold(
     backgroundColor: Styles.colors.scaffoldBackgroundColor,
     navigationBar: CupertinoNavigationBar(
-      backgroundColor: Styles.colors.appBardBackgroundColor,
+      backgroundColor: Styles.colors.appBarBackgroundColor,
       // backgroundColor: Styles.themeBarBackgroundColor,
       middle: StatedTitleView.from(context, () => widget.title),
       trailing: _shareBtn(context),
@@ -213,7 +213,7 @@ class _LiveSourceAdapter with SectionAdapterMixin {
   Widget getSectionFooter(BuildContext context, int section) {
     String prompt = state.description;
     return Container(
-      color: Styles.colors.appBardBackgroundColor,
+      color: Styles.colors.appBarBackgroundColor,
       padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
       child: Row(
         // crossAxisAlignment: CrossAxisAlignment.start,
@@ -376,7 +376,7 @@ class _LiveSourceState extends State<_LiveSourceItem> {
     view = Container(
       width: 48,
       height: 48,
-      // color: Styles.colors.appBardBackgroundColor,
+      // color: Styles.colors.appBarBackgroundColor,
       padding: const EdgeInsets.all(4),
       child: view,
     );

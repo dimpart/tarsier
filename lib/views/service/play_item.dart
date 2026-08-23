@@ -35,7 +35,7 @@ class Season extends Dictionary {
     } else if (season is Season) {
       return season;
     }
-    MutableMapping? info = Wrapper.getMap(season);
+    Map? info = Wrapper.getMap(season);
     if (info == null) {
       assert(false, 'video info error: $season');
       return null;
@@ -43,7 +43,7 @@ class Season extends Dictionary {
       assert(false, 'video info error: $info');
       return null;
     }
-    return Season(info);
+    return Season(info.asMapping());
   }
 
 }

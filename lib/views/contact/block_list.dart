@@ -86,7 +86,7 @@ class _BlockListState extends State<BlockListPage> implements lnc.Observer {
   Widget build(BuildContext context) => Scaffold(
     backgroundColor: Styles.colors.scaffoldBackgroundColor,
     appBar: CupertinoNavigationBar(
-      backgroundColor: Styles.colors.appBardBackgroundColor,
+      backgroundColor: Styles.colors.appBarBackgroundColor,
       middle: StatedTitleView.from(context, () => 'Blocked List'.tr),
     ),
     body: buildSectionListView(
@@ -146,7 +146,7 @@ class _BlockListAdapter with SectionAdapterMixin {
   Widget getSectionFooter(BuildContext context, int section) {
     String prompt = 'BlockList::Description'.tr;
     return Container(
-      color: Styles.colors.appBardBackgroundColor,
+      color: Styles.colors.appBarBackgroundColor,
       padding: const EdgeInsets.all(16),
       alignment: Alignment.center,
       child: Row(

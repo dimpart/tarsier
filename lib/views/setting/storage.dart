@@ -42,7 +42,7 @@ class _CacheFileState extends State<CacheFileManagePage> implements lnc.Observer
     return Scaffold(
       backgroundColor: colors.scaffoldBackgroundColor,
       appBar: CupertinoNavigationBar(
-        backgroundColor: colors.appBardBackgroundColor,
+        backgroundColor: colors.appBarBackgroundColor,
         middle: Text('Cache Files Management'.tr, style: Styles.titleTextStyle),
       ),
       body: buildScrollView(

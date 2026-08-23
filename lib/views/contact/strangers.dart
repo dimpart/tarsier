@@ -102,7 +102,7 @@ class _StrangerListState extends State<StrangerListPage> implements lnc.Observer
   Widget build(BuildContext context) => Scaffold(
     backgroundColor: Styles.colors.scaffoldBackgroundColor,
     appBar: CupertinoNavigationBar(
-      backgroundColor: Styles.colors.appBardBackgroundColor,
+      backgroundColor: Styles.colors.appBarBackgroundColor,
       middle: StatedTitleView.from(context, () => 'New Friends'.tr),
     ),
     body: buildSectionListView(
@@ -124,7 +124,7 @@ class _StrangerListAdapter with SectionAdapterMixin {
   Widget getSectionFooter(BuildContext context, int section) {
     String prompt = 'Strangers::Description'.tr;
     return Container(
-      color: Styles.colors.appBardBackgroundColor,
+      color: Styles.colors.appBarBackgroundColor,
       padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
       child: Row(
         // crossAxisAlignment: CrossAxisAlignment.start,

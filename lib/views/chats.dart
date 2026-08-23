@@ -135,7 +135,7 @@ class _ChatListState extends State<ChatHistoryPage> implements lnc.Observer {
     return Scaffold(
       backgroundColor: colors.scaffoldBackgroundColor,
       appBar: CupertinoNavigationBar(
-        backgroundColor: colors.appBardBackgroundColor,
+        backgroundColor: colors.appBarBackgroundColor,
         middle: StatedTitleView.from(context, () => 'Secure Chat'.tr),
         trailing: plusButton(context),
       ),
@@ -159,7 +159,7 @@ class _ChatListAdapter with SectionAdapterMixin {
   Widget getSectionFooter(BuildContext context, int section) {
     String prompt = 'ChatList::Description'.tr;
     return Container(
-      color: Styles.colors.appBardBackgroundColor,
+      color: Styles.colors.appBarBackgroundColor,
       padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
       child: Row(
         // crossAxisAlignment: CrossAxisAlignment.start,
@@ -435,7 +435,7 @@ class UnreadCounter {
   static final UnreadCounter _instance = UnreadCounter._internal();
   UnreadCounter._internal();
 
-  late final Amanuensis _clerk = Amanuensis();
+  final Amanuensis _clerk = Amanuensis();
 
   int _count = 0;
 

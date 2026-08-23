@@ -81,7 +81,7 @@ class _InvitationsState extends State<InvitationsPage> implements lnc.Observer {
   Widget build(BuildContext context) => Scaffold(
     backgroundColor: Styles.colors.scaffoldBackgroundColor,
     appBar: CupertinoNavigationBar(
-      backgroundColor: Styles.colors.appBardBackgroundColor,
+      backgroundColor: Styles.colors.appBarBackgroundColor,
       middle: StatedTitleView.from(context, () => 'Invitations'.tr),
       trailing: _confirmButton(context),
     ),
@@ -187,7 +187,7 @@ class _InvitationsAdapter with SectionAdapterMixin {
   Widget getSectionFooter(BuildContext context, int section) {
     String prompt = 'Invitations::Description'.tr;
     return Container(
-      color: Styles.colors.appBardBackgroundColor,
+      color: Styles.colors.appBarBackgroundColor,
       padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
       child: Row(
         // crossAxisAlignment: CrossAxisAlignment.start,

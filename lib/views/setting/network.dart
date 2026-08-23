@@ -20,7 +20,7 @@ class _NetworkState extends State<NetworkSettingPage> with Logging implements ln
     nc.addObserver(this, NotificationNames.kStationsUpdated);
   }
 
-  late final _StationListAdapter _adapter = _StationListAdapter();
+  final _StationListAdapter _adapter = _StationListAdapter();
   bool _refreshing = false;
 
   final TextEditingController _hostTextController = TextEditingController();
@@ -74,7 +74,7 @@ class _NetworkState extends State<NetworkSettingPage> with Logging implements ln
   Widget build(BuildContext context) => Scaffold(
     backgroundColor: Styles.colors.scaffoldBackgroundColor,
     appBar: CupertinoNavigationBar(
-      backgroundColor: Styles.colors.appBardBackgroundColor,
+      backgroundColor: Styles.colors.appBarBackgroundColor,
       middle: Text('Relay Stations'.tr, style: Styles.titleTextStyle),
       trailing: IconButton(
           icon: const Icon(AppIcons.refreshIcon, size: 16),
@@ -272,7 +272,7 @@ class _NetworkState extends State<NetworkSettingPage> with Logging implements ln
 class _StationListAdapter with SectionAdapterMixin {
   _StationListAdapter();
 
-  late final StationSpeeder _dataSource = StationSpeeder();
+  final StationSpeeder _dataSource = StationSpeeder();
 
   Future<void> reload() async => await _dataSource.reload();
 
@@ -309,7 +309,7 @@ class _StationListAdapter with SectionAdapterMixin {
   Widget getSectionFooter(BuildContext context, int section) {
     String prompt = 'RelayStations::Description'.tr;
     return Container(
-      color: Styles.colors.appBardBackgroundColor,
+      color: Styles.colors.appBarBackgroundColor,
       padding: const EdgeInsets.all(16),
       alignment: Alignment.center,
       child: Row(

@@ -157,7 +157,7 @@ class _PlaylistState extends State<PlaylistPage> with Logging implements lnc.Obs
   Widget build(BuildContext context) => Scaffold(
     backgroundColor: Styles.colors.scaffoldBackgroundColor,
     appBar: CupertinoNavigationBar(
-      backgroundColor: Styles.colors.appBardBackgroundColor,
+      backgroundColor: Styles.colors.appBarBackgroundColor,
       // backgroundColor: Styles.themeBarBackgroundColor,
       middle: StatedTitleView.from(context, () => widget.title),
       trailing: _trailing(context),

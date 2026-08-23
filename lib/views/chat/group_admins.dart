@@ -82,7 +82,7 @@ class _AdministratorsState extends State<AdministratorsPage> implements lnc.Obse
   Widget build(BuildContext context) => Scaffold(
     backgroundColor: Styles.colors.scaffoldBackgroundColor,
     appBar: CupertinoNavigationBar(
-      backgroundColor: Styles.colors.appBardBackgroundColor,
+      backgroundColor: Styles.colors.appBarBackgroundColor,
       middle: StatedTitleView.from(context, () => 'Administrators'.tr),
       trailing: widget.info.isOwner ? _plusButton(context) : null,
     ),
@@ -326,7 +326,7 @@ class _ContactListAdapter with SectionAdapterMixin {
   Widget getSectionFooter(BuildContext context, int section) {
     String prompt = 'Administrators::Description'.tr;
     return Container(
-      color: Styles.colors.appBardBackgroundColor,
+      color: Styles.colors.appBarBackgroundColor,
       padding: const EdgeInsets.all(16),
       alignment: Alignment.center,
       child: Row(

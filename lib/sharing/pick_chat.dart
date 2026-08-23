@@ -67,7 +67,7 @@ class _PickChatState extends State<PickChatPage> with SectionAdapterMixin {
   Widget build(BuildContext context) => Scaffold(
     backgroundColor: Styles.colors.scaffoldBackgroundColor,
     appBar: CupertinoNavigationBar(
-      backgroundColor: Styles.colors.appBardBackgroundColor,
+      backgroundColor: Styles.colors.appBarBackgroundColor,
       middle: StatedTitleView.from(context, () => 'Select a Chat'.tr),
     ),
     body: buildSectionListView(

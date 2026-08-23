@@ -20,7 +20,7 @@ class _BurnState extends State<BurnAfterReadingPage> implements lnc.Observer {
     nc.addObserver(this, NotificationNames.kBurnTimeUpdated);
   }
 
-  late final _BurnListAdapter _adapter = _BurnListAdapter();
+  final _BurnListAdapter _adapter = _BurnListAdapter();
 
   @override
   void dispose() {
@@ -47,7 +47,7 @@ class _BurnState extends State<BurnAfterReadingPage> implements lnc.Observer {
   Widget build(BuildContext context) => Scaffold(
     backgroundColor: Styles.colors.scaffoldBackgroundColor,
     appBar: CupertinoNavigationBar(
-      backgroundColor: Styles.colors.appBardBackgroundColor,
+      backgroundColor: Styles.colors.appBarBackgroundColor,
       middle: Text('Burn After Reading'.tr, style: Styles.titleTextStyle),
     ),
     body: buildSectionListView(
@@ -60,7 +60,7 @@ class _BurnState extends State<BurnAfterReadingPage> implements lnc.Observer {
 
 class _BurnListAdapter with SectionAdapterMixin {
 
-  late final BurnAfterReadingDataSource _dataSource = BurnAfterReadingDataSource();
+  final BurnAfterReadingDataSource _dataSource = BurnAfterReadingDataSource();
 
   @override
   int numberOfSections() =>
@@ -80,7 +80,7 @@ class _BurnListAdapter with SectionAdapterMixin {
   Widget getSectionFooter(BuildContext context, int section) {
     String prompt = 'BurnAfterReading::Description'.tr;
     return Container(
-      color: Styles.colors.appBardBackgroundColor,
+      color: Styles.colors.appBarBackgroundColor,
       padding: const EdgeInsets.all(16),
       alignment: Alignment.center,
       child: Row(
@@ -111,7 +111,7 @@ class _BurnCell extends StatefulWidget {
 
 class _BurnCellState extends State<_BurnCell> {
 
-  late final BurnAfterReadingDataSource _dataSource = BurnAfterReadingDataSource();
+  final BurnAfterReadingDataSource _dataSource = BurnAfterReadingDataSource();
 
   bool get isSelected => widget.duration == _dataSource.getBurnAfterReading();
 

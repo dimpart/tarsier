@@ -103,7 +103,7 @@ class _SearchState extends State<SearchPage> implements lnc.Observer {
   Widget build(BuildContext context) => CupertinoPageScaffold(
     backgroundColor: Styles.colors.scaffoldBackgroundColor,
     navigationBar: CupertinoNavigationBar(
-      backgroundColor: Styles.colors.appBardBackgroundColor,
+      backgroundColor: Styles.colors.appBarBackgroundColor,
       // backgroundColor: Styles.themeBarBackgroundColor,
       middle: StatedTitleView.from(context, () => 'Search User'.tr),
     ),

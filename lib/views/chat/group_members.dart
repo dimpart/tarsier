@@ -73,7 +73,7 @@ class _MembersState extends State<MembersPage> implements lnc.Observer {
   Widget build(BuildContext context) => Scaffold(
     backgroundColor: Styles.colors.scaffoldBackgroundColor,
     appBar: CupertinoNavigationBar(
-      backgroundColor: Styles.colors.appBardBackgroundColor,
+      backgroundColor: Styles.colors.appBarBackgroundColor,
       middle: StatedTitleView.from(context, () => 'Group Members (@count)'.trParams({
         'count': widget.info.members.length.toString(),
       }))

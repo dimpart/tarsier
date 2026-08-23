@@ -15,13 +15,13 @@ class BrightnessSettingPage extends StatefulWidget {
 
 class _BrightnessState extends State<BrightnessSettingPage> {
 
-  late final _BrightnessListAdapter _adapter = _BrightnessListAdapter();
+  final _BrightnessListAdapter _adapter = _BrightnessListAdapter();
 
   @override
   Widget build(BuildContext context) => Scaffold(
     backgroundColor: Styles.colors.scaffoldBackgroundColor,
     appBar: CupertinoNavigationBar(
-      backgroundColor: Styles.colors.appBardBackgroundColor,
+      backgroundColor: Styles.colors.appBarBackgroundColor,
       middle: Text('Brightness'.tr, style: Styles.titleTextStyle),
     ),
     body: buildSectionListView(
@@ -34,7 +34,7 @@ class _BrightnessState extends State<BrightnessSettingPage> {
 
 class _BrightnessListAdapter with SectionAdapterMixin {
 
-  late final BrightnessDataSource _dataSource = BrightnessDataSource();
+  final BrightnessDataSource _dataSource = BrightnessDataSource();
 
   @override
   int numberOfSections() =>
@@ -64,7 +64,7 @@ class _BrightnessCell extends StatefulWidget {
 
 class _BrightnessCellState extends State<_BrightnessCell> {
 
-  late final BrightnessDataSource _dataSource = BrightnessDataSource();
+  final BrightnessDataSource _dataSource = BrightnessDataSource();
 
   bool get isSelected => widget.order == _dataSource.getCurrentBrightnessOrder();
 

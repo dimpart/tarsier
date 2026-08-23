@@ -128,7 +128,7 @@ class _ChatDetailState extends State<GroupChatDetailPage> implements lnc.Observe
     return Scaffold(
       backgroundColor: Styles.colors.scaffoldBackgroundColor,
       appBar: CupertinoNavigationBar(
-        backgroundColor: Styles.colors.appBardBackgroundColor,
+        backgroundColor: Styles.colors.appBarBackgroundColor,
         middle: Text('Group Chat Details (@count)'.trParams({
           'count': widget.info.members.length.toString(),
         }), style: Styles.titleTextStyle),

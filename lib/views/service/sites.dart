@@ -133,7 +133,7 @@ class _WebSiteState extends State<WebSitePage> with Logging implements lnc.Obser
   Widget build(BuildContext context) => Scaffold(
     backgroundColor: Styles.colors.scaffoldBackgroundColor,
     appBar: CupertinoNavigationBar(
-      backgroundColor: Styles.colors.appBardBackgroundColor,
+      backgroundColor: Styles.colors.appBarBackgroundColor,
       // backgroundColor: Styles.themeBarBackgroundColor,
       middle: StatedTitleView.from(context, () => widget.title),
       trailing: _shareBtn(context, _content),
