@@ -87,6 +87,17 @@ if(PLUGIN_BUNDLED_LIBRARIES)
     COMPONENT Runtime)
 endif()
 
+# Install Dart native assets (for example sqlite3.dll, required by packages that
+# load SQLite via sqflite_common_ffi / package:sqlite3) next to the executable.
+# Native assets are separate from PLUGIN_BUNDLED_LIBRARIES; without this a desktop
+# build starts up but every database call blocks/fails and the app never leaves
+# its loading screen. No-op for projects that build no native assets.
+if(EXISTS "${PROJECT_BUILD_DIR}native_assets/windows")
+  install(DIRECTORY "${PROJECT_BUILD_DIR}native_assets/windows/"
+    DESTINATION "${INSTALL_BUNDLE_LIB_DIR}"
+    COMPONENT Runtime)
+endif()
+
 # Fully re-copy the assets directory on each build to avoid having stale files
 # from a previous install.
 set(FLUTTER_ASSET_DIR_NAME "flutter_assets")
