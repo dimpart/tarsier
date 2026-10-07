@@ -70,6 +70,9 @@ class _InputState extends State<ChatInputTray> implements lnc.Observer {
 
   @override
   void dispose() {
+    if (DevicePlatform.isDesktop) {
+      HardwareKeyboard.instance.removeHandler(_onPasteKey);
+    }
     _focusNode.dispose();
     _controller.dispose();
     var nc = lnc.NotificationCenter();
@@ -80,6 +83,9 @@ class _InputState extends State<ChatInputTray> implements lnc.Observer {
   @override
   void initState() {
     super.initState();
+    if (DevicePlatform.isDesktop) {
+      HardwareKeyboard.instance.addHandler(_onPasteKey);
+    }
     _focusNode.requestFocus();
     // load editing text
     var shared = SharedEditingText();
@@ -143,6 +149,26 @@ class _InputState extends State<ChatInputTray> implements lnc.Observer {
   );
 
   Widget _mobileInputField(BuildContext context) => _inputTextField(context);
+
+  ///  Desktop: Ctrl+V (Cmd+V on macOS) in the input field also checks the clipboard for an
+  ///  image (e.g. a screenshot) and offers to send it. The text field consumes the paste
+  ///  shortcut itself, so listen at the keyboard level and never swallow the key: a text
+  ///  paste still works as before.
+  bool _onPasteKey(KeyEvent event) {
+    if (event is! KeyDownEvent || event.logicalKey != LogicalKeyboardKey.keyV) {
+      return false;
+    } else if (widget.isTextOnly || !_focusNode.hasFocus || !mounted) {
+      return false;
+    }
+    var keyboard = HardwareKeyboard.instance;
+    bool pasting = DevicePlatform.isMacOS ? keyboard.isMetaPressed : keyboard.isControlPressed;
+    if (pasting) {
+      pasteImage(context, onPicked: (path) {
+        Log.info('pasted image: $path');
+      }, onRead: (path, data) => _sendImageData(data, widget.info));
+    }
+    return false;
+  }
 
   Widget _tabletInputField(BuildContext context) => Focus(
     focusNode: _focusNode,
@@ -317,7 +343,10 @@ void _sendText(BuildContext context, TextEditingController controller, Conversat
 void _sendImage(BuildContext context, Conversation chat) =>
     openImagePicker(context, onPicked: (path) {
       Log.info('picked image: $path');
-    }, onRead: (path, jpeg) => adjustImage(jpeg, 2048, (Uint8List data) async {
+    }, onRead: (path, jpeg) => _sendImageData(jpeg, chat));
+
+void _sendImageData(Uint8List jpeg, Conversation chat) =>
+    adjustImage(jpeg, 2048, (Uint8List data) async {
       // send adjusted image data with thumbnail
       TransportableFile? thumbnail;
       Uint8List? small = await ImageUtils.compressThumbnail(data);
@@ -328,7 +357,7 @@ void _sendImage(BuildContext context, Conversation chat) =>
       GlobalVariable shared = GlobalVariable();
       shared.emitter.sendPicture(data, filename: 'image.jpeg', thumbnail: thumbnail,
         receiver: chat.identifier,);
-    }));
+    });
 
 void _sendVoice(Uint8List data, double duration, Conversation chat) =>
     GlobalVariable().emitter.sendVoice(data, filename: 'voice.mp4', duration: duration,
