@@ -9,6 +9,7 @@ import '../../widgets/text.dart';
 import '../chat/chat_box.dart';
 import '../service/base.dart';
 import '../service/report.dart';
+import '../setting/devices.dart';
 
 
 class ProfilePage extends StatefulWidget {
@@ -61,6 +62,15 @@ class _ProfileState extends State<ProfilePage> with Logging implements lnc.Obser
     nc.addObserver(this, NotificationNames.kMuteListUpdated);
   }
 
+  /// All visa documents of the contact (each visa may carry an avatar)
+  late Future<List<Document>> _documents;
+
+  /// Controller for the avatar carousel (cover-flow style)
+  final PageController _avatarController = PageController(viewportFraction: 0.72);
+
+  /// Index of the current avatar page (syncs the large title)
+  int _avatarIndex = 0;
+
   final TextEditingController _aliasTextEditingController = TextEditingController();
   final TextEditingController _memoTextEditingController = TextEditingController();
   final FocusNode _aliasFocusNode = FocusNode();
@@ -70,6 +80,7 @@ class _ProfileState extends State<ProfilePage> with Logging implements lnc.Obser
 
   @override
   void dispose() {
+    _avatarController.dispose();
     _aliasTextEditingController.dispose();
     _memoTextEditingController.dispose();
     _aliasFocusNode.dispose();
@@ -120,6 +131,8 @@ class _ProfileState extends State<ProfilePage> with Logging implements lnc.Obser
 
   Future<void> _reload({bool init = false}) async {
     await widget.info.reloadData();
+    // refresh visa documents in case avatars changed
+    _documents = GlobalVariable().facebook.getDocuments(widget.info.identifier);
     if (init) {
       _aliasTextEditingController.text = widget.info.remark.alias;
       _memoTextEditingController.text = widget.info.remark.description;
@@ -138,6 +151,8 @@ class _ProfileState extends State<ProfilePage> with Logging implements lnc.Obser
   @override
   void initState() {
     super.initState();
+    // load all visa documents for the multi-avatar view
+    _documents = GlobalVariable().facebook.getDocuments(widget.info.identifier);
     _reload(init: true);
     _refresh();
   }
@@ -153,12 +168,18 @@ class _ProfileState extends State<ProfilePage> with Logging implements lnc.Obser
         slivers: <Widget>[
           CupertinoSliverNavigationBar(
             backgroundColor: colors.appBarBackgroundColor,
+            // only show the middle title in the collapsed state, otherwise
+            // it would overlap the large title in the expanded state
+            alwaysShowMiddle: false,
             // This title is visible in both collapsed and expanded states.
             // When the "middle" parameter is omitted, the widget provided
             // in the "largeTitle" parameter is used instead in the collapsed state.
-            largeTitle: Text(widget.info.name,
-              style: Styles.titleTextStyle,
-            ),
+            // sync the large title with the current avatar page (visa name)
+            largeTitle: _avatarTitle(Styles.titleTextStyle),
+            // the bar is permanently collapsed in landscape, so provide a
+            // middle title with the same sync logic (fresh instance each build
+            // keeps the frozen effectiveMiddle in the SDK updated)
+            middle: _avatarTitle(null),
           ),
           // This widget fills the remaining space in the viewport.
           // Drag the scrollable area to collapse the CupertinoSliverNavigationBar.
@@ -176,6 +197,19 @@ class _ProfileState extends State<ProfilePage> with Logging implements lnc.Obser
       ),
     );
   }
+
+  /// Title text synced with the current avatar page (visa name).
+  /// A null [style] lets the navigation bar apply its own middle style.
+  Widget _avatarTitle(TextStyle? style) => FutureBuilder<List<Document>>(
+    future: _documents,
+    builder: (context, snapshot) {
+      List<Visa> visas = _allVisas(snapshot.data);
+      if (visas.isEmpty || _avatarIndex >= visas.length) {
+        return Text(widget.info.name, style: style);
+      }
+      return Text(visas[_avatarIndex].name ?? widget.info.name, style: style);
+    },
+  );
 
   Widget _body(BuildContext context, {
     required Color backgroundColor,
@@ -432,20 +466,113 @@ class _ProfileState extends State<ProfilePage> with Logging implements lnc.Obser
     return items;
   }
 
-  Widget _avatarImage(BuildContext context) => GestureDetector(
-    onTap: () {
-      GlobalVariable shared = GlobalVariable();
-      shared.facebook.getAvatar(widget.info.identifier).then((pnf) {
-        if (pnf == null) {
-          logError('avatar image not found: ${widget.info.identifier}');
-        } else if (context.mounted) {
-          logInfo('preview avatar: $pnf');
-          previewAvatar(context, widget.info.identifier, pnf);
-        }
-      });
+  /// All visa documents of the contact, sorted by update time (latest first)
+  List<Visa> _allVisas(List<Document>? documents) {
+    List<Visa> visas = documents?.whereType<Visa>().toList() ?? [];
+    // sort by update time, latest first
+    visas.sort((a, b) {
+      var ta = a.time;
+      var tb = b.time;
+      if (ta == null) {
+        return tb == null ? 0 : 1;
+      } else if (tb == null) {
+        return -1;
+      }
+      return tb.compareTo(ta);
+    });
+    return visas;
+  }
+
+  Widget _avatarImage(BuildContext context) => FutureBuilder<List<Document>>(
+    future: _documents,
+    builder: (context, snapshot) {
+      // collect all visa documents (each visa may carry an avatar)
+      List<Visa> visas = _allVisas(snapshot.data);
+      if (visas.isEmpty) {
+        // fallback: keep original view while loading or no visa
+        return widget.info.getImage(width: 256, height: 256);
+      }
+      return SizedBox(
+        height: 256,
+        child: PageView.builder(
+          controller: _avatarController,
+          itemCount: visas.length,
+          // update the page index to sync the large title
+          onPageChanged: (index) => setState(() {
+            _avatarIndex = index;
+          }),
+          itemBuilder: (context, index) {
+            Visa visa = visas[index];
+            return GestureDetector(
+              onTap: () {
+                var avatar = visa.avatar;
+                if (avatar != null) {
+                  previewAvatar(context, widget.info.identifier, avatar);
+                }
+              },
+              // cover-flow style: scale/rotate each page by its distance to the current page
+              child: AnimatedBuilder(
+                animation: _avatarController,
+                child: _avatarView(visa, showBadge: visas.length > 1),
+                builder: (context, child) {
+                  double page = _avatarController.hasClients
+                      ? (_avatarController.page ?? 0.0)
+                      : 0.0;
+                  double distance = (index - page).clamp(-1.0, 1.0);
+                  double scale = 1.0 - distance.abs() * 0.615;
+                  double angle = distance * 0.2;
+                  double tx = -distance * 0.3 * MediaQuery.of(context).size.width;
+                  var transform = Matrix4.identity()
+                    ..setEntry(3, 2, 0.005)
+                    ..translateByDouble(tx, 0, 0, 1.0)
+                    ..rotateY(angle)
+                    ..scaleByDouble(scale, scale, scale, 1.0);
+                  return Center(
+                    child: SizedBox(
+                      width: 256,
+                      height: 256,
+                      child: Opacity(
+                        opacity: scale,
+                        child: Transform(
+                          transform: transform,
+                          alignment: Alignment.center,
+                          child: child,
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            );
+          },
+        ),
+      );
     },
-    child: widget.info.getImage(width: 256, height: 256, ),
   );
+
+  Widget _avatarView(Visa visa, {required bool showBadge}) {
+    const double avatarSize = 256;
+    // rounded square avatar, same as the original avatar style
+    Widget image;
+    var avatar = visa.avatar;
+    if (avatar == null) {
+      // default icon when the visa has no avatar
+      image = Icon(AppIcons.userIcon, size: avatarSize, color: Styles.colors.avatarDefaultColor);
+    } else {
+      image = AvatarFactory().getImageView(widget.info.identifier, avatar,
+        width: avatarSize, height: avatarSize);
+    }
+    // hide the badge for a single visa or when the device type is unknown
+    IconData? iconData = visa.deviceIcon;
+    if (!showBadge || iconData == null) {
+      return roundedRectangle(image, radius: avatarSize / 8);
+    }
+    // put on device icon
+    return applyDeviceIcon(image, iconData,
+      radius: avatarSize / 8,
+      alignment: const AlignmentDirectional(1.1, 1.0),
+    );
+  }
 
   Widget _idLabel(BuildContext context) => Expanded(
     flex: 9,
