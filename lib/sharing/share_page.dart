@@ -71,7 +71,7 @@ Widget _shareWebPagePreview(String title, String? icon, Conversation chat) {
 Future<bool> _sendWebPage(ID receiver, Uri url,
     {required String title, String? desc, String? icon}) async {
   // create web page content
-  PageContent content = PageContent.create(url: url, title: title, desc: desc);
+  PageContent content = PageContent.createFromURL(url, title: title, desc: desc);
   if (icon != null) {
     content['icon'] = icon;
   }

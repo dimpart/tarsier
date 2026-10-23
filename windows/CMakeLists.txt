@@ -92,11 +92,15 @@ endif()
 # Native assets are separate from PLUGIN_BUNDLED_LIBRARIES; without this a desktop
 # build starts up but every database call blocks/fails and the app never leaves
 # its loading screen. No-op for projects that build no native assets.
-if(EXISTS "${PROJECT_BUILD_DIR}native_assets/windows")
-  install(DIRECTORY "${PROJECT_BUILD_DIR}native_assets/windows/"
-    DESTINATION "${INSTALL_BUNDLE_LIB_DIR}"
-    COMPONENT Runtime)
-endif()
+install(DIRECTORY "${PROJECT_BUILD_DIR}native_assets/windows/"
+        DESTINATION "${INSTALL_BUNDLE_LIB_DIR}"
+        COMPONENT Runtime
+        OPTIONAL)
+#if(EXISTS "${PROJECT_BUILD_DIR}native_assets/windows")
+#  install(DIRECTORY "${PROJECT_BUILD_DIR}native_assets/windows/"
+#    DESTINATION "${INSTALL_BUNDLE_LIB_DIR}"
+#    COMPONENT Runtime)
+#endif()
 
 # Fully re-copy the assets directory on each build to avoid having stale files
 # from a previous install.
