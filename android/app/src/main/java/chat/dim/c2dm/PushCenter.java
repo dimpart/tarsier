@@ -2,6 +2,7 @@ package chat.dim.c2dm;
 
 import android.app.NotificationManager;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Build;
 
 import com.google.firebase.FirebaseApp;
@@ -26,6 +27,20 @@ public enum PushCenter {
     }
 
     boolean done = false;
+
+    private static final String TOKEN_KEY = "push_token";
+
+    /// Save the FCM token locally for reuse on the next launch.
+    void saveToken(String token, Context context) {
+        SharedPreferences prefs = context.getSharedPreferences("c2dm", Context.MODE_PRIVATE);
+        prefs.edit().putString(TOKEN_KEY, token).apply();
+    }
+
+    /// Load the cached FCM token, or null if not found.
+    String loadToken(Context context) {
+        SharedPreferences prefs = context.getSharedPreferences("c2dm", Context.MODE_PRIVATE);
+        return prefs.getString(TOKEN_KEY, null);
+    }
 
     public static void register(Context context) {
         try {
@@ -73,14 +88,27 @@ public enum PushCenter {
         messaging.getToken().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 // Get new FCM registration token
-                reportToken(task.getResult(), context);
+                String token = task.getResult();
+                saveToken(token, context);
+                reportToken(token, context);
             } else {
                 Log.error("failed to get token: " + task);
+                // The token may still be valid if this app was not re-installed,
+                // so reuse the cached one instead of giving up.
+                String cached = loadToken(context);
+                if (cached == null) {
+                    Log.error("no cached token to reuse");
+                } else {
+                    Log.info("reusing cached token");
+                    reportToken(cached, context);
+                }
             }
         });
     }
 
-    private void reportToken(String token, Context context) {
+    /// Report the given token to the station.
+    /// Package-private so that PushService can report the new token too.
+    void reportToken(String token, Context context) {
         final String app = context.getPackageName();
         final String receiver = "c2dm@anywhere";
 

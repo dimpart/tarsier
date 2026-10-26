@@ -6,15 +6,15 @@ import androidx.annotation.NonNull;
 
 import com.google.firebase.messaging.FirebaseMessagingService;
 
-import chat.dim.utils.Log;
-
 public class PushService extends FirebaseMessagingService {
 
     @Override
     public void onNewToken(@NonNull String token) {
         super.onNewToken(token);
-        // TODO: report device token
-        Log.warning("new token: " + token);
+        // Save the refreshed token and report it to the station.
+        PushCenter center = PushCenter.getInstance();
+        center.saveToken(token, this);
+        center.reportToken(token, this);
     }
 
     @Override
