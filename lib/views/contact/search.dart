@@ -27,7 +27,7 @@ class SearchPage extends StatefulWidget {
 
 }
 
-class _SearchState extends State<SearchPage> implements lnc.Observer {
+class _SearchState extends State<SearchPage> with Logging implements lnc.Observer {
   _SearchState() {
     _dataSource = _SearchDataSource();
     _adapter = _SearchResultAdapter(this, dataSource: _dataSource);
@@ -40,11 +40,13 @@ class _SearchState extends State<SearchPage> implements lnc.Observer {
   late final _SearchResultAdapter _adapter;
 
   final TextEditingController _controller = TextEditingController();
+  final FocusNode _focusNode = FocusNode();
   int _searchTag = 0;
 
   @override
   void dispose() {
     _controller.dispose();
+    _focusNode.dispose();
     var nc = lnc.NotificationCenter();
     nc.removeObserver(this, NotificationNames.kSearchUpdated);
     super.dispose();
@@ -65,15 +67,15 @@ class _SearchState extends State<SearchPage> implements lnc.Observer {
     }
     List? users = command['users'];
     if (users == null) {
-      Log.error('users not found in search response');
+      logError('users not found in search response');
       return;
     }
     int? tag = command['tag'];
     if (tag == _searchTag) {
-      Log.debug('respond with search tag: $tag');
+      logDebug('respond with search tag: $tag');
       _searchTag = 0;
     } else {
-      Log.error('search tag not match, ignore this response: $tag <> $_searchTag');
+      logError('search tag not match, ignore this response: $tag <> $_searchTag');
       return;
     }
     List<ContactInfo> array = ContactInfo.fromList(ID.convert(users));
@@ -114,6 +116,7 @@ class _SearchState extends State<SearchPage> implements lnc.Observer {
   );
 
   Widget _searchWidget(BuildContext context) => CupertinoSearchTextField(
+    focusNode: _focusNode,
     style: Styles.textFieldStyle,
     controller: _controller,
     placeholder: 'Input ID or nickname to search'.tr,
@@ -125,11 +128,11 @@ class _SearchState extends State<SearchPage> implements lnc.Observer {
   );
 
   Future<void> _search(BuildContext context, String keywords) async {
-    Log.warning('search with keyword: $keywords');
+    logWarning('search with keyword: $keywords');
     GlobalVariable shared = GlobalVariable();
     SharedMessenger? messenger = shared.messenger;
     if (messenger == null) {
-      Log.error('messenger not set, not connect yet?');
+      logError('messenger not set, not connect yet?');
       Alert.show(context, 'Error', 'Failed to send command'.tr);
       return;
     } else {
@@ -151,7 +154,7 @@ class _SearchState extends State<SearchPage> implements lnc.Observer {
       // TODO: query station with 'ans'/'document' command for bot ID
       bot = ID.parse("archivist@anywhere");
     }
-    Log.debug('query with search tag: $_searchTag');
+    logDebug('query with search tag: $_searchTag');
     messenger.sendContent(command, sender: null, receiver: bot!);
   }
 }
@@ -192,12 +195,12 @@ class _SearchResultAdapter with SectionAdapterMixin {
 
 }
 
-class _SearchDataSource {
+class _SearchDataSource with Logging {
 
   List<ContactInfo>? _items;
 
   Future<void> refresh(List<ContactInfo> array) async {
-    Log.debug('refreshing ${array.length} search result(s)');
+    logDebug('refreshing ${array.length} search result(s)');
     _items = array;
   }
 

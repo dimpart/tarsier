@@ -101,7 +101,7 @@ class _DeviceState extends State<_DeviceCell> {
     Visa visa = widget.visa;
     const double bigSize = 48;
     // check device type
-    IconData iconData = visa.deviceIcon ?? AppIcons.unknownDeviceIcon;
+    IconData iconData = visa.deviceIcon;
     var pnf = visa.avatar;
     if (pnf == null) {
       // show device icon
@@ -157,7 +157,7 @@ Widget applyDeviceIcon(Widget image, IconData iconData, {
     roundedRectangle(Container(
       color: Styles.colors.iconBackgroundColor,
       child: Icon(iconData, size: iconSize),
-    )),
+    ), radius: iconSize / 4),
   ],
 );
 
@@ -172,7 +172,7 @@ Widget roundedRectangle(Widget view, {double radius = 6.0}) => ClipRRect(
 
 extension DeviceIcon on Visa {
 
-  IconData? get deviceIcon {
+  IconData get deviceIcon {
     var sys = getProperty('sys');
     if (sys is Map) {
       var os = sys['os'];
@@ -187,9 +187,11 @@ extension DeviceIcon on Visa {
         return AppIcons.macosDeviceIcon;
       } else if (os == 'windows') {
         return AppIcons.windowsDeviceIcon;
+      } else if (os == 'linux') {
+        return AppIcons.linuxDeviceIcon;
       }
     }
-    return null; // AppIcons.unknownDeviceIcon;
+    return AppIcons.unknownDeviceIcon;
   }
 
 }

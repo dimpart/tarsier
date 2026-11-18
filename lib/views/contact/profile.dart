@@ -211,6 +211,52 @@ class _ProfileState extends State<ProfilePage> with Logging implements lnc.Obser
     },
   );
 
+  /// Language text synced with the current avatar page (visa language).
+  Widget _languageLabel() => FutureBuilder<List<Document>>(
+    future: _documents,
+    builder: (context, snapshot) {
+      List<Visa> visas = _allVisas(snapshot.data);
+      if (visas.isNotEmpty && _avatarIndex < visas.length) {
+        String? lang = _visaLanguage(visas[_avatarIndex]);
+        if (lang != null) {
+          return Text(lang);
+        }
+      }
+      return Text(widget.info.language ?? 'Unknown'.tr);
+    },
+  );
+
+  /// Language from the visa - check 'app.language' first, then 'sys.locale'
+  String? _visaLanguage(Visa? visa) {
+    String? code = _getStringProperty(visa, 'app', 'language')
+        ?? _getStringProperty(visa, 'sys', 'locale');
+    if (code == null) {
+      return null;
+    }
+    LanguageItem? item = getLanguageItem(code);
+    String? name = item?.name;
+    if (name == null) {
+      return code;
+    }
+    return '$name ($code)';
+  }
+
+  String? _getStringProperty(Visa? visa, String section, String key) {
+    var info = visa?.getProperty(section);
+    if (info is Map) {} else {
+      return null;
+    }
+    var text = info[key];
+    if (text is String) {} else {
+      return null;
+    }
+    text = text.trim();
+    if (text.isEmpty) {
+      return null;
+    }
+    return text;
+  }
+
   Widget _body(BuildContext context, {
     required Color backgroundColor,
     required Color backgroundColorActivated,
@@ -275,7 +321,7 @@ class _ProfileState extends State<ProfilePage> with Logging implements lnc.Obser
             backgroundColorActivated: backgroundColorActivated,
             padding: Styles.settingsSectionItemPadding,
             title: Text('Language'.tr, style: TextStyle(color: primaryTextColor)),
-            additionalInfo: Text(widget.info.language ?? 'Unknown'.tr),
+            additionalInfo: _languageLabel(),
           ),
           /// App Version
           if (widget.info.clientInfo != null)
@@ -285,7 +331,7 @@ class _ProfileState extends State<ProfilePage> with Logging implements lnc.Obser
             padding: Styles.settingsSectionItemPadding,
             title: Text('App'.tr, style: TextStyle(color: primaryTextColor)),
             // additionalInfo: Text(widget.info.clientInfo ?? 'Unknown'.tr),
-            additionalInfo: _appInfo(context, widget.info),
+            additionalInfo: _appInfo(context),
           ),
         ],
       ),
@@ -373,22 +419,74 @@ class _ProfileState extends State<ProfilePage> with Logging implements lnc.Obser
     ],
   );
 
-  Widget _appInfo(BuildContext context, ContactInfo? info) {
-    // get client info - "name (os; store) version"
-    String? clientInfo = info?.clientInfo;
-    clientInfo ??= 'Unknown'.tr;
-    // get app/sys info from visa
-    Visa? visa = info?.visa;
+  /// Client info synced with the current avatar page (visa app/sys).
+  Widget _appInfo(BuildContext context) => FutureBuilder<List<Document>>(
+    future: _documents,
+    builder: (context, snapshot) {
+      List<Visa> visas = _allVisas(snapshot.data);
+      if (visas.isNotEmpty && _avatarIndex < visas.length) {
+        Visa visa = visas[_avatarIndex];
+        // get app/sys info from visa
+        var app = visa.getProperty('app');
+        var sys = visa.getProperty('sys');
+        if (app != null || sys != null) {
+          // get client info - "name (os; store) version"
+          String clientInfo = _visaClientInfo(visa)
+              ?? widget.info.clientInfo
+              ?? 'Unknown'.tr;
+          // show for debugging
+          return GestureDetector(
+            child: Text(clientInfo),
+            onDoubleTap: () => _showAppInfo(context, visa, app: app, sys: sys),
+          );
+        }
+      }
+      return Text(widget.info.clientInfo ?? 'Unknown'.tr);
+    },
+  );
+
+  /// Client info from the visa - format: "name (os; store) version"
+  String? _visaClientInfo(Visa? visa) {
     var app = visa?.getProperty('app');
-    var sys = visa?.getProperty('sys');
-    if (app == null && sys == null) {
-      return Text(clientInfo);
+    if (app is! Map) {
+      return null;
     }
-    // show for debugging
-    return GestureDetector(
-      child: Text(clientInfo),
-      onDoubleTap: () => _showAppInfo(context, visa, app: app, sys: sys),
-    );
+    String? name = app['name'];
+    name ??= app['id'];
+    if (name == null || name.isEmpty) {
+      return null;
+    }
+    String? version = app['version'];
+    String? store = app['store'];
+    // check 'sys.os'
+    String? os;
+    var sys = visa?.getProperty('sys');
+    if (sys is Map) {
+      os = sys['os'];
+      if (os == 'ios') {
+        os = 'iOS';
+      } else if (os == 'android') {
+        os = 'Android';
+      } else if (os == 'macos') {
+        os = 'MacOS';
+      } else if (os == 'windows') {
+        os = 'Windows';
+      } else if (os == 'linux') {
+        os = 'Linux';
+      }
+    }
+    String? platform;
+    if (os == null || os.isEmpty) {
+      platform = store;
+    } else if (store == null || store.isEmpty) {
+      platform = os;
+    } else {
+      platform = '$os; $store';
+    }
+    if (platform == null || platform.isEmpty) {
+      return '$name $version';
+    }
+    return '$name ($platform) $version';
   }
 
   void _showAppInfo(BuildContext context, Visa? visa, {dynamic app, dynamic sys}) {
@@ -505,9 +603,17 @@ class _ProfileState extends State<ProfilePage> with Logging implements lnc.Obser
             Visa visa = visas[index];
             return GestureDetector(
               onTap: () {
-                var avatar = visa.avatar;
-                if (avatar != null) {
-                  previewAvatar(context, widget.info.identifier, avatar);
+                if (index == _avatarIndex) {
+                  // preview the current avatar
+                  var avatar = visa.avatar;
+                  if (avatar != null) {
+                    previewAvatar(context, widget.info.identifier, avatar);
+                  }
+                } else {
+                  // tap on a peeking avatar to flip one page
+                  _avatarController.animateToPage(index,
+                    duration: const Duration(milliseconds: 300),
+                    curve: Curves.easeOut);
                 }
               },
               // cover-flow style: scale/rotate each page by its distance to the current page
@@ -520,8 +626,9 @@ class _ProfileState extends State<ProfilePage> with Logging implements lnc.Obser
                       : 0.0;
                   double distance = (index - page).clamp(-1.0, 1.0);
                   double scale = 1.0 - distance.abs() * 0.615;
-                  double angle = distance * 0.2;
+                  double angle = distance * 0.3;
                   double tx = -distance * 0.3 * MediaQuery.of(context).size.width;
+                  // double ty = distance.abs() * 64;
                   var transform = Matrix4.identity()
                     ..setEntry(3, 2, 0.005)
                     ..translateByDouble(tx, 0, 0, 1.0)
@@ -563,14 +670,14 @@ class _ProfileState extends State<ProfilePage> with Logging implements lnc.Obser
         width: avatarSize, height: avatarSize);
     }
     // hide the badge for a single visa or when the device type is unknown
-    IconData? iconData = visa.deviceIcon;
-    if (!showBadge || iconData == null) {
+    if (!showBadge) {
       return roundedRectangle(image, radius: avatarSize / 8);
     }
     // put on device icon
-    return applyDeviceIcon(image, iconData,
+    return applyDeviceIcon(image, visa.deviceIcon,
+      iconSize: 48,
       radius: avatarSize / 8,
-      alignment: const AlignmentDirectional(1.1, 1.0),
+      alignment: const AlignmentDirectional(1.2, 1.0),
     );
   }
 
@@ -724,8 +831,11 @@ void _shareContact(BuildContext ctx, ContactInfo info) {
     );
   });
 }
-Future<bool> _sendContact(ID receiver,
-    {required ID identifier, required String name, String? avatar}) async {
+Future<bool> _sendContact(ID receiver, {
+  required ID identifier,
+  required String name,
+  String? avatar,
+}) async {
   NameCard content = NameCard.create(identifier, name, TransportableFile.parse(avatar));
   Log.debug('name card: $content');
   GlobalVariable shared = GlobalVariable();
