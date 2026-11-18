@@ -37,7 +37,7 @@ class SettingsPage extends StatefulWidget {
   State<SettingsPage> createState() => _SettingsPageState();
 }
 
-class _SettingsPageState extends State<SettingsPage> implements lnc.Observer {
+class _SettingsPageState extends State<SettingsPage> with Logging implements lnc.Observer {
   _SettingsPageState() {
     var nc = lnc.NotificationCenter();
     nc.addObserver(this, NotificationNames.kSettingUpdated);
@@ -55,7 +55,7 @@ class _SettingsPageState extends State<SettingsPage> implements lnc.Observer {
     String name = notification.name;
     Map? userInfo = notification.userInfo;
     if (name == NotificationNames.kSettingUpdated) {
-      Log.info('setting updated: $userInfo');
+      logInfo('setting updated: $userInfo');
       if (mounted) {
         setState(() {
         });
@@ -403,7 +403,7 @@ class _MyAccountSection extends StatefulWidget {
 
 }
 
-class _MyAccountState extends State<_MyAccountSection> implements lnc.Observer {
+class _MyAccountState extends State<_MyAccountSection> with Logging implements lnc.Observer {
   _MyAccountState() {
 
     var nc = lnc.NotificationCenter();
@@ -428,7 +428,7 @@ class _MyAccountState extends State<_MyAccountSection> implements lnc.Observer {
     GlobalVariable shared = GlobalVariable();
     User? user = await shared.facebook.currentUser;
     if (identifier == null) {
-      Log.error('notification error: $notification');
+      logError('notification error: $notification');
     } else if (identifier == user?.identifier) {
       await _reload();
     }
@@ -438,7 +438,7 @@ class _MyAccountState extends State<_MyAccountSection> implements lnc.Observer {
     GlobalVariable shared = GlobalVariable();
     User? user = await shared.facebook.currentUser;
     if (user == null) {
-      Log.error('failed to get current user');
+      logError('failed to get current user');
       return;
     }
     ContactInfo? info = _info;
@@ -490,7 +490,7 @@ class _SettingsIconView extends StatefulWidget {
 
 }
 
-class _SettingsIconState extends State<_SettingsIconView> implements lnc.Observer {
+class _SettingsIconState extends State<_SettingsIconView> with Logging implements lnc.Observer {
   _SettingsIconState() {
     var nc = lnc.NotificationCenter();
     nc.addObserver(this, NotificationNames.kConfigUpdated);
@@ -520,7 +520,7 @@ class _SettingsIconState extends State<_SettingsIconView> implements lnc.Observe
     Client client = shared.terminal;
     Newest? newest = Config().newest;
     int count = newest != null && newest.canUpgrade(client) ? 1 : 0;
-    Log.warning('greeting count: $count');
+    logInfo('greeting count: $count');
     return IconView.fromSpot(widget.icon, count);
   }
 

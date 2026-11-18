@@ -188,7 +188,7 @@ class _ChatBoxState extends State<ChatBox> with Logging implements lnc.Observer 
       bool canReview = info.isOwner || info.isAdmin;
       int count = info.invitations.length;
       if (canReview && count > 0) {
-        logWarning('invitations count: $count');
+        logInfo('invitations count: $count');
         return IconView.fromSpot(icon, count,
           alignment: const AlignmentDirectional(0.8, -0.8),
         );

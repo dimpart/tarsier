@@ -40,6 +40,7 @@ class _AccountState extends State<AccountPage> {
   String? _nickname;
   String? _avatarPath;
   Uri? _avatarUrl;
+  Future<Uri?>? _uploading;
 
   // static final Uri _upWaiting = Uri.parse('https://chat.dim.sechat/up/waiting');
   // static final Uri _upError = Uri.parse('https://chat.dim.sechat/up/error');
@@ -288,7 +289,8 @@ class _AccountState extends State<AccountPage> {
     }
     String filename = URLHelper.filenameFromData(data, 'avatar.$ext');
     var ftp = SharedFileUploader();
-    ftp.uploadAvatar(data, filename, widget.user.identifier).then((url) {
+    // keep the in-flight task, _saveInfo() will wait for it
+    _uploading = ftp.uploadAvatar(data, filename, widget.user.identifier).then((url) {
       if (url == null) {
         Log.error('failed to upload avatar: $filename');
         // _avatarUrl = _upError;
@@ -296,10 +298,12 @@ class _AccountState extends State<AccountPage> {
         Log.warning('avatar uploaded: $filename -> $url');
         _avatarUrl = url;
       }
+      return url;
     }).onError((error, stackTrace) {
       if (context.mounted) {
         Alert.show(context, 'Upload Failed', '$error');
       }
+      return null;
     });
   }));
 
@@ -307,6 +311,9 @@ class _AccountState extends State<AccountPage> {
     // save profile for current user
     GlobalVariable shared = GlobalVariable();
     User user = widget.user;
+    // 0. wait for the avatar upload if still in flight,
+    //    or the visa would be saved without the avatar URL
+    await _uploading;
     // 1. get sign key for current user
     SignKey? sKey = await shared.facebook.getPrivateKeyForVisaSignature(user.identifier)
         .onError((error, stackTrace) {

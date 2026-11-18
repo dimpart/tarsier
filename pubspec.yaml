@@ -16,7 +16,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
 # In Windows, build-name is used as the major, minor, and patch parts
 # of the product and file versions while build-number is used as the build suffix.
-version: 1.6.3+13100
+version: 1.6.4+13111
 
 environment:
   sdk: '>=3.0.0 <4.0.0'
@@ -101,3 +101,13 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages
+
+# native assets: route SQLite prebuilt binary downloads through a mirror,
+# since direct access to github.com may be unreachable in this environment.
+hooks:
+  user_defines:
+    sqlite3:
+      source: sqlite3
+      # "$RELEASE_TAG" -> package release tag (e.g. sqlite3-3.6.0),
+      # "$FILENAME"    -> asset name          (e.g. libsqlite3.arm64.android.so)
+      url_pattern: "https://gh-proxy.com/https://github.com/simolus3/sqlite3.dart/releases/download/$RELEASE_TAG/$FILENAME"

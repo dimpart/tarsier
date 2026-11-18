@@ -34,7 +34,7 @@ class _MainPage extends StatefulWidget {
   State<_MainPage> createState() => _MainPageState();
 }
 
-class _MainPageState extends State<_MainPage> with WidgetsBindingObserver {
+class _MainPageState extends State<_MainPage> with WidgetsBindingObserver, Logging {
 
   @override
   void dispose() {
@@ -59,7 +59,7 @@ class _MainPageState extends State<_MainPage> with WidgetsBindingObserver {
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    Log.info('didChangeAppLifecycleState: state=$state');
+    logInfo('didChangeAppLifecycleState: state=$state');
     GlobalVariable shared = GlobalVariable();
     shared.terminal.onAppLifecycleStateChanged(state);
   }
@@ -101,7 +101,7 @@ class _MainPageState extends State<_MainPage> with WidgetsBindingObserver {
 // Widget build(BuildContext context) => CupertinoTabScaffold(
 //   backgroundColor: Styles.colors.scaffoldBackgroundColor,
 //   tabBar: CupertinoTabBar(
-//     backgroundColor: Styles.colors.appBardBackgroundColor,
+//     backgroundColor: Styles.colors.appBarBackgroundColor,
 //     items: [
 //       ChatHistoryPage.barItem(),
 //       ContactListPage.barItem(),
@@ -168,7 +168,7 @@ class _SystemChecker with Logging {
     //
     var pnf = await _getAvatar();
     if (pnf != null) {
-      Log.info('current user avatar: $pnf');
+      logInfo('current user avatar: $pnf');
     } else if (context.mounted) {
       Alert.confirm(context, 'Pick Image',
         'Please choose your avatar'.tr,

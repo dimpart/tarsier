@@ -22,7 +22,7 @@ class _RegisterInfo {
   bool agreed = true;
 
   String nickname = '';
-  String avatarURL = '';
+  String? avatarURL;
 
   String? identifier;
 
@@ -102,6 +102,15 @@ class _RegisterState extends State<RegisterPage> {
     // A list of sliver widgets.
     slivers: <Widget>[
       CupertinoSliverNavigationBar(
+        // only show the middle title in the collapsed state, otherwise
+        // it would overlap the large title in the expanded state
+        alwaysShowMiddle: false,
+        // A fresh middle instance each build is required: the SDK freezes
+        // the large title on page rebuilds unless a middle is provided
+        // (same workaround as the profile page)
+        middle: Text(
+          widget._info.importing ? 'Import'.tr : 'Register'.tr,
+        ),
         // This title is visible in both collapsed and expanded states.
         // When the "middle" parameter is omitted, the widget provided
         // in the "largeTitle" parameter is used instead in the collapsed state.

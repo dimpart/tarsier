@@ -38,7 +38,7 @@ class ContactListPage extends StatefulWidget {
   State<StatefulWidget> createState() => _ContactListState();
 }
 
-class _ContactListState extends State<ContactListPage> implements lnc.Observer {
+class _ContactListState extends State<ContactListPage> with Logging implements lnc.Observer {
   _ContactListState() {
     _dataSource = _ContactDataSource();
     _adapter = _ContactListAdapter(dataSource: _dataSource);
@@ -65,11 +65,11 @@ class _ContactListState extends State<ContactListPage> implements lnc.Observer {
     Map? userInfo = notification.userInfo;
     if (name == NotificationNames.kContactsUpdated) {
       ID? contact = userInfo?['contact'];
-      Log.info('contact updated: $contact');
+      logInfo('contact updated: $contact');
       await _reload();
     } else if (name == NotificationNames.kDocumentUpdated) {
       ID? did = userInfo?['ID'];
-      Log.info('document updated: $did');
+      logInfo('document updated: $did');
       await _reload();
     }
   }
@@ -79,7 +79,7 @@ class _ContactListState extends State<ContactListPage> implements lnc.Observer {
     // 0. check current user
     User? user = await shared.facebook.currentUser;
     if (user == null) {
-      Log.error('current user not set');
+      logError('current user not set');
       return null;
     }
     // 1. get contacts for current user
@@ -91,7 +91,7 @@ class _ContactListState extends State<ContactListPage> implements lnc.Observer {
       Set<ID> candidates = HashSet();
       candidates.addAll(config.managers);
       candidates.addAll(config.contacts);
-      Log.warning('default contacts: $candidates');
+      logWarning('default contacts: $candidates');
       for (ID item in candidates) {
         await database.addContact(item, user: user.identifier);
       }
@@ -170,7 +170,7 @@ class _ContactListState extends State<ContactListPage> implements lnc.Observer {
   );
 }
 
-class _ContactListAdapter with SectionAdapterMixin {
+class _ContactListAdapter with SectionAdapterMixin, Logging {
   _ContactListAdapter({required _ContactDataSource dataSource})
       : _dataSource = dataSource;
 
@@ -268,7 +268,7 @@ class _ContactListAdapter with SectionAdapterMixin {
     }
     ContactInfo info = _dataSource.getItem(section, index);
     return ProfilePage.cell(info, onLongPress: () {
-      Log.warning('long press: $info');
+      logWarning('long press: $info');
       Alert.confirm(context, 'Confirm Delete',
         previewEntity(info, width: 128, height: 128),
         okAction: () => info.delete(context: context),
@@ -331,13 +331,13 @@ class _ContactListAdapter with SectionAdapterMixin {
 
 }
 
-class _ContactDataSource {
+class _ContactDataSource with Logging {
 
   List<String> _sections = [];
   Map<int, List<ContactInfo>> _items = {};
 
   void refresh(List<ContactInfo> contacts) {
-    Log.debug('refreshing ${contacts.length} contact(s)');
+    logDebug('refreshing ${contacts.length} contact(s)');
     ContactSorter sorter = ContactSorter.build(contacts);
     _sections = sorter.sectionNames;
     _items = sorter.sectionItems;
@@ -356,7 +356,7 @@ class _ContactDataSource {
 ///
 ///   Greeting State
 ///
-abstract class _GreetingState<T extends StatefulWidget> extends State<T> implements lnc.Observer {
+abstract class _GreetingState<T extends StatefulWidget> extends State<T> with Logging implements lnc.Observer {
   _GreetingState() {
 
     var nc = lnc.NotificationCenter();
@@ -382,21 +382,21 @@ abstract class _GreetingState<T extends StatefulWidget> extends State<T> impleme
     Map? userInfo = notification.userInfo;
     if (name == NotificationNames.kConversationUpdated) {
       ID? chat = userInfo?['ID'];
-      Log.info('conversation updated: $chat');
+      logInfo('conversation updated: $chat');
       await _reload();
     } else if (name == NotificationNames.kContactsUpdated) {
       ID? contact = userInfo?['contact'];
-      Log.info('contact updated: $contact');
+      logInfo('contact updated: $contact');
       await _reload();
     } else if (name == NotificationNames.kBlockListUpdated) {
       ID? contact = userInfo?['blocked'];
       contact ??= userInfo?['unblocked'];
-      Log.info('blocked contact updated: $contact');
+      logInfo('blocked contact updated: $contact');
       await _reload();
     } else if (name == NotificationNames.kMuteListUpdated) {
       ID? contact = userInfo?['muted'];
       contact ??= userInfo?['unmuted'];
-      Log.info('muted contact updated: $contact');
+      logInfo('muted contact updated: $contact');
       await _reload();
     }
   }
@@ -432,7 +432,7 @@ class _NewFriendState extends _GreetingState<_NewFriendCounter> {
   @override
   Widget build(BuildContext context) {
     int count = GreetingCounter().count;
-    Log.warning('greeting count: $count');
+    logInfo('greeting count: $count');
     Widget? bubble = NumberBubble.fromInt(count);
     return bubble ?? Container();
   }
@@ -457,14 +457,14 @@ class _ContactsIconState extends _GreetingState<_ContactsIconView> {
   @override
   Widget build(BuildContext context) {
     int count = GreetingCounter().count;
-    Log.warning('greeting count: $count');
+    logInfo('greeting count: $count');
     return IconView.fromNumber(widget.icon, count);
   }
 
 }
 
 
-class GreetingCounter {
+class GreetingCounter with Logging {
   factory GreetingCounter() => _instance;
   static final GreetingCounter _instance = GreetingCounter._internal();
   GreetingCounter._internal();
@@ -485,13 +485,13 @@ class GreetingCounter {
     for (ContactInfo chat in strangers) {
       await chat.reloadData();
       if (!chat.isNewFriend) {
-        Log.warning('skip the friend: $chat');
+        logWarning('skip the friend: $chat');
         continue;
       } else if (chat.isMuted) {
-        Log.warning('skip muted chat: $chat');
+        logWarning('skip muted chat: $chat');
         continue;
       }
-      // Log.warning('stranger: $chat');
+      // logWarning('stranger: $chat');
       if (chat.unread > 0) {
         count += 1;
       }

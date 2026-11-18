@@ -31,7 +31,7 @@ class ChatHistoryPage extends StatefulWidget {
   State<StatefulWidget> createState() => _ChatListState();
 }
 
-class _ChatListState extends State<ChatHistoryPage> implements lnc.Observer {
+class _ChatListState extends State<ChatHistoryPage> with Logging implements lnc.Observer {
   _ChatListState() : _clerk = Amanuensis() {
     _adapter = _ChatListAdapter(dataSource: _clerk);
 
@@ -64,16 +64,16 @@ class _ChatListState extends State<ChatHistoryPage> implements lnc.Observer {
     Map? userInfo = notification.userInfo;
     if (name == NotificationNames.kConversationUpdated) {
       ID? chat = userInfo?['ID'];
-      Log.info('conversation updated: $chat');
+      logInfo('conversation updated: $chat');
       await _reload();
     } else if (name == NotificationNames.kContactsUpdated) {
       ID? contact = userInfo?['contact'];
-      Log.info('contact updated: $contact');
+      logInfo('contact updated: $contact');
       await _reload();
     } else if (name == NotificationNames.kBlockListUpdated) {
       ID? contact = userInfo?['blocked'];
       contact ??= userInfo?['unblocked'];
-      Log.info('blocked contact updated: $contact');
+      logInfo('blocked contact updated: $contact');
       await _reload();
     } else if (name == NotificationNames.kMembersUpdated) {
       ID? gid = userInfo?['ID'];
@@ -81,7 +81,7 @@ class _ChatListState extends State<ChatHistoryPage> implements lnc.Observer {
       await _reload();
     } else if (name == NotificationNames.kGroupHistoryUpdated) {
       ID? chat = userInfo?['ID'];
-      Log.info('group history updated: $chat');
+      logInfo('group history updated: $chat');
       await _reload();
     } else {
       assert(false, 'notification error: $notification');
@@ -101,7 +101,7 @@ class _ChatListState extends State<ChatHistoryPage> implements lnc.Observer {
     // burn expired messages
     BurnAfterReadingDataSource bar = BurnAfterReadingDataSource();
     bool ok = await bar.burnAll();
-    Log.info('burned: $ok');
+    logInfo('burned: $ok');
   }
 
   Future<void> _load() async {
@@ -147,7 +147,7 @@ class _ChatListState extends State<ChatHistoryPage> implements lnc.Observer {
   }
 }
 
-class _ChatListAdapter with SectionAdapterMixin {
+class _ChatListAdapter with SectionAdapterMixin, Logging {
   _ChatListAdapter({required Amanuensis dataSource}) : _dataSource = dataSource;
 
   final Amanuensis _dataSource;
@@ -179,11 +179,11 @@ class _ChatListAdapter with SectionAdapterMixin {
   Widget getItem(BuildContext context, IndexPath indexPath) {
     List<Conversation> conversations = _dataSource.conversations;
     if (indexPath.item >= conversations.length) {
-      Log.error('out of range: ${conversations.length}, $indexPath');
+      logError('out of range: ${conversations.length}, $indexPath');
       return const Text('');
     }
     Conversation info = conversations[indexPath.item];
-    Log.debug('show item: $info');
+    logDebug('show item: $info');
     return _ChatTableCell(info);
   }
 
@@ -200,7 +200,7 @@ class _ChatTableCell extends StatefulWidget {
 
 }
 
-class _ChatTableCellState extends State<_ChatTableCell> implements lnc.Observer {
+class _ChatTableCellState extends State<_ChatTableCell> with Logging implements lnc.Observer {
   _ChatTableCellState() {
     var nc = lnc.NotificationCenter();
     nc.addObserver(this, NotificationNames.kMessageTyping);
@@ -222,7 +222,7 @@ class _ChatTableCellState extends State<_ChatTableCell> implements lnc.Observer 
     if (name == NotificationNames.kMessageTyping) {
       ID? cid = userInfo?['ID'];
       if (cid == widget.info.identifier) {
-        Log.info('message updated: $cid');
+        logInfo('message updated: $cid');
         if (mounted) {
           setState(() {
             //
@@ -232,7 +232,7 @@ class _ChatTableCellState extends State<_ChatTableCell> implements lnc.Observer 
     } else if (name == NotificationNames.kMuteListUpdated) {
       ID? contact = userInfo?['muted'];
       contact ??= userInfo?['unmuted'];
-      Log.info('muted contact updated: $contact');
+      logInfo('muted contact updated: $contact');
       if (contact == widget.info.identifier) {
         await _reload();
       }
@@ -263,11 +263,11 @@ class _ChatTableCellState extends State<_ChatTableCell> implements lnc.Observer 
     additionalInfo: _timeLabel(widget.info),
     // trailing: const CupertinoListTileChevron(),
     onTap: () {
-      Log.warning('tap: ${widget.info}');
+      logWarning('tap: ${widget.info}');
       ChatBox.open(context, widget.info, null);
       },
     onLongPress: () {
-      Log.warning('long press: ${widget.info}');
+      logWarning('long press: ${widget.info}');
       Alert.confirm(context, 'Confirm Delete',
         previewEntity(widget.info),
         okAction: () => _removeConversation(context, widget.info.identifier),
@@ -290,7 +290,7 @@ class _ChatTableCellState extends State<_ChatTableCell> implements lnc.Observer 
   }
 
   void _removeConversation(BuildContext context, ID chat) {
-    Log.warning('removing $chat');
+    logWarning('removing $chat');
     Amanuensis clerk = Amanuensis();
     Alert.confirm(context, 'Confirm Delete', 'Sure to remove this conversation?'.tr,
       okAction: () => clerk.removeConversation(chat).onError((error, stackTrace) {
@@ -382,7 +382,7 @@ class _ChatsIconView extends StatefulWidget {
 
 }
 
-class _ChatsIconState extends State<_ChatsIconView> implements lnc.Observer {
+class _ChatsIconState extends State<_ChatsIconView> with Logging implements lnc.Observer {
   _ChatsIconState() {
     var nc = lnc.NotificationCenter();
     nc.addObserver(this, NotificationNames.kConversationUpdated);
@@ -423,7 +423,7 @@ class _ChatsIconState extends State<_ChatsIconView> implements lnc.Observer {
   @override
   Widget build(BuildContext context) {
     int count = UnreadCounter().count;
-    Log.warning('new message count: $count');
+    logInfo('new message count: $count');
     return IconView.fromNumber(widget.icon, count);
   }
 
@@ -450,17 +450,17 @@ class UnreadCounter {
     for (Conversation chat in all) {
       if (chat is ContactInfo) {
         if (chat.isMuted) {
-          // Log.warning('skip muted chat: $chat');
+          // logInfo('skip muted chat: $chat');
           continue;
         } else if (chat.isBlocked) {
-          // Log.warning('skip blocked chat: $chat');
+          // logInfo('skip blocked chat: $chat');
           continue;
         } else if (chat.isNotFriend) {
-          // Log.warning('skip stranger chat: $chat');
+          // logInfo('skip stranger chat: $chat');
           continue;
         }
       }
-      // Log.warning('chat: $chat');
+      // logInfo('chat: $chat');
       count += chat.unread;
     }
     return _count = count;
