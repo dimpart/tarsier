@@ -352,11 +352,14 @@ class _HistoryAdapter with SectionAdapterMixin, Logging {
         contentView = TranslatableView(contentView, content, sender);
       }
       // create content frame
+      // (no send flag for my call records: they are synthesized
+      //  locally and never transmitted)
+      bool isNotCallRecord = content.getString('app') != VompContent.APP;
       contentView = _getContentFrame(context, sender, mainFlex, isMine,
         image: AvatarFactory().getAvatarView(sender),
         name: nameLabel,
         body: contentView,
-        flag: isMine ? ChatSendFlag(iMsg) : null,
+        flag: isMine && isNotCallRecord ? ChatSendFlag(iMsg) : null,
       );
     } else if (commandText.isEmpty) {
       // hidden command
@@ -453,6 +456,9 @@ class _HistoryAdapter with SectionAdapterMixin, Logging {
         return ContentViewHelper.getVideoContentView(ctx, content, envelope);
       } else if (content is AudioContent) {
         return ContentViewHelper.getAudioContentView(ctx, content, envelope);
+      } else if (content.getString('app') == VompContent.APP) {
+        // voice call record: text with a phone icon
+        return ContentViewHelper.getCallRecordView(ctx, content, envelope);
       }
     } catch (e, st) {
       logError('failed to get content view (type=${content.type}), sender: ${envelope.sender}, error: $e, $st');

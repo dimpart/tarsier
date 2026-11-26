@@ -127,7 +127,7 @@ class _InputState extends State<ChatInputTray> implements lnc.Observer {
       //
       if (showFunctionIcon)
         CupertinoButton(
-          onPressed: () => _sendImage(context, widget.info),
+          onPressed: () => _popupFunctionMenu(context, widget.info),
           child: const Icon(AppIcons.chatFunctionIcon),
         ),
       if (showSendIcon)
@@ -314,10 +314,20 @@ void _sendText(BuildContext context, TextEditingController controller, Conversat
   shared.setConversationEditingText('', chat);
 }
 
-void _sendImage(BuildContext context, Conversation chat) =>
-    openImagePicker(context, onPicked: (path) {
-      Log.info('picked image: $path');
-    }, onRead: (path, jpeg) => adjustImage(jpeg, 2048, (Uint8List data) async {
+void _popupFunctionMenu(BuildContext context, Conversation chat) =>
+    Alert.actionSheet(context, null, null,
+      Alert.action(AppIcons.cameraIcon, 'Camera'),
+          () => openImagePickerWithSource(context, true, onRead: (path, jpeg) =>
+              _sendPickedImage(path, jpeg, chat)),
+      Alert.action(AppIcons.albumIcon, 'Album'),
+          () => openImagePickerWithSource(context, false, onRead: (path, jpeg) =>
+              _sendPickedImage(path, jpeg, chat)),
+      Alert.action(AppIcons.meetingDialIcon, 'Voice Call'),
+          () => _dialMeeting(chat),
+    );
+
+void _sendPickedImage(String path, Uint8List jpeg, Conversation chat) =>
+    adjustImage(jpeg, 2048, (Uint8List data) async {
       // send adjusted image data with thumbnail
       TransportableFile? thumbnail;
       Uint8List? small = await ImageUtils.compressThumbnail(data);
@@ -328,7 +338,15 @@ void _sendImage(BuildContext context, Conversation chat) =>
       GlobalVariable shared = GlobalVariable();
       shared.emitter.sendPicture(data, filename: 'image.jpeg', thumbnail: thumbnail,
         receiver: chat.identifier,);
-    }));
+    });
+
+void _dialMeeting(Conversation chat) {
+  Log.info('dial meeting with: ${chat.identifier}');
+  var nc = lnc.NotificationCenter();
+  nc.postNotification(NotificationNames.kMeetingDialClicked, chat, {
+    'ID': chat.identifier,
+  });
+}
 
 void _sendVoice(Uint8List data, double duration, Conversation chat) =>
     GlobalVariable().emitter.sendVoice(data, filename: 'voice.mp4', duration: duration,

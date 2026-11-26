@@ -92,6 +92,33 @@ abstract class ContentViewUtils {
     );
   }
 
+  static Widget getCallRecordView(Content content, ID sender, {
+    required GestureLongPressCallback? onLongPress,
+  }) {
+    String text = DefaultMessageBuilder().getText(content, sender);
+    bool mine = sender == currentUser?.identifier;
+    Color color = getTextColor(sender);
+    Widget view = Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(AppIcons.meetingDialIcon, size: 20, color: color),
+        const SizedBox(width: 6),
+        Flexible(child: SelectableText(text, style: TextStyle(color: color))),
+      ],
+    );
+    if (onLongPress == null) {
+      return view;
+    }
+    return GestureDetector(
+      onLongPress: onLongPress,
+      child: Container(
+        color: getBackgroundColor(mine),
+        padding: Styles.textMessagePadding,
+        child: view,
+      ),
+    );
+  }
+
   static Widget getAudioContentView(AudioContent content, ID sender, {
     required GestureLongPressCallback? onLongPress,
   }) {

@@ -183,6 +183,21 @@ abstract class ContentViewHelper {
     );
   }
 
+  static Widget getCallRecordView(BuildContext ctx, Content content, Envelope envelope) {
+    // action - delete only: the record is synthesized locally on each
+    // side, so the peer has no trace to match a recall against
+    deleteMessage() => _deleteMessage(ctx, content, envelope);
+    actionSheet() => Alert.actionSheet(ctx, null, null,
+      // delete
+      _deleteAction(),
+      deleteMessage,
+    );
+    // OK
+    return ContentViewUtils.getCallRecordView(content, envelope.sender,
+      onLongPress: actionSheet,
+    );
+  }
+
   static Widget getTextContentView(BuildContext ctx, Content content, Envelope envelope) {
     ID sender = envelope.sender;
     String? format = content.getString('format');
