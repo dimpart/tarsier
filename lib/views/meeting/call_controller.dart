@@ -38,7 +38,7 @@ enum CallState { idle, inviting, waiting, connecting, connected, reconnecting, e
 ///   reject/cancel/bye/busy), transitions guarded by the current state
 ///   and the meeting ID as specified in vomp/protocol.md section 3.3
 ///   (the state machine).
-class CallController extends ChangeNotifier implements lnc.Observer {
+class CallController extends ChangeNotifier with Logging implements lnc.Observer {
   factory CallController() => _instance;
   static final CallController _instance = CallController._internal();
   CallController._internal() {
@@ -108,25 +108,25 @@ class CallController extends ChangeNotifier implements lnc.Observer {
     GlobalVariable shared = GlobalVariable();
     User? me = await shared.facebook.currentUser;
     if (me == null) {
-      Log.error('failed to get current user');
+      logError('failed to get current user');
       return;
     }
     // local audio capability: probe the native Opus coder pair; the
     // result is the media proposed by the dial (signaling.md section 1)
-    Map media = _probeMedia();
+    Map media = await _probeMedia();
     _proposedMedia = media;
     // my own port info: no ready bridge means no fallback path,
     // the direct connections may still work, so keep going anyway
     List<BridgeEntry> myBridges = MagpieClient.instance.myBridges;
     List<SocketEntry> mySockets = MagpieClient.instance.mySockets;
     if (myBridges.isEmpty) {
-      Log.warning('no ready bridge before dialing: $peer');
+      logWarning('no ready bridge before dialing: $peer');
     }
     // new meeting ID: a temporary Polylogue ID derived from my
     // meta.seed = 'call-xxxx' (vomp/protocol.md section 3.0)
     ID? meeting = await _newMeetingID(me);
     if (meeting == null) {
-      Log.error('failed to generate meeting ID');
+      logError('failed to generate meeting ID');
       return;
     }
     _meeting = meeting;
@@ -172,7 +172,7 @@ class CallController extends ChangeNotifier implements lnc.Observer {
     }
     ID? meeting = _meeting;
     if (meeting == null) {
-      Log.error('failed to get meeting ID');
+      logError('failed to get meeting ID');
       return;
     }
     _timer?.cancel();
@@ -183,7 +183,7 @@ class CallController extends ChangeNotifier implements lnc.Observer {
     // reply act='accept' with my port info and the confirmed media: the
     // dial proposal intersected with the local capability (either side
     // without Opus => 'pcm16', signaling.md section 2)
-    Map local = _probeMedia();
+    Map local = await _probeMedia();
     Map media = _negotiateMedia(_proposedMedia ?? local, local);
     _confirmedMedia = media;
     List<BridgeEntry> myBridges = MagpieClient.instance.myBridges;
@@ -203,7 +203,7 @@ class CallController extends ChangeNotifier implements lnc.Observer {
     }
     ID? meeting = _meeting;
     if (meeting == null) {
-      Log.error('failed to get meeting ID');
+      logError('failed to get meeting ID');
       return;
     }
     // send act='cancel' to abort the still-ringing call
@@ -221,7 +221,7 @@ class CallController extends ChangeNotifier implements lnc.Observer {
     }
     ID? meeting = _meeting;
     if (meeting == null) {
-      Log.error('failed to get meeting ID');
+      logError('failed to get meeting ID');
       return;
     }
     // send act='reject' to decline the invitation
@@ -239,7 +239,7 @@ class CallController extends ChangeNotifier implements lnc.Observer {
     }
     ID? meeting = _meeting;
     if (meeting == null) {
-      Log.error('failed to get meeting ID');
+      logError('failed to get meeting ID');
       return;
     }
     // send act='bye' with the sender-measured talk seconds
@@ -336,7 +336,7 @@ class CallController extends ChangeNotifier implements lnc.Observer {
       bool sameMeeting = _meeting!.isSameAs(vomp.meeting);
       bool samePeer = sender.isSameAs(_peer);
       if (!sameMeeting || !samePeer) {
-        Log.warning('drop foreign command: $act, meeting: ${vomp.meeting}, sender: $sender');
+        logWarning('drop foreign command: $act, meeting: ${vomp.meeting}, sender: $sender');
         return;
       }
     } else if (act != VompContent.ACT_DIAL) {
@@ -348,7 +348,7 @@ class CallController extends ChangeNotifier implements lnc.Observer {
         break;
 
       case VompContent.ACT_ACCEPT:
-        _acceptArrived(sender, vomp);
+        await _acceptArrived(sender, vomp);
         break;
 
       case VompContent.ACT_START:
@@ -402,7 +402,7 @@ class CallController extends ChangeNotifier implements lnc.Observer {
     if (time != null) {
       sent = DateTime.fromMillisecondsSinceEpoch((time * 1000).toInt());
       if (DateTime.now().difference(sent) > _ringingTimeout) {
-        Log.warning('late dial ignored: $vomp');
+        logWarning('late dial ignored: $vomp');
         await _saveRecord('Missed call.');
         return;
       }
@@ -435,12 +435,12 @@ class CallController extends ChangeNotifier implements lnc.Observer {
     GlobalVariable shared = GlobalVariable();
     User? current = await shared.facebook.currentUser;
     if (current == null) {
-      Log.error('failed to get current user');
+      logError('failed to get current user');
       return;
     }
     // the start media is the accept-confirmed one (signaling.md section 3);
     // fall back to my own probe when the peer sent no media (old version)
-    Map media = vomp.media ?? _proposedMedia ?? _probeMedia();
+    Map media = vomp.media ?? _proposedMedia ?? await _probeMedia();
     _confirmedMedia = media;
     // bare member IDs: no reliable local terminal name is available from
     // the framework yet, so the device terminal cannot be addressed
@@ -483,6 +483,9 @@ class CallController extends ChangeNotifier implements lnc.Observer {
       // the confirmed media comes with the 'start' command too
       _confirmedMedia = vomp.media ?? _confirmedMedia;
       _startEngine();
+      // probe the data plane right away: the internal tick (10 s) may
+      // be too late for the CONNECTING deadline
+      MagpieClient.instance.keepAlive();
     } else {
       assert(false, 'unexpected start: state = $_state, sender = $sender');
     }
@@ -528,7 +531,7 @@ class CallController extends ChangeNotifier implements lnc.Observer {
   Future<void> _sendSignaling(VompContent? content) async {
     ID? peer = _peer;
     if (content == null || peer == null) {
-      Log.error('failed to send signaling: $content, peer: $peer');
+      logError('failed to send signaling: $content, peer: $peer');
       return;
     }
     GlobalVariable shared = GlobalVariable();
@@ -538,13 +541,19 @@ class CallController extends ChangeNotifier implements lnc.Observer {
   /// Local audio capability: try to create the native Opus coder pair,
   /// fall back to PCM16 pass-through when the lib is unavailable
   /// (vomp/codec.md: Opus init failure => PCM16 pass-through).
-  Map _probeMedia() {
-    final gateway = createNativeOpusGateway(
-      sampleRate: PayloadFormat.defaultSampleRate,
-      channels: PayloadFormat.defaultChannels);
-    bool opus = gateway != null;
-    // the gateway is only for the capability check: release it at once
-    gateway?.destroy();
+  Future<Map> _probeMedia() async {
+    // the FFI bindings must be initialized before any coder can be
+    // created: without this the probe failed silently on every device,
+    // so every call negotiated down to the PCM16 pass-through
+    bool opus = await loadOpusLibrary();
+    if (opus) {
+      final gateway = createNativeOpusGateway(
+        sampleRate: PayloadFormat.defaultSampleRate,
+        channels: PayloadFormat.defaultChannels);
+      opus = gateway != null;
+      // the gateway is only for the capability check: release it at once
+      gateway?.destroy();
+    }
     return {
       'codec': opus ? 'opus' : 'pcm16',
       'rate': PayloadFormat.defaultSampleRate,
@@ -583,7 +592,7 @@ class CallController extends ChangeNotifier implements lnc.Observer {
     GlobalVariable shared = GlobalVariable();
     SignKey? sKey = await shared.database.getPrivateKeyForVisaSignature(me.identifier);
     if (sKey == null) {
-      Log.error('failed to get private key of: ${me.identifier}');
+      logError('failed to get private key of: ${me.identifier}');
       return null;
     }
     final suffix = _nextCallSuffix++;
@@ -662,7 +671,7 @@ class CallController extends ChangeNotifier implements lnc.Observer {
 
   /// Flip to a new state with a trace.
   void _changeState(CallState next) {
-    Log.debug('call state: $_state -> $next');
+    logDebug('call state: $_state -> $next');
     _state = next;
     notifyListeners();
   }
@@ -733,13 +742,13 @@ class CallController extends ChangeNotifier implements lnc.Observer {
   Future<void> _saveRecord(String text, {ID? to}) async {
     ID? peer = to ?? _peer;
     if (peer == null) {
-      Log.error('failed to get peer');
+      logError('failed to get peer');
       return;
     }
     GlobalVariable shared = GlobalVariable();
     User? me = await shared.facebook.currentUser;
     if (me == null) {
-      Log.error('failed to get current user');
+      logError('failed to get current user');
       return;
     }
     final head = Envelope.create(sender: me.identifier, receiver: peer);
@@ -755,7 +764,7 @@ class CallController extends ChangeNotifier implements lnc.Observer {
     ID? peer = _peer;
     ID? meeting = _meeting;
     if (key == null || peer == null || meeting == null) {
-      Log.error('failed to start engine: $key, $peer');
+      logError('failed to start engine: $key, $peer');
       return;
     }
     CallEngine? engine = _engine;

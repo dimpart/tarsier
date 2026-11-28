@@ -2,11 +2,12 @@ import 'package:flutter/material.dart';
 
 import 'package:dim_flutter/dim_flutter.dart';
 
+import 'views/meeting/call_controller.dart';
+import 'views/setting/account.dart';
 import 'views/chats.dart';
 import 'views/customizer.dart';
 import 'views/contacts.dart';
 import 'views/services.dart';
-import 'views/setting/account.dart';
 
 
 void changeRootPage(BuildContext context, WidgetBuilder builder) {
@@ -47,6 +48,11 @@ class _MainPageState extends State<_MainPage> with WidgetsBindingObserver, Loggi
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     WidgetsBinding.instance.addPostFrameCallback((_) => _systemCheck(context));
+    // Construct the calling controller eagerly: it observes the inbound
+    // VoMP signaling, so it must exist before the first call (in or out)
+    // is made - lazy construction inside the call window would be too
+    // late for both.
+    CallController();
   }
 
   Future<void> _systemCheck(BuildContext context) async {

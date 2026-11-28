@@ -11,7 +11,7 @@ import 'package:dim_flutter/dim_flutter.dart';
 /// The engine starts when both sides enter CONNECTING (after the
 /// accept/start exchange) and stops on hang-up; while running it also
 /// observes the data plane - the first probe PONG back means reached.
-class CallEngine implements MagpieClientDelegate {
+class CallEngine with Logging implements MagpieClientDelegate {
   CallEngine({
     required this.peer,
     required this.localId,
@@ -40,6 +40,36 @@ class CallEngine implements MagpieClientDelegate {
   PayloadCodec? _codec;
   bool _running = false;
 
+  // [opus] log rate limiting: the first frame logs immediately, then one
+  // line every 5s per direction (50 fps would flood otherwise)
+  static const _opusLogInterval = Duration(seconds: 5);
+  int _upFrames = 0;
+  int _downFrames = 0;
+  DateTime? _lastUpLog;
+  DateTime? _lastDownLog;
+
+  // [opus] drop accounting: inbound frames failing validation, decrypt or
+  // decode are invisible otherwise (the wire counters still move)
+  final Map<String, int> _dropReasons = {};
+  int _dropTotal = 0;
+  DateTime? _lastDropLog;
+
+  void _onDrop(String reason) {
+    _dropReasons[reason] = (_dropReasons[reason] ?? 0) + 1;
+    _dropTotal += 1;
+    final now = DateTime.now();
+    final last = _lastDropLog;
+    if (last == null) {
+      _lastDropLog = now;
+      logInfo('[opus] drop: $reason');
+      return;
+    }
+    if (now.difference(last) >= _opusLogInterval) {
+      _lastDropLog = now;
+      logInfo('[opus] drops: total=$_dropTotal, $_dropReasons');
+    }
+  }
+
   /// called when the data plane is ready (the first probe PONG came back):
   /// the upper layer flips the state to 'connected'
   void Function()? onDataPlaneReady;
@@ -58,27 +88,33 @@ class CallEngine implements MagpieClientDelegate {
       return;
     }
     _running = true;
+    // observe the data plane before the audio pipeline is up: the first
+    // probe PONG may arrive earlier than the mic permission resolves,
+    // and the 'pipelines ready' transition is one-shot
+    MagpieClient.instance.delegate = this;
     _codec = PayloadCodec(
       localId: localId,
       keys: _directionKeys,
       // negotiation ended without Opus: force the PCM16 pass-through
       opusFactory: _media?['codec'] == 'pcm16' ? _pcm16OpusFactory : null,
     );
+    _codec!.onDrop = _onDrop;
     // bring the Opus path up (idempotent; on failure the codec falls
     // back to the PCM16 pass-through by itself)
     await _codec!.init();
+    logInfo('[opus] init: opusReady=${_codec!.opusReady}, negotiated=${_media?['codec']}');
     // speaker: decode inbound frames and play them out
     _speaker = PcmSpeaker();
-    await _speaker!.start();
+    bool playing = await _speaker!.start();
+    logInfo('[opus] speaker: $playing');
     // mic: capture -> encode -> send (RX only without the permission)
     _mic = MicRecorder();
     _mic!.onFrame = _onMicFrame;
     bool permitted = await _mic!.start();
+    logInfo('[opus] mic: $permitted');
     if (!permitted) {
-      Log.warning('no microphone permission, RX only');
+      logWarning('no microphone permission, RX only');
     }
-    // observe the data plane
-    MagpieClient.instance.delegate = this;
   }
 
   Future<void> stop() async {
@@ -108,10 +144,35 @@ class CallEngine implements MagpieClientDelegate {
     );
     Uint8List? payload = codec.encodeFrame(frame);
     if (payload == null) {
-      Log.warning('failed to encode voice frame');
+      logWarning('failed to encode voice frame');
       return;
     }
+    _logUpFrame(payload, codec);
     MagpieClient.instance.sendFrame(payload, receiver: peer);
+  }
+
+  void _logUpFrame(Uint8List payload, PayloadCodec codec) {
+    _upFrames += 1;
+    final now = DateTime.now();
+    final last = _lastUpLog;
+    if (last != null && now.difference(last) < _opusLogInterval) {
+      return;
+    }
+    _lastUpLog = now;
+    logInfo('[opus] up #$_upFrames: pcm=640B -> payload=${payload.length}B, opus=${codec.sendingOpus}');
+  }
+
+  void _logDownFrame(Uint8List payload) {
+    _downFrames += 1;
+    final now = DateTime.now();
+    final last = _lastDownLog;
+    if (last != null && now.difference(last) < _opusLogInterval) {
+      return;
+    }
+    _lastDownLog = now;
+    // AAD codec byte: 'O' = Opus, 'P' = PCM16
+    String codecByte = String.fromCharCode(payload[1]);
+    logInfo('[opus] down #$_downFrames: payload=${payload.length}B, codec=$codecByte');
   }
 
   // MagpieClientDelegate
@@ -132,6 +193,7 @@ class CallEngine implements MagpieClientDelegate {
     if (frame == null) {
       return; // KEEPALIVE or malformed
     }
+    _logDownFrame(packet.payload);
     _speaker?.push(frame.pcm);
   }
 
@@ -143,6 +205,7 @@ class CallEngine implements MagpieClientDelegate {
   @override
   void onPipelinesReady(ID did) {
     if (did.isSameAs(peer)) {
+      logInfo('[voice call] data plane connected: $peer');
       onDataPlaneReady?.call();
     }
   }

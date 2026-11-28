@@ -30,6 +30,12 @@ class _CallPageState extends State<CallPage> {
   bool _muted = false;
   bool _speakerOn = false;
 
+  // up/down bandwidth: previous cumulative counters + formatted speeds
+  int? _lastUp;
+  int? _lastDown;
+  String _upSpeed = '';
+  String _downSpeed = '';
+
   CallState get _state => _controller.state;
 
   @override
@@ -66,7 +72,8 @@ class _CallPageState extends State<CallPage> {
         _timer = Timer.periodic(const Duration(seconds: 1), (_) {
           if (mounted) {
             setState(() {
-              // refresh the talking duration
+              // refresh the talking duration + the up/down bandwidth
+              _pollSpeed();
             });
           }
         });
@@ -108,6 +115,80 @@ class _CallPageState extends State<CallPage> {
     }
   }
 
+  /// Path display while talking, one line per direction (the two ends
+  /// rank their pipes independently, so they may differ):
+  ///   '↓ Direct'  - the path the peer sends on (my incoming)
+  ///   '↑ Direct'  - my own send path
+  /// Polled every second, so a mid-call path change shows up here.
+  String get _connectionText {
+    ID? peer = _controller.peer;
+    if (peer == null) {
+      return '';
+    }
+    bool? outbound = MagpieClient.instance.isDirect(peer.withoutTerminal());
+    bool? inbound = MagpieClient.instance.inboundDirect;
+    if (outbound == null && inbound == null) {
+      return '';
+    }
+    String line(bool direct, String speed) => [
+      direct ? 'Direct' : 'Bridged',
+      'Encrypted',
+      speed,
+    ].where((part) => part.isNotEmpty).join(' · ');
+    final lines = <String>[];
+    if (inbound != null) {
+      lines.add('↓ ${line(inbound, _downSpeed)}');
+    }
+    if (outbound != null) {
+      lines.add('↑ ${line(outbound, _upSpeed)}');
+    }
+    return lines.join('\n');
+  }
+
+  /// Fixed-height slot at the top of the window: keeps the layout
+  /// stable while the label is not ready yet.
+  Widget _connectionLabel() {
+    String text = _state == CallState.connected ? _connectionText : '';
+    if (text.isEmpty) {
+      return const SizedBox.shrink();
+    }
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.fromLTRB(32, 16, 32, 8),
+      child: Text(text,
+        textAlign: TextAlign.left,
+        style: TextStyle(
+          fontSize: 12,
+          color: CupertinoColors.white.withValues(alpha: 0.55),
+        ),
+      ),
+    );
+  }
+
+  /// Snapshot the cumulative wire counters and turn the deltas into
+  /// formatted speeds (bytes/s over the last second).
+  void _pollSpeed() {
+    int up = MagpieClient.instance.uplinkBytes;
+    int down = MagpieClient.instance.downlinkBytes;
+    int? prevUp = _lastUp;
+    int? prevDown = _lastDown;
+    _lastUp = up;
+    _lastDown = down;
+    if (prevUp != null && up >= prevUp) {
+      _upSpeed = _formatSpeed(up - prevUp);
+    }
+    if (prevDown != null && down >= prevDown) {
+      _downSpeed = _formatSpeed(down - prevDown);
+    }
+  }
+
+  static String _formatSpeed(int bytes) {
+    if (bytes >= 1024) {
+      return '${(bytes / 1024.0).toStringAsFixed(1)} KB/s';
+    }
+    return '$bytes B/s';
+  }
+
   @override
   Widget build(BuildContext context) {
     return PopScope(
@@ -123,6 +204,7 @@ class _CallPageState extends State<CallPage> {
           ),
           child: SafeArea(
             child: Column(children: [
+              _connectionLabel(),
               const Spacer(),
               _avatar(),
               const SizedBox(height: 24),
